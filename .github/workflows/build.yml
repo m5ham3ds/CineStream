@@ -26,6 +26,14 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      - name: Generate debug keystore
+        run: |
+          keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "C=US, O=Android, CN=Android Debug"
+
+      - name: Create dummy google-services.json
+        run: |
+          echo '{"project_info":{"project_number":"123456789","project_id":"dummy-project"},"client":[{"client_info":{"mobilesdk_app_id":"1:123456789:android:abcdef","android_client_info":{"package_name":"com.example"}},"api_key":[{"current_key":"dummy_key"}]}]}' > app/google-services.json
+
       - name: Build Debug APK
         run: ./gradlew assembleDebug
 

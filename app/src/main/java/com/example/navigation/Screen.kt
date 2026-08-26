@@ -4,7 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.LibraryBooks
+import androidx.compose.material.icons.automirrored.filled.LibraryBooks
 import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
@@ -20,7 +20,7 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
     object Movies : Screen("movies", "Movies", Icons.Default.Movie)
     object Series : Screen("series", "Series", Icons.Default.Tv)
     object Search : Screen("search", "Search", Icons.Default.Search)
-    object Library : Screen("library", "Library", Icons.Default.LibraryBooks)
+    object Library : Screen("library", "Library", Icons.AutoMirrored.Filled.LibraryBooks)
 
     object Profile : Screen("profile", "Profile", Icons.Default.Person)
     object Downloads : Screen("downloads", "Downloads", Icons.Default.Download)
