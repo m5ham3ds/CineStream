@@ -1,5 +1,6 @@
 package com.example.ui.screens.downloads
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -19,7 +20,7 @@ import coil.compose.AsyncImage
 import com.example.data.repository.DownloadRepository
 
 @Composable
-fun DownloadsScreen() {
+fun DownloadsScreen(onItemClick: (String, Boolean) -> Unit = { _, _ -> }) {
     val context = LocalContext.current
     val downloadRepository = remember { DownloadRepository(context) }
     val items by downloadRepository.getDownloadItems().collectAsState(initial = emptyList())
@@ -55,7 +56,7 @@ fun DownloadsScreen() {
                 items(items) { item ->
                     Card(
                         colors = CardDefaults.cardColors(containerColor = Color(0xFF2A2A2E)),
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().clickable { onItemClick(item.id, item.isMovie) },
                         shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
                     ) {
                         Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -75,7 +76,7 @@ fun DownloadsScreen() {
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text("Downloaded", color = Color(0xFF4CAF50), style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.SemiBold)
                             }
-                            IconButton(onClick = { /* Play action */ }) {
+                            IconButton(onClick = { onItemClick(item.id, item.isMovie) }) {
                                 Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = Color.White)
                             }
                         }

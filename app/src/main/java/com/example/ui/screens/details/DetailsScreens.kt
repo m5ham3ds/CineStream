@@ -7,6 +7,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
@@ -57,6 +58,12 @@ fun MovieDetailsScreen(
     val downloadRepository = remember { DownloadRepository(context) }
     val libraryRepository = remember { LibraryRepository(context) }
     val scope = rememberCoroutineScope()
+
+    val libraryItems by libraryRepository.getLibraryItems().collectAsState(initial = emptyList())
+    val downloadItems by downloadRepository.getDownloadItems().collectAsState(initial = emptyList())
+    
+    val isFavorite = libraryItems.any { it.id == movieId }
+    val isDownloaded = downloadItems.any { it.id == movieId }
 
     LaunchedEffect(movieId) {
         viewModel.loadMovie(movieId)
@@ -148,27 +155,46 @@ fun MovieDetailsScreen(
                             Text("Watch Now")
                         }
 
-                        IconButton(
-                            onClick = { showDownloadSheet = true },
-                            modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant, shape = CircleShape)
-                        ) {
-                            Icon(Icons.Default.Download, contentDescription = "Download")
+                        if (isDownloaded) {
+                            IconButton(
+                                onClick = { onPlay(defaultVideoUrl) },
+                                modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant, shape = CircleShape)
+                            ) {
+                                Icon(Icons.Default.PlayArrow, contentDescription = "Play Downloaded", tint = MaterialTheme.colorScheme.primary)
+                            }
+                        } else {
+                            IconButton(
+                                onClick = { showDownloadSheet = true },
+                                modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant, shape = CircleShape)
+                            ) {
+                                Icon(Icons.Default.Download, contentDescription = "Download")
+                            }
                         }
 
                         IconButton(
                             onClick = { 
                                 uiState.movie?.let { movie ->
                                     scope.launch {
-                                        libraryRepository.addToLibrary(LibraryItem(
+                                        val item = LibraryItem(
                                             id = movie.id, title = movie.title, posterUrl = movie.posterUrl, isMovie = true
-                                        ))
-                                        Toast.makeText(context, "Added to Library", Toast.LENGTH_SHORT).show()
+                                        )
+                                        if (isFavorite) {
+                                            libraryRepository.removeFromLibrary(item)
+                                            Toast.makeText(context, "Removed from Library", Toast.LENGTH_SHORT).show()
+                                        } else {
+                                            libraryRepository.addToLibrary(item)
+                                            Toast.makeText(context, "Added to Library", Toast.LENGTH_SHORT).show()
+                                        }
                                     }
                                 }
                             },
                             modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant, shape = CircleShape)
                         ) {
-                            Icon(Icons.Default.FavoriteBorder, contentDescription = "Add to List")
+                            if (isFavorite) {
+                                Icon(Icons.Default.Favorite, contentDescription = "Remove from List", tint = Color.Red)
+                            } else {
+                                Icon(Icons.Default.FavoriteBorder, contentDescription = "Add to List")
+                            }
                         }
                     }
 
@@ -213,6 +239,12 @@ fun SeriesDetailsScreen(
     val downloadRepository = remember { DownloadRepository(context) }
     val libraryRepository = remember { LibraryRepository(context) }
     val scope = rememberCoroutineScope()
+
+    val libraryItems by libraryRepository.getLibraryItems().collectAsState(initial = emptyList())
+    val downloadItems by downloadRepository.getDownloadItems().collectAsState(initial = emptyList())
+    
+    val isFavorite = libraryItems.any { it.id == seriesId }
+    val isDownloaded = downloadItems.any { it.id == seriesId }
 
     LaunchedEffect(seriesId) {
         viewModel.loadSeries(seriesId)
@@ -304,27 +336,46 @@ fun SeriesDetailsScreen(
                             Text("Resume")
                         }
 
-                        IconButton(
-                            onClick = { showDownloadSheet = true },
-                            modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant, shape = CircleShape)
-                        ) {
-                            Icon(Icons.Default.Download, contentDescription = "Download")
+                        if (isDownloaded) {
+                            IconButton(
+                                onClick = { onPlay(defaultVideoUrl) },
+                                modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant, shape = CircleShape)
+                            ) {
+                                Icon(Icons.Default.PlayArrow, contentDescription = "Play Downloaded", tint = MaterialTheme.colorScheme.primary)
+                            }
+                        } else {
+                            IconButton(
+                                onClick = { showDownloadSheet = true },
+                                modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant, shape = CircleShape)
+                            ) {
+                                Icon(Icons.Default.Download, contentDescription = "Download")
+                            }
                         }
 
                         IconButton(
                             onClick = { 
                                 uiState.series?.let { series ->
                                     scope.launch {
-                                        libraryRepository.addToLibrary(LibraryItem(
+                                        val item = LibraryItem(
                                             id = series.id, title = series.title, posterUrl = series.posterUrl, isMovie = false
-                                        ))
-                                        Toast.makeText(context, "Added to Library", Toast.LENGTH_SHORT).show()
+                                        )
+                                        if (isFavorite) {
+                                            libraryRepository.removeFromLibrary(item)
+                                            Toast.makeText(context, "Removed from Library", Toast.LENGTH_SHORT).show()
+                                        } else {
+                                            libraryRepository.addToLibrary(item)
+                                            Toast.makeText(context, "Added to Library", Toast.LENGTH_SHORT).show()
+                                        }
                                     }
                                 }
                             },
                             modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant, shape = CircleShape)
                         ) {
-                            Icon(Icons.Default.FavoriteBorder, contentDescription = "Add to List")
+                            if (isFavorite) {
+                                Icon(Icons.Default.Favorite, contentDescription = "Remove from List", tint = Color.Red)
+                            } else {
+                                Icon(Icons.Default.FavoriteBorder, contentDescription = "Add to List")
+                            }
                         }
                     }
 

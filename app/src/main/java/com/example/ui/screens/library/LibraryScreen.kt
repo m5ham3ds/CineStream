@@ -17,7 +17,7 @@ import com.example.ui.components.MediaCard
 import kotlinx.coroutines.launch
 
 @Composable
-fun LibraryScreen() {
+fun LibraryScreen(onItemClick: (String, Boolean) -> Unit = { _, _ -> }) {
     val context = LocalContext.current
     val libraryRepository = remember { LibraryRepository(context) }
     val items by libraryRepository.getLibraryItems().collectAsState(initial = emptyList())
@@ -55,7 +55,7 @@ fun LibraryScreen() {
                     MediaCard(
                         title = item.title,
                         posterUrl = item.posterUrl,
-                        onClick = { /* navigate to details */ },
+                        onClick = { onItemClick(item.id, item.isMovie) },
                         onLongClick = { /* Maybe remove? */ }
                     )
                 }

@@ -506,10 +506,28 @@ fun AppNavigation() {
                     )
                 }
                 composable(Screen.Library.route) {
-                    LibraryScreen()
+                    LibraryScreen(
+                        onItemClick = { id, isMovie ->
+                            if (isMovie) {
+                                navController.navigate(Screen.MovieDetails.createRoute(id))
+                            } else {
+                                navController.navigate(Screen.SeriesDetails.createRoute(id))
+                            }
+                        }
+                    )
                 }
                 composable(Screen.Profile.route) { ProfileScreen() }
-                composable(Screen.Downloads.route) { DownloadsScreen() }
+                composable(Screen.Downloads.route) { 
+                    DownloadsScreen(
+                        onItemClick = { id, isMovie ->
+                            if (isMovie) {
+                                navController.navigate(Screen.MovieDetails.createRoute(id))
+                            } else {
+                                navController.navigate(Screen.SeriesDetails.createRoute(id))
+                            }
+                        }
+                    ) 
+                }
                 composable(Screen.Settings.route) { SettingsScreen() }
                 composable(Screen.About.route) { AboutScreen() }
                 composable(Screen.MovieDetails.route) { backStackEntry ->
