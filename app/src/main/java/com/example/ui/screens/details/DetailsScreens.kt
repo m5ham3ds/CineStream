@@ -6,12 +6,17 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -27,6 +32,10 @@ import com.example.ui.ViewModelFactory
 import java.net.URLEncoder
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.ui.components.DownloadQualitySheet
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.platform.LocalContext
+import android.widget.Toast
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,7 +46,7 @@ fun MovieDetailsScreen(
     viewModel: MovieDetailsViewModel = viewModel(factory = ViewModelFactory())
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val defaultVideoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+    val defaultVideoUrl = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
 
     LaunchedEffect(movieId) {
         viewModel.loadMovie(movieId)
@@ -113,13 +122,47 @@ fun MovieDetailsScreen(
                         Text(text = "${movie.runtime} min", style = MaterialTheme.typography.bodyMedium)
                     }
                     Spacer(modifier = Modifier.height(16.dp))
-                    Button(
-                        onClick = { onPlay(defaultVideoUrl) },
-                        modifier = Modifier.fillMaxWidth()
+                    var showDownloadSheet by remember { mutableStateOf(false) }
+                    val context = LocalContext.current
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Default.PlayArrow, contentDescription = "Play")
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Watch Now")
+                        Button(
+                            onClick = { onPlay(defaultVideoUrl) },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Icon(Icons.Default.PlayArrow, contentDescription = "Play")
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Watch Now")
+                        }
+
+                        IconButton(
+                            onClick = { showDownloadSheet = true },
+                            modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant, shape = CircleShape)
+                        ) {
+                            Icon(Icons.Default.Download, contentDescription = "Download")
+                        }
+
+                        IconButton(
+                            onClick = { 
+                                Toast.makeText(context, "Added to Watchlist", Toast.LENGTH_SHORT).show()
+                            },
+                            modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant, shape = CircleShape)
+                        ) {
+                            Icon(Icons.Default.FavoriteBorder, contentDescription = "Add to List")
+                        }
+                    }
+
+                    if (showDownloadSheet) {
+                        DownloadQualitySheet(
+                            onDismiss = { showDownloadSheet = false },
+                            onQualitySelected = { quality ->
+                                Toast.makeText(context, "Downloading in $quality...", Toast.LENGTH_SHORT).show()
+                            }
+                        )
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(text = movie.overview, style = MaterialTheme.typography.bodyLarge)
@@ -141,7 +184,7 @@ fun SeriesDetailsScreen(
     viewModel: SeriesDetailsViewModel = viewModel(factory = ViewModelFactory())
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val defaultVideoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+    val defaultVideoUrl = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
 
     LaunchedEffect(seriesId) {
         viewModel.loadSeries(seriesId)
@@ -217,13 +260,47 @@ fun SeriesDetailsScreen(
                         Text(text = "${series.seasons.size} Seasons", style = MaterialTheme.typography.bodyMedium)
                     }
                     Spacer(modifier = Modifier.height(16.dp))
-                    Button(
-                        onClick = { onPlay(defaultVideoUrl) },
-                        modifier = Modifier.fillMaxWidth()
+                    var showDownloadSheet by remember { mutableStateOf(false) }
+                    val context = LocalContext.current
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Default.PlayArrow, contentDescription = "Play")
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Resume")
+                        Button(
+                            onClick = { onPlay(defaultVideoUrl) },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Icon(Icons.Default.PlayArrow, contentDescription = "Play")
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Resume")
+                        }
+
+                        IconButton(
+                            onClick = { showDownloadSheet = true },
+                            modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant, shape = CircleShape)
+                        ) {
+                            Icon(Icons.Default.Download, contentDescription = "Download")
+                        }
+
+                        IconButton(
+                            onClick = { 
+                                Toast.makeText(context, "Added to Watchlist", Toast.LENGTH_SHORT).show()
+                            },
+                            modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant, shape = CircleShape)
+                        ) {
+                            Icon(Icons.Default.FavoriteBorder, contentDescription = "Add to List")
+                        }
+                    }
+
+                    if (showDownloadSheet) {
+                        DownloadQualitySheet(
+                            onDismiss = { showDownloadSheet = false },
+                            onQualitySelected = { quality ->
+                                Toast.makeText(context, "Downloading in $quality...", Toast.LENGTH_SHORT).show()
+                            }
+                        )
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(text = series.overview, style = MaterialTheme.typography.bodyLarge)

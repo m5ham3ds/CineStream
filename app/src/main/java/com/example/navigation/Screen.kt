@@ -1,19 +1,30 @@
 package com.example.navigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LibraryBooks
 import androidx.compose.material.icons.filled.Movie
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Tv
 import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
+    object Splash : Screen("splash", "Splash", Icons.Default.Home)
+    object Onboarding : Screen("onboarding", "Onboarding", Icons.Default.Home)
     object Home : Screen("home", "Home", Icons.Default.Home)
     object Movies : Screen("movies", "Movies", Icons.Default.Movie)
     object Series : Screen("series", "Series", Icons.Default.Tv)
     object Search : Screen("search", "Search", Icons.Default.Search)
     object Library : Screen("library", "Library", Icons.Default.LibraryBooks)
+
+    object Profile : Screen("profile", "Profile", Icons.Default.Person)
+    object Downloads : Screen("downloads", "Downloads", Icons.Default.Download)
+    object Settings : Screen("settings", "Settings", Icons.Default.Settings)
+    object About : Screen("about", "About Us", Icons.Default.Info)
 
     object MovieDetails : Screen("movie_details/{movieId}", "Movie Details", Icons.Default.Movie) {
         fun createRoute(movieId: String) = "movie_details/$movieId"
