@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.first
 @Composable
 fun SplashScreen(
     onNavigateToOnboarding: () -> Unit,
-    onNavigateToHome: () -> Unit
+    onNavigateToAuth: () -> Unit
 ) {
     val context = LocalContext.current
     val userPrefs = remember { UserPreferencesRepository(context) }
@@ -47,7 +47,7 @@ fun SplashScreen(
         // Wait for the animation to finish
         delay(2000)
         if (hasSeenOnboarding) {
-            onNavigateToHome()
+            onNavigateToAuth()
         } else {
             onNavigateToOnboarding()
         }

@@ -1,6 +1,7 @@
 package com.example.ui.screens.about
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,5 +22,16 @@ fun AboutScreen() {
         Text("CineStream App v1.0", color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(modifier = Modifier.height(8.dp))
         Text("Your premium cinematic experience.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Spacer(modifier = Modifier.height(32.dp))
+        
+        val context = androidx.compose.ui.platform.LocalContext.current
+        Button(
+            onClick = {
+                android.widget.Toast.makeText(context, "You are on the latest version.", android.widget.Toast.LENGTH_SHORT).show()
+            },
+            modifier = Modifier.fillMaxWidth(0.6f)
+        ) {
+            Text("Check for Updates")
+        }
     }
 }

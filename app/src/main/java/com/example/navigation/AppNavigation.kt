@@ -37,6 +37,7 @@ import com.example.ui.screens.profile.ProfileScreen
 import com.example.ui.screens.downloads.DownloadsScreen
 import com.example.ui.screens.settings.SettingsScreen
 import com.example.ui.screens.about.AboutScreen
+import com.example.ui.screens.auth.AuthScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -111,16 +112,6 @@ fun AppNavigation() {
                     },
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
                 )
-                NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.Refresh, contentDescription = null) },
-                    label = { Text("Check for Updates") },
-                    selected = false,
-                    onClick = {
-                        scope.launch { drawerState.close() }
-                        Toast.makeText(context, "You are on the latest version.", Toast.LENGTH_SHORT).show()
-                    },
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
-                )
             }
         }
     ) {
@@ -164,8 +155,8 @@ fun AppNavigation() {
                                 popUpTo(Screen.Splash.route) { inclusive = true }
                             }
                         },
-                        onNavigateToHome = {
-                            navController.navigate(Screen.Home.route) {
+                        onNavigateToAuth = {
+                            navController.navigate(Screen.Auth.route) {
                                 popUpTo(Screen.Splash.route) { inclusive = true }
                             }
                         }
@@ -174,8 +165,22 @@ fun AppNavigation() {
                 composable(Screen.Onboarding.route) {
                     OnboardingScreen(
                         onComplete = {
-                            navController.navigate(Screen.Home.route) {
+                            navController.navigate(Screen.Auth.route) {
                                 popUpTo(Screen.Onboarding.route) { inclusive = true }
+                            }
+                        }
+                    )
+                }
+                composable(Screen.Auth.route) {
+                    AuthScreen(
+                        onSkip = {
+                            navController.navigate(Screen.Home.route) {
+                                popUpTo(Screen.Auth.route) { inclusive = true }
+                            }
+                        },
+                        onAuthSuccess = {
+                            navController.navigate(Screen.Home.route) {
+                                popUpTo(Screen.Auth.route) { inclusive = true }
                             }
                         }
                     )
