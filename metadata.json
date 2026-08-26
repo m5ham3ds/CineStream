@@ -1,0 +1,6 @@
+{
+  "name": "CineStream",
+  "description": "Professional streaming application for movies and series.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
