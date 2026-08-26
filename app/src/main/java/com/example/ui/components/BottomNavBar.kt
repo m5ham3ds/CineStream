@@ -33,16 +33,17 @@ fun BottomNavBar(navController: NavController) {
 
     Box(
         modifier = Modifier
+            .windowInsetsPadding(WindowInsets.navigationBars)
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(horizontal = 16.dp, vertical = 4.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(percent = 50))
                 .background(Color(0xFF2A2A2E))
-                .padding(horizontal = 8.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
+                .padding(horizontal = 8.dp, vertical = 4.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             items.forEach { screen ->
@@ -52,6 +53,7 @@ fun BottomNavBar(navController: NavController) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
+                        .weight(1f)
                         .clip(RoundedCornerShape(percent = 50))
                         .background(if (selected) Color(0xFF4A4A4F) else Color.Transparent)
                         .clickable {
@@ -63,18 +65,21 @@ fun BottomNavBar(navController: NavController) {
                                 restoreState = true
                             }
                         }
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .padding(vertical = 4.dp)
                 ) {
                     Icon(
                         imageVector = screen.icon,
                         contentDescription = label,
-                        tint = Color.White
+                        tint = Color.White,
+                        modifier = Modifier.size(20.dp)
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = label,
                         color = Color.White,
-                        fontSize = 12.sp
+                        fontSize = 9.sp,
+                        maxLines = 1,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                     )
                 }
             }

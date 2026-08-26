@@ -1,0 +1,86 @@
+--- app/src/main/java/com/example/navigation/AppNavigation.kt
++++ app/src/main/java/com/example/navigation/AppNavigation.kt
+@@ -19,4 +19,5 @@
+ import androidx.compose.material.icons.outlined.Settings
+ import androidx.compose.material.icons.outlined.Info
+ import androidx.compose.material.icons.outlined.Download
++import androidx.compose.material.icons.outlined.Search
+ import androidx.compose.material3.*
+@@ -25,4 +26,5 @@
+ import androidx.compose.runtime.rememberCoroutineScope
++import androidx.compose.runtime.CompositionLocalProvider
+ import androidx.compose.ui.Alignment
+ import androidx.compose.ui.Modifier
+@@ -34,4 +36,5 @@
+ import androidx.compose.ui.res.painterResource
+ import androidx.compose.ui.text.font.FontFamily
+ import androidx.compose.ui.text.font.FontWeight
++import androidx.compose.ui.unit.LayoutDirection
+ import androidx.compose.ui.text.style.TextAlign
+@@ -82,2 +85,4 @@
+ 
++    CompositionLocalProvider(androidx.compose.ui.platform.LocalLayoutDirection provides LayoutDirection.Rtl) {
++
+     ModalNavigationDrawer(
+@@ -85,2 +90,3 @@
+         drawerContent = {
++            CompositionLocalProvider(androidx.compose.ui.platform.LocalLayoutDirection provides LayoutDirection.Ltr) {
+             ModalDrawerSheet(
+@@ -218,2 +224,4 @@
+         }
+-    ) {
++            }
++        }
++    ) { innerPaddingScaffold ->
++        CompositionLocalProvider(androidx.compose.ui.platform.LocalLayoutDirection provides LayoutDirection.Ltr) {
+         Scaffold(
+@@ -226,3 +234,3 @@
+                     Box(
+                         modifier = Modifier
+-                            .fillMaxWidth()
++                            .windowInsetsPadding(WindowInsets.statusBars)
++                            .fillMaxWidth()
+@@ -244,17 +252,2 @@
+                             
+-                            // Name & subtitle
+-                            Column {
+-                                Text(
+-                                    text = "E. Laurent",
+-                                    color = Color.White,
+-                                    fontSize = 16.sp,
+-                                    fontFamily = FontFamily.Cursive
+-                                )
+-                                Text(
+-                                    text = "Est. 2026",
+-                                    color = Color.LightGray,
+-                                    fontSize = 10.sp
+-                                )
+-                            }
+-                            
+                             Spacer(modifier = Modifier.weight(1f))
+@@ -272,3 +265,3 @@
+                             // Right Icons
+-                            Icon(Icons.Outlined.Settings, contentDescription = "Settings", tint = Color.White)
++                            Icon(Icons.Outlined.Search, contentDescription = "Search", tint = Color.White, modifier = Modifier.clickable { navController.navigate(Screen.Search.route) })
+                             Spacer(modifier = Modifier.width(16.dp))
+@@ -285,3 +278,3 @@
+                             Spacer(modifier = Modifier.width(8.dp))
+-                            Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Dropdown", tint = Color.White)
++                            Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color.White, modifier = Modifier.clickable { scope.launch { drawerState.open() } })
+                             Spacer(modifier = Modifier.width(8.dp))
+@@ -300,5 +293,12 @@
+             NavHost(
+                 navController = navController,
+                 startDestination = Screen.Splash.route,
+-                modifier = Modifier.padding(innerPadding)
++                modifier = Modifier.padding(innerPadding),
++                enterTransition = { androidx.compose.animation.fadeIn(animationSpec = androidx.compose.animation.core.tween(300)) },
++                exitTransition = { androidx.compose.animation.fadeOut(animationSpec = androidx.compose.animation.core.tween(300)) },
++                popEnterTransition = { androidx.compose.animation.fadeIn(animationSpec = androidx.compose.animation.core.tween(300)) },
++                popExitTransition = { androidx.compose.animation.fadeOut(animationSpec = androidx.compose.animation.core.tween(300)) }
+             ) {
+@@ -395,2 +395,4 @@
+         }
++        }
++    }
+ }

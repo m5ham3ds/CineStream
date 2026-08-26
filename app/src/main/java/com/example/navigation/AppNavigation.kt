@@ -18,11 +18,17 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -71,6 +77,12 @@ fun AppNavigation() {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    
+    val userPrefs = remember { com.example.data.repository.UserPreferencesRepository(context) }
+    val isGuest by userPrefs.isGuest.collectAsState(initial = false)
+    
+    var isSearchExpanded by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
+    var searchQuery by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf("") }
 
     val bottomBarRoutes = listOf(
         Screen.Home.route,
@@ -80,9 +92,11 @@ fun AppNavigation() {
         Screen.Library.route
     )
 
+    androidx.compose.runtime.CompositionLocalProvider(androidx.compose.ui.platform.LocalLayoutDirection provides androidx.compose.ui.unit.LayoutDirection.Rtl) {
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
+            androidx.compose.runtime.CompositionLocalProvider(androidx.compose.ui.platform.LocalLayoutDirection provides androidx.compose.ui.unit.LayoutDirection.Ltr) {
             ModalDrawerSheet(
                 drawerContainerColor = Color(0xFF1E1E20),
                 modifier = Modifier.width(300.dp)
@@ -200,97 +214,150 @@ fun AppNavigation() {
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        // Check if Guest
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.clickable { /* Logout action */ }
+                            modifier = Modifier.clickable { 
+                                if (isGuest) {
+                                    navController.navigate(Screen.Auth.route)
+                                } else {
+                                    /* Logout action */ 
+                                }
+                            }
                         ) {
-                            Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Log Out", tint = Color.White)
+                            Icon(if (isGuest) Icons.Default.Person else Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Log", tint = Color.White)
                             Spacer(modifier = Modifier.width(12.dp))
-                            Text("Log Out", color = Color.White, fontSize = 16.sp)
+                            Text(if (isGuest) "Log In" else "Log Out", color = Color.White, fontSize = 16.sp)
                         }
                         
                         Icon(Icons.AutoMirrored.Filled.Help, contentDescription = "Help", tint = Color.Gray)
                     }
                 }
             }
+            }
         }
     ) {
+        androidx.compose.runtime.CompositionLocalProvider(androidx.compose.ui.platform.LocalLayoutDirection provides androidx.compose.ui.unit.LayoutDirection.Ltr) {
         Scaffold(
             containerColor = Color.Black,
             topBar = {
                 if (bottomBarRoutes.contains(currentRoute) || currentRoute in listOf(Screen.Profile.route, Screen.Downloads.route, Screen.Settings.route, Screen.About.route)) {
-                    Box(
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 12.dp)
-                            .clip(RoundedCornerShape(percent = 50))
-                            .background(Color(0xFF2A2A2E))
-                            .padding(horizontal = 8.dp, vertical = 8.dp)
+                            .windowInsetsPadding(WindowInsets.statusBars)
                     ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 12.dp)
+                                .clip(RoundedCornerShape(percent = 50))
+                                .background(Color(0xFF2A2A2E))
+                                .padding(horizontal = 8.dp, vertical = 8.dp)
                         ) {
-                            // Avatar on left
-                            Box(
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(CircleShape)
-                                    .background(Color.Gray)
-                                    .clickable { scope.launch { drawerState.open() } },
-                                contentAlignment = Alignment.Center
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Icon(Icons.Default.Person, contentDescription = "Avatar", tint = Color.White)
-                            }
-                            Spacer(modifier = Modifier.width(12.dp))
-                            
-                            // Name & subtitle
-                            Column {
+                                // Avatar on left
+                                Box(
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .clip(CircleShape)
+                                        .background(Color.Gray)
+                                        .clickable { 
+                                            if (isGuest) {
+                                                navController.navigate(Screen.Auth.route)
+                                            } else {
+                                                navController.navigate(Screen.Profile.route)
+                                            }
+                                        },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(Icons.Default.Person, contentDescription = "Avatar", tint = Color.White)
+                                }
+                                Spacer(modifier = Modifier.weight(1f))
+                                
+                                // Center App Name
                                 Text(
-                                    text = "E. Laurent",
-                                    color = Color.White,
-                                    fontSize = 16.sp,
-                                    fontFamily = FontFamily.Cursive
+                                    "CineStream",
+                                    fontWeight = FontWeight.Bold,
+                                    fontFamily = FontFamily.Serif,
+                                    color = Color(0xFFA51B1B),
+                                    fontSize = 20.sp
                                 )
-                                Text(
-                                    text = "Est. 2026",
-                                    color = Color.LightGray,
-                                    fontSize = 10.sp
-                                )
+                                
+                                Spacer(modifier = Modifier.weight(1f))
+                                
+                                // Right Icons
+                                Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.White, modifier = Modifier.clickable { isSearchExpanded = !isSearchExpanded })
+                                Spacer(modifier = Modifier.width(16.dp))
+                                BadgedBox(
+                                    badge = {
+                                        Badge(
+                                            containerColor = Color.White,
+                                            contentColor = Color.Black,
+                                            modifier = Modifier.offset(x = (-4).dp, y = 4.dp)
+                                        ) {
+                                            Text("1")
+                                        }
+                                    }
+                                ) {
+                                    Icon(Icons.Outlined.Notifications, contentDescription = "Notifications", tint = Color.White)
+                                }
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color.White, modifier = Modifier.clickable { scope.launch { drawerState.open() } })
+                                Spacer(modifier = Modifier.width(8.dp))
                             }
-                            
-                            Spacer(modifier = Modifier.weight(1f))
-                            
-                            // Center App Name
-                            Text(
-                                "CineStream",
-                                fontWeight = FontWeight.Bold,
-                                fontFamily = FontFamily.Serif,
-                                color = Color(0xFFA51B1B),
-                                fontSize = 20.sp
-                            )
-                            
-                            Spacer(modifier = Modifier.weight(1f))
-                            
-                            // Right Icons
-                            Icon(Icons.Outlined.Settings, contentDescription = "Settings", tint = Color.White)
-                            Spacer(modifier = Modifier.width(16.dp))
-                            BadgedBox(
-                                badge = {
-                                    Badge(
-                                        containerColor = Color.White,
-                                        contentColor = Color.Black,
-                                        modifier = Modifier.offset(x = (-4).dp, y = 4.dp)
-                                    ) {
-                                        Text("1")
+                        }
+                        
+                        androidx.compose.animation.AnimatedVisibility(visible = isSearchExpanded) {
+                            Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+                                TextField(
+                                    value = searchQuery,
+                                    onValueChange = { searchQuery = it },
+                                    placeholder = { Text("Search movies or series...") },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = TextFieldDefaults.colors(
+                                        focusedContainerColor = Color(0xFF1E1E20),
+                                        unfocusedContainerColor = Color(0xFF1E1E20),
+                                        focusedTextColor = Color.White,
+                                        unfocusedTextColor = Color.White,
+                                        focusedIndicatorColor = Color.Transparent,
+                                        unfocusedIndicatorColor = Color.Transparent
+                                    ),
+                                    shape = RoundedCornerShape(16.dp),
+                                    singleLine = true
+                                )
+                                if (searchQuery.isNotEmpty()) {
+                                    val dummyMovies = listOf("Avatar", "Avengers: Endgame", "Assassin's Creed", "Batman Begins", "Interstellar", "Inception", "Iron Man", "Spider-Man", "Superman")
+                                    val searchResults = dummyMovies.filter { it.contains(searchQuery, ignoreCase = true) }
+                                    if (searchResults.isNotEmpty()) {
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        Card(
+                                            colors = CardDefaults.cardColors(containerColor = Color(0xFF2A2A2E)),
+                                            modifier = Modifier.fillMaxWidth(),
+                                            shape = RoundedCornerShape(16.dp)
+                                        ) {
+                                            Column(modifier = Modifier.padding(8.dp)) {
+                                                searchResults.forEach { result ->
+                                                    Text(
+                                                        text = result,
+                                                        color = Color.White,
+                                                        modifier = Modifier
+                                                            .fillMaxWidth()
+                                                            .clickable { 
+                                                                searchQuery = result
+                                                                isSearchExpanded = false
+                                                            }
+                                                            .padding(12.dp)
+                                                    )
+                                                }
+                                            }
+                                        }
                                     }
                                 }
-                            ) {
-                                Icon(Icons.Outlined.Notifications, contentDescription = "Notifications", tint = Color.White)
                             }
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Dropdown", tint = Color.White)
-                            Spacer(modifier = Modifier.width(8.dp))
                         }
                     }
                 }
@@ -304,7 +371,11 @@ fun AppNavigation() {
             NavHost(
                 navController = navController,
                 startDestination = Screen.Splash.route,
-                modifier = Modifier.padding(innerPadding)
+                modifier = Modifier.padding(innerPadding),
+                enterTransition = { androidx.compose.animation.fadeIn(animationSpec = androidx.compose.animation.core.tween(300)) },
+                exitTransition = { androidx.compose.animation.fadeOut(animationSpec = androidx.compose.animation.core.tween(300)) },
+                popEnterTransition = { androidx.compose.animation.fadeIn(animationSpec = androidx.compose.animation.core.tween(300)) },
+                popExitTransition = { androidx.compose.animation.fadeOut(animationSpec = androidx.compose.animation.core.tween(300)) }
             ) {
                 composable(Screen.Splash.route) {
                     SplashScreen(
@@ -315,6 +386,11 @@ fun AppNavigation() {
                         },
                         onNavigateToAuth = {
                             navController.navigate(Screen.Auth.route) {
+                                popUpTo(Screen.Splash.route) { inclusive = true }
+                            }
+                        },
+                        onNavigateToHome = {
+                            navController.navigate(Screen.Home.route) {
                                 popUpTo(Screen.Splash.route) { inclusive = true }
                             }
                         }
@@ -407,4 +483,6 @@ fun AppNavigation() {
             }
         }
     }
+}
+}
 }

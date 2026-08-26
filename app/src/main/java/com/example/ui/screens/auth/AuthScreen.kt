@@ -13,6 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import android.widget.Toast
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -21,6 +22,9 @@ fun AuthScreen(
     onAuthSuccess: () -> Unit
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val userPrefs = remember { com.example.data.repository.UserPreferencesRepository(context) }
+
     var isSignUp by remember { mutableStateOf(false) }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -33,7 +37,10 @@ fun AuthScreen(
     ) {
         // Skip Button
         TextButton(
-            onClick = onSkip,
+            onClick = { 
+                scope.launch { userPrefs.saveIsGuest(true) }
+                onSkip() 
+            },
             modifier = Modifier.align(Alignment.TopEnd)
         ) {
             Text("Skip", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
@@ -81,11 +88,47 @@ fun AuthScreen(
                     unfocusedTextColor = Color.White
                 )
             )
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(16.dp))
+
+            var agreeToTerms by remember { mutableStateOf(false) }
+
+            if (isSignUp) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(
+                        checked = agreeToTerms,
+                        onCheckedChange = { agreeToTerms = it },
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = MaterialTheme.colorScheme.primary,
+                            uncheckedColor = Color.Gray
+                        )
+                    )
+                    Text("I agree to Terms & Conditions", color = Color.White)
+                }
+            } else {
+                TextButton(
+                    onClick = { Toast.makeText(context, "Forgot Password clicked", Toast.LENGTH_SHORT).show() },
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    Text("Forgot Password?", color = MaterialTheme.colorScheme.primary)
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             Button(
                 onClick = { 
+                    if (isSignUp && !agreeToTerms) {
+                        Toast.makeText(context, "Please agree to terms", Toast.LENGTH_SHORT).show()
+                        return@Button
+                    }
                     if (email.isNotBlank() && password.isNotBlank()) {
+                        scope.launch { 
+                            userPrefs.saveIsGuest(false) 
+                            userPrefs.saveIsLoggedIn(true)
+                        }
                         onAuthSuccess() 
                     } else {
                         Toast.makeText(context, "Please enter email and password", Toast.LENGTH_SHORT).show()
@@ -107,6 +150,10 @@ fun AuthScreen(
             Button(
                 onClick = { 
                     Toast.makeText(context, "Google Sign-In logic goes here.", Toast.LENGTH_SHORT).show()
+                    scope.launch { 
+                        userPrefs.saveIsGuest(false) 
+                        userPrefs.saveIsLoggedIn(true)
+                    }
                     onAuthSuccess()
                 },
                 modifier = Modifier

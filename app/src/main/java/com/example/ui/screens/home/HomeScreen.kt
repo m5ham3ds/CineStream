@@ -13,6 +13,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -21,11 +24,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImage
 import com.example.domain.models.Movie
 import com.example.domain.models.Series
 import com.example.ui.ViewModelFactory
 import com.example.ui.components.MediaCard
+import com.example.ui.components.MediaActionBottomSheet
 
 @Composable
 fun HomeScreen(
@@ -34,6 +40,7 @@ fun HomeScreen(
     viewModel: HomeViewModel = viewModel(factory = ViewModelFactory())
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
     if (uiState.isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -50,6 +57,8 @@ fun HomeScreen(
     }
 
     val scrollState = rememberScrollState()
+    var showBottomSheet by remember { mutableStateOf(false) }
+    var bottomSheetIsMovie by remember { mutableStateOf(true) }
 
     Column(
         modifier = Modifier
@@ -73,7 +82,11 @@ fun HomeScreen(
                 MediaCard(
                     title = movie.title,
                     posterUrl = movie.posterUrl,
-                    onClick = { onMovieClick(movie.id) }
+                    onClick = { onMovieClick(movie.id) },
+                    onLongClick = { 
+                        bottomSheetIsMovie = true
+                        showBottomSheet = true
+                    }
                 )
             }
         }
@@ -89,7 +102,11 @@ fun HomeScreen(
                 MediaCard(
                     title = series.title,
                     posterUrl = series.posterUrl,
-                    onClick = { onSeriesClick(series.id) }
+                    onClick = { onSeriesClick(series.id) },
+                    onLongClick = { 
+                        bottomSheetIsMovie = false
+                        showBottomSheet = true
+                    }
                 )
             }
         }
@@ -105,9 +122,22 @@ fun HomeScreen(
                 MediaCard(
                     title = movie.title,
                     posterUrl = movie.posterUrl,
-                    onClick = { onMovieClick(movie.id) }
+                    onClick = { onMovieClick(movie.id) },
+                    onLongClick = { 
+                        bottomSheetIsMovie = true
+                        showBottomSheet = true
+                    }
                 )
             }
+        }
+        
+        if (showBottomSheet) {
+            MediaActionBottomSheet(
+                isMovie = bottomSheetIsMovie,
+                onDismissRequest = { showBottomSheet = false },
+                onDownloadStart = { Toast.makeText(context, "Download Started", Toast.LENGTH_SHORT).show() },
+                onAddToLibrary = { Toast.makeText(context, "Added to Library", Toast.LENGTH_SHORT).show() }
+            )
         }
     }
 }

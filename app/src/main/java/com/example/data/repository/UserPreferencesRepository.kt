@@ -14,15 +14,39 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "us
 class UserPreferencesRepository(private val context: Context) {
 
     private val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
+    private val IS_GUEST = booleanPreferencesKey("is_guest")
+    private val IS_LOGGED_IN = booleanPreferencesKey("is_logged_in")
 
     val onboardingCompleted: Flow<Boolean> = context.dataStore.data
         .map { preferences ->
             preferences[ONBOARDING_COMPLETED] ?: false
         }
 
+    val isGuest: Flow<Boolean> = context.dataStore.data
+        .map { preferences ->
+            preferences[IS_GUEST] ?: false
+        }
+
+    val isLoggedIn: Flow<Boolean> = context.dataStore.data
+        .map { preferences ->
+            preferences[IS_LOGGED_IN] ?: false
+        }
+
     suspend fun saveOnboardingCompleted(completed: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[ONBOARDING_COMPLETED] = completed
+        }
+    }
+
+    suspend fun saveIsGuest(isGuest: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[IS_GUEST] = isGuest
+        }
+    }
+
+    suspend fun saveIsLoggedIn(isLoggedIn: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[IS_LOGGED_IN] = isLoggedIn
         }
     }
 }
