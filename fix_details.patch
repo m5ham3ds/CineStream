@@ -1,0 +1,108 @@
+--- app/src/main/java/com/example/ui/screens/details/DetailsScreens.kt
++++ app/src/main/java/com/example/ui/screens/details/DetailsScreens.kt
+@@ -35,6 +35,11 @@
+ import com.example.ui.components.DownloadQualitySheet
+ import androidx.compose.foundation.shape.CircleShape
+ import androidx.compose.ui.platform.LocalContext
+ import android.widget.Toast
++import com.example.data.repository.DownloadRepository
++import com.example.data.model.DownloadItem
++import com.example.data.repository.LibraryRepository
++import com.example.data.model.LibraryItem
++import kotlinx.coroutines.launch
+ 
+ @OptIn(ExperimentalMaterial3Api::class)
+@@ -48,6 +53,9 @@
+     val uiState by viewModel.uiState.collectAsState()
+     val defaultVideoUrl = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
++    val context = LocalContext.current
++    val downloadRepository = remember { DownloadRepository(context) }
++    val libraryRepository = remember { LibraryRepository(context) }
++    val scope = rememberCoroutineScope()
+ 
+     LaunchedEffect(movieId) {
+         viewModel.loadMovie(movieId)
+@@ -124,7 +132,6 @@
+                     Spacer(modifier = Modifier.height(16.dp))
+                     var showDownloadSheet by remember { mutableStateOf(false) }
+-                    val context = LocalContext.current
+ 
+                     Row(
+@@ -147,7 +154,16 @@
+                         IconButton(
+-                            onClick = { /* Add to favorites */ },
++                            onClick = {
++                                uiState.movie?.let { movie ->
++                                    scope.launch {
++                                        libraryRepository.addToLibrary(LibraryItem(
++                                            id = movie.id, title = movie.title, posterUrl = movie.posterUrl, isMovie = true
++                                        ))
++                                        Toast.makeText(context, "Added to Library", Toast.LENGTH_SHORT).show()
++                                    }
++                                }
++                            },
+                             modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant, shape = CircleShape)
+                         ) {
+@@ -161,7 +177,16 @@
+                         DownloadQualitySheet(
+                             onDismiss = { showDownloadSheet = false },
+                             onQualitySelected = { quality ->
++                                uiState.movie?.let { movie ->
++                                    scope.launch {
++                                        downloadRepository.addToDownloads(DownloadItem(
++                                            id = movie.id, title = movie.title, posterUrl = movie.posterUrl, isMovie = true, quality = quality
++                                        ))
++                                        Toast.makeText(context, "Download Started", Toast.LENGTH_SHORT).show()
++                                    }
++                                }
+-                                Toast.makeText(context, "Downloading in $quality...", Toast.LENGTH_SHORT).show()
+                             }
+                         )
+                     }
+@@ -185,6 +210,9 @@
+     val uiState by viewModel.uiState.collectAsState()
+     val defaultVideoUrl = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
++    val context = LocalContext.current
++    val downloadRepository = remember { DownloadRepository(context) }
++    val libraryRepository = remember { LibraryRepository(context) }
++    val scope = rememberCoroutineScope()
+ 
+     LaunchedEffect(seriesId) {
+         viewModel.loadSeries(seriesId)
+@@ -262,7 +290,6 @@
+                     Spacer(modifier = Modifier.height(16.dp))
+                     var showDownloadSheet by remember { mutableStateOf(false) }
+-                    val context = LocalContext.current
+ 
+                     Row(
+@@ -285,7 +312,16 @@
+                         IconButton(
+-                            onClick = { /* Add to favorites */ },
++                            onClick = {
++                                uiState.series?.let { series ->
++                                    scope.launch {
++                                        libraryRepository.addToLibrary(LibraryItem(
++                                            id = series.id, title = series.title, posterUrl = series.posterUrl, isMovie = false
++                                        ))
++                                        Toast.makeText(context, "Added to Library", Toast.LENGTH_SHORT).show()
++                                    }
++                                }
++                            },
+                             modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant, shape = CircleShape)
+                         ) {
+@@ -299,7 +335,16 @@
+                         DownloadQualitySheet(
+                             onDismiss = { showDownloadSheet = false },
+                             onQualitySelected = { quality ->
++                                uiState.series?.let { series ->
++                                    scope.launch {
++                                        downloadRepository.addToDownloads(DownloadItem(
++                                            id = series.id, title = series.title, posterUrl = series.posterUrl, isMovie = false, quality = quality
++                                        ))
++                                        Toast.makeText(context, "Download Started", Toast.LENGTH_SHORT).show()
++                                    }
++                                }
+-                                Toast.makeText(context, "Downloading in $quality...", Toast.LENGTH_SHORT).show()
+                             }
+                         )
+                     }

@@ -10,6 +10,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.automirrored.filled.Help
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
@@ -83,6 +85,7 @@ fun AppNavigation() {
     
     var isSearchExpanded by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
     var searchQuery by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf("") }
+    var showLogoutDialog by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
 
     val bottomBarRoutes = listOf(
         Screen.Home.route,
@@ -128,7 +131,17 @@ fun AppNavigation() {
                             textAlign = TextAlign.Center
                         )
                         Spacer(modifier = Modifier.weight(1f))
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.clickable {
+                                scope.launch { drawerState.close() }
+                                if (isGuest) {
+                                    navController.navigate(Screen.Auth.route)
+                                } else {
+                                    navController.navigate(Screen.Profile.route)
+                                }
+                            }
+                        ) {
                             Box(
                                 modifier = Modifier
                                     .size(70.dp)
@@ -143,13 +156,13 @@ fun AppNavigation() {
                             Spacer(modifier = Modifier.width(16.dp))
                             Column {
                                 Text(
-                                    text = "E. Laurent",
+                                    text = if (isGuest) "Guest User" else "E. Laurent",
                                     fontSize = 24.sp,
                                     fontFamily = FontFamily.Cursive,
                                     color = Color.White
                                 )
                                 Text(
-                                    text = "Premium User",
+                                    text = if (isGuest) "Free Account" else "Premium User",
                                     fontSize = 14.sp,
                                     color = Color.LightGray
                                 )
@@ -160,6 +173,18 @@ fun AppNavigation() {
                 
                 Spacer(modifier = Modifier.height(16.dp))
                 
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.Home, contentDescription = null, tint = Color.White) },
+                    label = { Text("Home", color = Color.White, fontSize = 16.sp) },
+                    selected = currentRoute == Screen.Home.route,
+                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        navController.navigate(Screen.Home.route)
+                    },
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+
                 NavigationDrawerItem(
                     icon = { Icon(Icons.Outlined.Download, contentDescription = null, tint = Color.White) },
                     label = { Text("Downloads", color = Color.White, fontSize = 16.sp) },
@@ -174,6 +199,18 @@ fun AppNavigation() {
                 
                 HorizontalDivider(color = Color.DarkGray, modifier = Modifier.padding(horizontal = 16.dp))
                 
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.Favorite, contentDescription = null, tint = Color.White) },
+                    label = { Text("Library", color = Color.White, fontSize = 16.sp) },
+                    selected = currentRoute == Screen.Library.route,
+                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        navController.navigate(Screen.Library.route)
+                    },
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+
                 NavigationDrawerItem(
                     icon = { Icon(Icons.Outlined.Settings, contentDescription = null, tint = Color.White) },
                     label = { Text("Settings", color = Color.White, fontSize = 16.sp) },
@@ -219,9 +256,11 @@ fun AppNavigation() {
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.clickable { 
                                 if (isGuest) {
+                                    scope.launch { drawerState.close() }
                                     navController.navigate(Screen.Auth.route)
                                 } else {
-                                    /* Logout action */ 
+                                    scope.launch { drawerState.close() }
+                                    showLogoutDialog = true
                                 }
                             }
                         ) {
@@ -238,6 +277,26 @@ fun AppNavigation() {
         }
     ) {
         androidx.compose.runtime.CompositionLocalProvider(androidx.compose.ui.platform.LocalLayoutDirection provides androidx.compose.ui.unit.LayoutDirection.Ltr) {
+        if (showLogoutDialog) {
+            AlertDialog(
+                onDismissRequest = { showLogoutDialog = false },
+                title = { Text("Log Out") },
+                text = { Text("Are you sure you want to log out?") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        showLogoutDialog = false
+                        scope.launch { userPrefs.saveIsGuest(true) }
+                        navController.navigate(Screen.Auth.route) { popUpTo(0) }
+                    }) { Text("Yes", color = Color.Red) }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showLogoutDialog = false }) { Text("No", color = Color.White) }
+                },
+                containerColor = Color(0xFF1E1E20),
+                titleContentColor = Color.White,
+                textContentColor = Color.LightGray
+            )
+        }
         Scaffold(
             containerColor = Color.Black,
             topBar = {
@@ -460,7 +519,7 @@ fun AppNavigation() {
                         onBack = { navController.popBackStack() },
                         onPlay = { url -> 
                             val encodedUrl = URLEncoder.encode(url, "UTF-8")
-                            navController.navigate("player/$encodedUrl")
+                            navController.navigate("player?url=$encodedUrl")
                         }
                     )
                 }
@@ -471,11 +530,11 @@ fun AppNavigation() {
                         onBack = { navController.popBackStack() },
                         onPlay = { url -> 
                             val encodedUrl = URLEncoder.encode(url, "UTF-8")
-                            navController.navigate("player/$encodedUrl")
+                            navController.navigate("player?url=$encodedUrl")
                         }
                     )
                 }
-                composable("player/{url}") { backStackEntry ->
+                composable("player?url={url}") { backStackEntry ->
                     val url = backStackEntry.arguments?.getString("url") ?: return@composable
                     val decodedUrl = URLDecoder.decode(url, "UTF-8")
                     PlayerScreen(videoUrl = decodedUrl, onBack = { navController.popBackStack() })

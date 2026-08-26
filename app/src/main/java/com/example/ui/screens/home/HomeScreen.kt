@@ -32,6 +32,12 @@ import com.example.domain.models.Series
 import com.example.ui.ViewModelFactory
 import com.example.ui.components.MediaCard
 import com.example.ui.components.MediaActionBottomSheet
+import com.example.data.repository.LibraryRepository
+import com.example.data.model.LibraryItem
+import com.example.data.repository.DownloadRepository
+import com.example.data.model.DownloadItem
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
 
 @Composable
 fun HomeScreen(
@@ -41,6 +47,9 @@ fun HomeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+    val libraryRepository = remember { LibraryRepository(context) }
+    val downloadRepository = remember { DownloadRepository(context) }
+    val scope = rememberCoroutineScope()
 
     if (uiState.isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -59,6 +68,9 @@ fun HomeScreen(
     val scrollState = rememberScrollState()
     var showBottomSheet by remember { mutableStateOf(false) }
     var bottomSheetIsMovie by remember { mutableStateOf(true) }
+    var selectedMediaId by remember { mutableStateOf("") }
+    var selectedMediaTitle by remember { mutableStateOf("") }
+    var selectedMediaPoster by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -85,6 +97,9 @@ fun HomeScreen(
                     onClick = { onMovieClick(movie.id) },
                     onLongClick = { 
                         bottomSheetIsMovie = true
+                        selectedMediaId = movie.id
+                        selectedMediaTitle = movie.title
+                        selectedMediaPoster = movie.posterUrl
                         showBottomSheet = true
                     }
                 )
@@ -105,6 +120,9 @@ fun HomeScreen(
                     onClick = { onSeriesClick(series.id) },
                     onLongClick = { 
                         bottomSheetIsMovie = false
+                        selectedMediaId = series.id
+                        selectedMediaTitle = series.title
+                        selectedMediaPoster = series.posterUrl
                         showBottomSheet = true
                     }
                 )
@@ -125,6 +143,9 @@ fun HomeScreen(
                     onClick = { onMovieClick(movie.id) },
                     onLongClick = { 
                         bottomSheetIsMovie = true
+                        selectedMediaId = movie.id
+                        selectedMediaTitle = movie.title
+                        selectedMediaPoster = movie.posterUrl
                         showBottomSheet = true
                     }
                 )
@@ -135,8 +156,29 @@ fun HomeScreen(
             MediaActionBottomSheet(
                 isMovie = bottomSheetIsMovie,
                 onDismissRequest = { showBottomSheet = false },
-                onDownloadStart = { Toast.makeText(context, "Download Started", Toast.LENGTH_SHORT).show() },
-                onAddToLibrary = { Toast.makeText(context, "Added to Library", Toast.LENGTH_SHORT).show() }
+                onDownloadStart = { quality ->
+                    scope.launch {
+                        downloadRepository.addToDownloads(DownloadItem(
+                            id = selectedMediaId,
+                            title = selectedMediaTitle,
+                            posterUrl = selectedMediaPoster,
+                            isMovie = bottomSheetIsMovie,
+                            quality = quality
+                        ))
+                        Toast.makeText(context, "Download Started", Toast.LENGTH_SHORT).show()
+                    }
+                },
+                onAddToLibrary = {
+                    scope.launch {
+                        libraryRepository.addToLibrary(LibraryItem(
+                            id = selectedMediaId,
+                            title = selectedMediaTitle,
+                            posterUrl = selectedMediaPoster,
+                            isMovie = bottomSheetIsMovie
+                        ))
+                        Toast.makeText(context, "Added to Library", Toast.LENGTH_SHORT).show()
+                    }
+                }
             )
         }
     }

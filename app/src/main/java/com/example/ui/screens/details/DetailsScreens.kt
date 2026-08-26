@@ -36,6 +36,12 @@ import com.example.ui.components.DownloadQualitySheet
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.platform.LocalContext
 import android.widget.Toast
+import com.example.data.repository.DownloadRepository
+import com.example.data.model.DownloadItem
+import com.example.data.repository.LibraryRepository
+import com.example.data.model.LibraryItem
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,6 +53,10 @@ fun MovieDetailsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val defaultVideoUrl = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
+    val context = LocalContext.current
+    val downloadRepository = remember { DownloadRepository(context) }
+    val libraryRepository = remember { LibraryRepository(context) }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(movieId) {
         viewModel.loadMovie(movieId)
@@ -123,7 +133,6 @@ fun MovieDetailsScreen(
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                     var showDownloadSheet by remember { mutableStateOf(false) }
-                    val context = LocalContext.current
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -148,7 +157,14 @@ fun MovieDetailsScreen(
 
                         IconButton(
                             onClick = { 
-                                Toast.makeText(context, "Added to Watchlist", Toast.LENGTH_SHORT).show()
+                                uiState.movie?.let { movie ->
+                                    scope.launch {
+                                        libraryRepository.addToLibrary(LibraryItem(
+                                            id = movie.id, title = movie.title, posterUrl = movie.posterUrl, isMovie = true
+                                        ))
+                                        Toast.makeText(context, "Added to Library", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
                             },
                             modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant, shape = CircleShape)
                         ) {
@@ -160,7 +176,15 @@ fun MovieDetailsScreen(
                         DownloadQualitySheet(
                             onDismiss = { showDownloadSheet = false },
                             onQualitySelected = { quality ->
-                                Toast.makeText(context, "Downloading in $quality...", Toast.LENGTH_SHORT).show()
+                                uiState.movie?.let { movie ->
+                                    scope.launch {
+                                        downloadRepository.addToDownloads(DownloadItem(
+                                            id = movie.id, title = movie.title, posterUrl = movie.posterUrl, isMovie = true, quality = quality
+                                        ))
+                                        Toast.makeText(context, "Download Started", Toast.LENGTH_SHORT).show()
+                                        showDownloadSheet = false
+                                    }
+                                }
                             }
                         )
                     }
@@ -185,6 +209,10 @@ fun SeriesDetailsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val defaultVideoUrl = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
+    val context = LocalContext.current
+    val downloadRepository = remember { DownloadRepository(context) }
+    val libraryRepository = remember { LibraryRepository(context) }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(seriesId) {
         viewModel.loadSeries(seriesId)
@@ -261,7 +289,6 @@ fun SeriesDetailsScreen(
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                     var showDownloadSheet by remember { mutableStateOf(false) }
-                    val context = LocalContext.current
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -286,7 +313,14 @@ fun SeriesDetailsScreen(
 
                         IconButton(
                             onClick = { 
-                                Toast.makeText(context, "Added to Watchlist", Toast.LENGTH_SHORT).show()
+                                uiState.series?.let { series ->
+                                    scope.launch {
+                                        libraryRepository.addToLibrary(LibraryItem(
+                                            id = series.id, title = series.title, posterUrl = series.posterUrl, isMovie = false
+                                        ))
+                                        Toast.makeText(context, "Added to Library", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
                             },
                             modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant, shape = CircleShape)
                         ) {
@@ -298,7 +332,15 @@ fun SeriesDetailsScreen(
                         DownloadQualitySheet(
                             onDismiss = { showDownloadSheet = false },
                             onQualitySelected = { quality ->
-                                Toast.makeText(context, "Downloading in $quality...", Toast.LENGTH_SHORT).show()
+                                uiState.series?.let { series ->
+                                    scope.launch {
+                                        downloadRepository.addToDownloads(DownloadItem(
+                                            id = series.id, title = series.title, posterUrl = series.posterUrl, isMovie = false, quality = quality
+                                        ))
+                                        Toast.makeText(context, "Download Started", Toast.LENGTH_SHORT).show()
+                                        showDownloadSheet = false
+                                    }
+                                }
                             }
                         )
                     }

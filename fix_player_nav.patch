@@ -1,0 +1,25 @@
+--- app/src/main/java/com/example/navigation/AppNavigation.kt
++++ app/src/main/java/com/example/navigation/AppNavigation.kt
+@@ -522,7 +522,7 @@
+                         onBack = { navController.popBackStack() },
+                         onPlay = { url -> 
+                             val encodedUrl = URLEncoder.encode(url, "UTF-8")
+-                            navController.navigate("player/$encodedUrl")
++                            navController.navigate("player?url=$encodedUrl")
+                         }
+                     )
+                 }
+@@ -533,11 +533,11 @@
+                         onBack = { navController.popBackStack() },
+                         onPlay = { url -> 
+                             val encodedUrl = URLEncoder.encode(url, "UTF-8")
+-                            navController.navigate("player/$encodedUrl")
++                            navController.navigate("player?url=$encodedUrl")
+                         }
+                     )
+                 }
+-                composable("player/{url}") { backStackEntry ->
++                composable("player?url={url}") { backStackEntry ->
+                     val url = backStackEntry.arguments?.getString("url") ?: return@composable
+                     val decodedUrl = URLDecoder.decode(url, "UTF-8")
+                     PlayerScreen(videoUrl = decodedUrl, onBack = { navController.popBackStack() })

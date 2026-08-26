@@ -1,0 +1,85 @@
+--- app/src/main/java/com/example/ui/screens/home/HomeScreen.kt
++++ app/src/main/java/com/example/ui/screens/home/HomeScreen.kt
+@@ -19,6 +19,7 @@
+ import androidx.compose.material3.Text
+ import androidx.compose.runtime.Composable
+ import androidx.compose.runtime.collectAsState
++import androidx.compose.runtime.rememberCoroutineScope
+ import androidx.compose.runtime.getValue
+ import androidx.compose.runtime.mutableStateOf
+ import androidx.compose.runtime.remember
+@@ -34,6 +35,9 @@
+ import com.example.ui.components.MediaActionBottomSheet
++import com.example.data.repository.LibraryRepository
++import com.example.data.model.LibraryItem
++import kotlinx.coroutines.launch
+ 
+ @Composable
+ fun HomeScreen(
+@@ -43,6 +47,8 @@
+ ) {
+     val uiState by viewModel.uiState.collectAsState()
+     val context = LocalContext.current
++    val libraryRepository = remember { LibraryRepository(context) }
++    val scope = rememberCoroutineScope()
+ 
+     if (uiState.isLoading) {
+         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+@@ -59,6 +65,9 @@
+     val scrollState = rememberScrollState()
+     var showBottomSheet by remember { mutableStateOf(false) }
+     var bottomSheetIsMovie by remember { mutableStateOf(true) }
++    var selectedMediaId by remember { mutableStateOf("") }
++    var selectedMediaTitle by remember { mutableStateOf("") }
++    var selectedMediaPoster by remember { mutableStateOf("") }
+ 
+     Column(
+         modifier = Modifier
+@@ -85,6 +94,9 @@
+                     onClick = { onMovieClick(movie.id) },
+                     onLongClick = { 
+                         bottomSheetIsMovie = true
++                        selectedMediaId = movie.id
++                        selectedMediaTitle = movie.title
++                        selectedMediaPoster = movie.posterUrl
+                         showBottomSheet = true
+                     }
+                 )
+@@ -105,6 +117,9 @@
+                     onClick = { onSeriesClick(series.id) },
+                     onLongClick = { 
+                         bottomSheetIsMovie = false
++                        selectedMediaId = series.id
++                        selectedMediaTitle = series.title
++                        selectedMediaPoster = series.posterUrl
+                         showBottomSheet = true
+                     }
+                 )
+@@ -125,6 +140,9 @@
+                     onClick = { onMovieClick(movie.id) },
+                     onLongClick = { 
+                         bottomSheetIsMovie = true
++                        selectedMediaId = movie.id
++                        selectedMediaTitle = movie.title
++                        selectedMediaPoster = movie.posterUrl
+                         showBottomSheet = true
+                     }
+                 )
+@@ -136,7 +154,16 @@
+                 isMovie = bottomSheetIsMovie,
+                 onDismissRequest = { showBottomSheet = false },
+                 onDownloadStart = { Toast.makeText(context, "Download Started", Toast.LENGTH_SHORT).show() },
+-                onAddToLibrary = { Toast.makeText(context, "Added to Library", Toast.LENGTH_SHORT).show() }
++                onAddToLibrary = {
++                    scope.launch {
++                        libraryRepository.addToLibrary(LibraryItem(
++                            id = selectedMediaId,
++                            title = selectedMediaTitle,
++                            posterUrl = selectedMediaPoster,
++                            isMovie = bottomSheetIsMovie
++                        ))
++                        Toast.makeText(context, "Added to Library", Toast.LENGTH_SHORT).show()
++                    }
++                }
+             )
+         }
