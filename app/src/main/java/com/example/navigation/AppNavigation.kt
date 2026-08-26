@@ -1,19 +1,41 @@
 package com.example.navigation
 
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import android.widget.Toast
 import kotlinx.coroutines.launch
 import androidx.navigation.compose.NavHost
@@ -61,80 +83,216 @@ fun AppNavigation() {
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            ModalDrawerSheet {
-                Spacer(Modifier.height(12.dp))
-                Text(
-                    text = "CineStream",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(16.dp)
-                )
-                HorizontalDivider()
+            ModalDrawerSheet(
+                drawerContainerColor = Color(0xFF1E1E20),
+                modifier = Modifier.width(300.dp)
+            ) {
+                // Top Header Section with Gradient
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .background(
+                            brush = Brush.verticalGradient(
+                                colors = listOf(Color(0xFF2B2B2B), Color(0xFF161616))
+                            )
+                        )
+                        .padding(16.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Top
+                    ) {
+                        Text(
+                            text = "CineStream",
+                            style = MaterialTheme.typography.headlineMedium.copy(
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = FontFamily.Serif
+                            ),
+                            color = Color(0xFFA51B1B),
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.weight(1f))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(
+                                modifier = Modifier
+                                    .size(70.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.Gray)
+                                    .border(3.dp, Color.DarkGray, CircleShape),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                // Placeholder for Avatar
+                                Icon(Icons.Default.Person, contentDescription = "Avatar", tint = Color.White, modifier = Modifier.size(40.dp))
+                            }
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Column {
+                                Text(
+                                    text = "E. Laurent",
+                                    fontSize = 24.sp,
+                                    fontFamily = FontFamily.Cursive,
+                                    color = Color.White
+                                )
+                                Text(
+                                    text = "Premium User",
+                                    fontSize = 14.sp,
+                                    color = Color.LightGray
+                                )
+                            }
+                        }
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
                 
                 NavigationDrawerItem(
-                    icon = { Icon(Screen.Profile.icon, contentDescription = null) },
-                    label = { Text(Screen.Profile.title) },
-                    selected = currentRoute == Screen.Profile.route,
-                    onClick = {
-                        scope.launch { drawerState.close() }
-                        navController.navigate(Screen.Profile.route)
-                    },
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
-                )
-                NavigationDrawerItem(
-                    icon = { Icon(Screen.Downloads.icon, contentDescription = null) },
-                    label = { Text(Screen.Downloads.title) },
+                    icon = { Icon(Icons.Outlined.Download, contentDescription = null, tint = Color.White) },
+                    label = { Text("Downloads", color = Color.White, fontSize = 16.sp) },
                     selected = currentRoute == Screen.Downloads.route,
+                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
                     onClick = {
                         scope.launch { drawerState.close() }
                         navController.navigate(Screen.Downloads.route)
                     },
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
+                
+                HorizontalDivider(color = Color.DarkGray, modifier = Modifier.padding(horizontal = 16.dp))
+                
                 NavigationDrawerItem(
-                    icon = { Icon(Screen.Settings.icon, contentDescription = null) },
-                    label = { Text(Screen.Settings.title) },
+                    icon = { Icon(Icons.Outlined.Settings, contentDescription = null, tint = Color.White) },
+                    label = { Text("Settings", color = Color.White, fontSize = 16.sp) },
                     selected = currentRoute == Screen.Settings.route,
+                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
                     onClick = {
                         scope.launch { drawerState.close() }
                         navController.navigate(Screen.Settings.route)
                     },
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
+                
+                HorizontalDivider(color = Color.DarkGray, modifier = Modifier.padding(horizontal = 16.dp))
+                
                 NavigationDrawerItem(
-                    icon = { Icon(Screen.About.icon, contentDescription = null) },
-                    label = { Text(Screen.About.title) },
+                    icon = { Icon(Icons.Outlined.Info, contentDescription = null, tint = Color.White) },
+                    label = { Text("About Us", color = Color.White, fontSize = 16.sp) },
                     selected = currentRoute == Screen.About.route,
+                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
                     onClick = {
                         scope.launch { drawerState.close() }
                         navController.navigate(Screen.About.route)
                     },
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
+                
+                Spacer(modifier = Modifier.weight(1f))
+                
+                // Bottom Area
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color(0xFF161618))
+                        .padding(16.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.clickable { /* Logout action */ }
+                        ) {
+                            Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Log Out", tint = Color.White)
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text("Log Out", color = Color.White, fontSize = 16.sp)
+                        }
+                        
+                        Icon(Icons.AutoMirrored.Filled.Help, contentDescription = "Help", tint = Color.Gray)
+                    }
+                }
             }
         }
     ) {
         Scaffold(
+            containerColor = Color.Black,
             topBar = {
                 if (bottomBarRoutes.contains(currentRoute) || currentRoute in listOf(Screen.Profile.route, Screen.Downloads.route, Screen.Settings.route, Screen.About.route)) {
-                    CenterAlignedTopAppBar(
-                        title = { 
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 12.dp)
+                            .clip(RoundedCornerShape(percent = 50))
+                            .background(Color(0xFF2A2A2E))
+                            .padding(horizontal = 8.dp, vertical = 8.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // Avatar on left
+                            Box(
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.Gray)
+                                    .clickable { scope.launch { drawerState.open() } },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(Icons.Default.Person, contentDescription = "Avatar", tint = Color.White)
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            
+                            // Name & subtitle
+                            Column {
+                                Text(
+                                    text = "E. Laurent",
+                                    color = Color.White,
+                                    fontSize = 16.sp,
+                                    fontFamily = FontFamily.Cursive
+                                )
+                                Text(
+                                    text = "Est. 2026",
+                                    color = Color.LightGray,
+                                    fontSize = 10.sp
+                                )
+                            }
+                            
+                            Spacer(modifier = Modifier.weight(1f))
+                            
+                            // Center App Name
                             Text(
                                 "CineStream",
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
-                            ) 
-                        },
-                        navigationIcon = {
-                            IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                                Icon(Icons.Default.Menu, contentDescription = "Menu")
+                                fontFamily = FontFamily.Serif,
+                                color = Color(0xFFA51B1B),
+                                fontSize = 20.sp
+                            )
+                            
+                            Spacer(modifier = Modifier.weight(1f))
+                            
+                            // Right Icons
+                            Icon(Icons.Outlined.Settings, contentDescription = "Settings", tint = Color.White)
+                            Spacer(modifier = Modifier.width(16.dp))
+                            BadgedBox(
+                                badge = {
+                                    Badge(
+                                        containerColor = Color.White,
+                                        contentColor = Color.Black,
+                                        modifier = Modifier.offset(x = (-4).dp, y = 4.dp)
+                                    ) {
+                                        Text("1")
+                                    }
+                                }
+                            ) {
+                                Icon(Icons.Outlined.Notifications, contentDescription = "Notifications", tint = Color.White)
                             }
-                        },
-                        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                            containerColor = MaterialTheme.colorScheme.surface
-                        )
-                    )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Dropdown", tint = Color.White)
+                            Spacer(modifier = Modifier.width(8.dp))
+                        }
+                    }
                 }
             },
             bottomBar = {

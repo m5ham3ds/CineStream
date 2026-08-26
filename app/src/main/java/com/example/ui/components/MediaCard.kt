@@ -25,7 +25,7 @@ fun MediaCard(
 ) {
     Column(
         modifier = modifier
-            .width(120.dp)
+            .width(140.dp)
             .clickable { onClick() }
     ) {
         AsyncImage(
@@ -34,14 +34,15 @@ fun MediaCard(
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxWidth()
-                .aspectRatio(2f / 3f)
-                .clip(RoundedCornerShape(8.dp))
+                .aspectRatio(3f / 4f)
+                .clip(RoundedCornerShape(12.dp))
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = title,
             style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.SemiBold,
+            fontWeight = FontWeight.Normal,
+            color = androidx.compose.ui.graphics.Color.LightGray,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )

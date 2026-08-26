@@ -1,6 +1,9 @@
 package com.example.ui.screens.home
 
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -114,7 +117,9 @@ fun HeroSection(movie: Movie, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
             .aspectRatio(16f / 9f)
+            .clip(RoundedCornerShape(16.dp))
     ) {
         AsyncImage(
             model = movie.backdropUrl,
@@ -127,8 +132,8 @@ fun HeroSection(movie: Movie, onClick: () -> Unit) {
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        colors = listOf(Color.Transparent, MaterialTheme.colorScheme.background),
-                        startY = 50f
+                        colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.8f)),
+                        startY = 100f
                     )
                 )
         )
@@ -140,17 +145,19 @@ fun HeroSection(movie: Movie, onClick: () -> Unit) {
             Text(
                 text = movie.title,
                 style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = Color.White
             )
-            Spacer(modifier = Modifier.height(4.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                movie.genres.take(3).forEach { genre ->
-                    Text(text = genre, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
-                }
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Button(onClick = onClick) {
-                Text("Play")
+            Spacer(modifier = Modifier.height(12.dp))
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(percent = 50))
+                    .background(Color.White.copy(alpha = 0.2f))
+                    .clickable { onClick() }
+                    .padding(horizontal = 24.dp, vertical = 8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("Play", color = Color.White, fontWeight = FontWeight.Normal)
             }
         }
     }
@@ -161,7 +168,8 @@ fun SectionTitle(title: String) {
     Text(
         text = title,
         style = MaterialTheme.typography.titleMedium,
-        fontWeight = FontWeight.Bold,
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+        fontWeight = FontWeight.SemiBold,
+        color = Color.White,
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
     )
 }
