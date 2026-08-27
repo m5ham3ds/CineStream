@@ -10,6 +10,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -165,7 +166,7 @@ fun PlayerScreen(videoUrl: String, onBack: () -> Unit) {
 
                     // Right Vertical Slider (Volume)
                     Box(modifier = Modifier.align(Alignment.CenterEnd).padding(end = 24.dp)) {
-                        VerticalSlider(value = volume, onValueChange = { volume = it }, icon = Icons.Default.VolumeUp)
+                        VerticalSlider(value = volume, onValueChange = { volume = it }, icon = Icons.AutoMirrored.Filled.VolumeUp)
                     }
 
                     // Center Playback Controls

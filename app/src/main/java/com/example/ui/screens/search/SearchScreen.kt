@@ -11,10 +11,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.TrendingUp
+
 import androidx.compose.material.icons.outlined.ChildCare
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.LiveTv
@@ -105,7 +106,7 @@ fun SearchScreen(
                         .clickable { searchQuery = text; viewModel.onQueryChange(text) },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(Icons.Default.TrendingUp, contentDescription = null, tint = Color(0xFFE50914), modifier = Modifier.size(16.dp))
+                    Icon(Icons.AutoMirrored.Filled.TrendingUp, contentDescription = null, tint = Color(0xFFE50914), modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(text, color = Color.LightGray, fontSize = 14.sp)
                 }

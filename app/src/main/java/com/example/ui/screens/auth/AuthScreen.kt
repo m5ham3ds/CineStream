@@ -1,19 +1,37 @@
 package com.example.ui.screens.auth
 
+import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.Mail
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import android.widget.Toast
+import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
+import coil.compose.AsyncImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,134 +42,230 @@ fun AuthScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val userPrefs = remember { com.example.data.repository.UserPreferencesRepository(context) }
-
     var isSignUp by remember { mutableStateOf(false) }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
+    var rememberMe by remember { mutableStateOf(false) }
+
+    val scrollState = rememberScrollState()
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black)
-            .padding(24.dp)
     ) {
-        // Skip Button
-        TextButton(
-            onClick = { 
-                scope.launch { userPrefs.saveIsGuest(true) }
-                onSkip() 
-            },
-            modifier = Modifier.align(Alignment.TopEnd)
-        ) {
-            Text("Skip", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
-        }
+        // Top Background Image with gradient
+        AsyncImage(
+            model = "https://image.tmdb.org/t/p/w500/8Y43POKjjKDGI9MH89NW0NAzzp8.jpg", // placeholder for movie grid
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(300.dp)
+                .align(Alignment.TopCenter),
+            alpha = 0.3f
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(300.dp)
+                .background(Brush.verticalGradient(listOf(Color.Transparent, Color.Black)))
+                .align(Alignment.TopCenter)
+        )
+
+        // Bottom Background Film Reel
+        AsyncImage(
+            model = "https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=2000&auto=format&fit=crop", // Placeholder for film reel
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .align(Alignment.BottomCenter),
+            alpha = 0.2f
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .background(Brush.verticalGradient(listOf(Color.Black, Color.Transparent)))
+                .align(Alignment.BottomCenter)
+        )
+
 
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.Center),
+                .fillMaxSize()
+                .padding(24.dp)
+                .verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopEnd) {
+                Text(
+                    text = "Skip",
+                    color = Color(0xFFE50914),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier
+                        .clickable {
+                            scope.launch { userPrefs.saveIsGuest(true) }
+                            onSkip()
+                        }
+                        .padding(vertical = 8.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
             Text(
-                text = if (isSignUp) "Create Account" else "Welcome Back",
-                style = MaterialTheme.typography.headlineLarge,
+                text = "CineStream",
+                color = Color(0xFFE50914),
+                fontSize = 40.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                fontFamily = androidx.compose.ui.text.font.FontFamily.Serif
             )
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            Text(
+                text = if (isSignUp) "Create Account" else "Welcome Back!",
+                color = Color.White,
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = if (isSignUp) "Sign up to start your cinematic journey" else "Sign in to continue your cinematic journey",
+                color = Color.LightGray,
+                fontSize = 14.sp
+            )
+
             Spacer(modifier = Modifier.height(32.dp))
 
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Email (Gmail)") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = Color.DarkGray,
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White
-                )
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("Password") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = Color.DarkGray,
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White
-                )
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-
-            var agreeToTerms by remember { mutableStateOf(false) }
-
-            if (isSignUp) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Checkbox(
-                        checked = agreeToTerms,
-                        onCheckedChange = { agreeToTerms = it },
-                        colors = CheckboxDefaults.colors(
-                            checkedColor = MaterialTheme.colorScheme.primary,
-                            uncheckedColor = Color.Gray
-                        )
-                    )
-                    Text("I agree to Terms & Conditions", color = Color.White)
-                }
-            } else {
-                TextButton(
-                    onClick = { Toast.makeText(context, "Forgot Password clicked", Toast.LENGTH_SHORT).show() },
-                    modifier = Modifier.align(Alignment.End)
-                ) {
-                    Text("Forgot Password?", color = MaterialTheme.colorScheme.primary)
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = { 
-                    if (isSignUp && !agreeToTerms) {
-                        Toast.makeText(context, "Please agree to terms", Toast.LENGTH_SHORT).show()
-                        return@Button
-                    }
-                    if (email.isNotBlank() && password.isNotBlank()) {
-                        scope.launch { 
-                            userPrefs.saveIsGuest(false) 
-                            userPrefs.saveIsLoggedIn(true)
-                        }
-                        onAuthSuccess() 
-                    } else {
-                        Toast.makeText(context, "Please enter email and password", Toast.LENGTH_SHORT).show()
-                    }
-                },
+            // Login Box
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp),
-                shape = RoundedCornerShape(8.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Color(0xFF161618))
+                    .border(1.dp, Color(0xFF2A2A2E), RoundedCornerShape(16.dp))
+                    .padding(20.dp)
             ) {
-                Text(if (isSignUp) "Sign Up" else "Sign In")
+                Column {
+                    OutlinedTextField(
+                        value = email,
+                        onValueChange = { email = it },
+                        placeholder = { Text("Email (Gmail)", color = Color.Gray) },
+                        leadingIcon = { Icon(Icons.Outlined.Mail, contentDescription = null, tint = Color(0xFFE50914)) },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color(0xFF2A2A2E),
+                            unfocusedBorderColor = Color(0xFF2A2A2E),
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White
+                        ),
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    OutlinedTextField(
+                        value = password,
+                        onValueChange = { password = it },
+                        placeholder = { Text("Password", color = Color.Gray) },
+                        leadingIcon = { Icon(Icons.Outlined.Lock, contentDescription = null, tint = Color(0xFFE50914)) },
+                        trailingIcon = {
+                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                Icon(
+                                    imageVector = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                    contentDescription = if (passwordVisible) "Hide password" else "Show password",
+                                    tint = Color.Gray
+                                )
+                            }
+                        },
+                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color(0xFF2A2A2E),
+                            unfocusedBorderColor = Color(0xFF2A2A2E),
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White
+                        ),
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Checkbox(
+                                checked = rememberMe,
+                                onCheckedChange = { rememberMe = it },
+                                colors = CheckboxDefaults.colors(
+                                    checkedColor = Color(0xFFE50914),
+                                    uncheckedColor = Color.Gray,
+                                    checkmarkColor = Color.White
+                                )
+                            )
+                            Text("Remember me", color = Color.LightGray, fontSize = 14.sp)
+                        }
+                        if (!isSignUp) {
+                            Text(
+                                text = "Forgot Password?",
+                                color = Color(0xFFE50914),
+                                fontSize = 14.sp,
+                                modifier = Modifier.clickable { /* Handle forgot password */ }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    Button(
+                        onClick = {
+                            if (email.isNotBlank() && password.isNotBlank()) {
+                                scope.launch {
+                                    userPrefs.saveIsGuest(false)
+                                    userPrefs.saveIsLoggedIn(true)
+                                }
+                                onAuthSuccess()
+                            } else {
+                                Toast.makeText(context, "Please enter email and password", Toast.LENGTH_SHORT).show()
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE50914)),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text(if (isSignUp) "Sign Up" else "Sign In", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                Box(modifier = Modifier.weight(1f).height(1.dp).background(Color(0xFF2A2A2E)))
+                Text("Or continue with", color = Color.Gray, fontSize = 14.sp, modifier = Modifier.padding(horizontal = 16.dp))
+                Box(modifier = Modifier.weight(1f).height(1.dp).background(Color(0xFF2A2A2E)))
             }
 
             Spacer(modifier = Modifier.height(24.dp))
-            Text("Or continue with", color = Color.Gray)
-            Spacer(modifier = Modifier.height(24.dp))
 
-            // Google Sign In Button
+            // Google Sign In
             Button(
-                onClick = { 
-                    Toast.makeText(context, "Google Sign-In logic goes here.", Toast.LENGTH_SHORT).show()
-                    scope.launch { 
-                        userPrefs.saveIsGuest(false) 
+                onClick = {
+                    scope.launch {
+                        userPrefs.saveIsGuest(false)
                         userPrefs.saveIsLoggedIn(true)
                     }
                     onAuthSuccess()
@@ -162,19 +276,55 @@ fun AuthScreen(
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text("Sign in with Google", color = Color.Black, fontWeight = FontWeight.Bold)
+                // Placeholder for Google Icon
+                Text("G", color = Color.Black, fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(end = 8.dp))
+                Text("Sign in with Google", color = Color.Black, fontWeight = FontWeight.Medium, fontSize = 16.sp)
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                Button(
+                    onClick = { /* Apple Sign In */ },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(50.dp)
+                        .border(1.dp, Color(0xFF2A2A2E), RoundedCornerShape(8.dp)),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF161618)),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text("🍎 Sign in with Apple", color = Color.White, fontSize = 13.sp)
+                }
+                Button(
+                    onClick = { /* Facebook Sign In */ },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(50.dp)
+                        .border(1.dp, Color(0xFF2A2A2E), RoundedCornerShape(8.dp)),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF161618)),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text("f Sign in with Facebook", color = Color.White, fontSize = 13.sp)
+                }
             }
 
             Spacer(modifier = Modifier.height(32.dp))
+
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = if (isSignUp) "Already have an account?" else "Don't have an account?",
-                    color = Color.LightGray
+                    text = if (isSignUp) "Already have an account? " else "Don't have an account? ",
+                    color = Color.Gray,
+                    fontSize = 14.sp
                 )
-                TextButton(onClick = { isSignUp = !isSignUp }) {
-                    Text(if (isSignUp) "Sign In" else "Sign Up", color = MaterialTheme.colorScheme.primary)
-                }
+                Text(
+                    text = if (isSignUp) "Sign In" else "Sign Up",
+                    color = Color(0xFFE50914),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.clickable { isSignUp = !isSignUp }
+                )
             }
+            Spacer(modifier = Modifier.height(32.dp))
         }
     }
 }
