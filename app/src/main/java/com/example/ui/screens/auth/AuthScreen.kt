@@ -97,8 +97,7 @@ fun AuthScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(24.dp)
-                .verticalScroll(scrollState),
+                .padding(horizontal = 24.dp, vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopEnd) {
@@ -281,35 +280,7 @@ fun AuthScreen(
                 Text("Sign in with Google", color = Color.Black, fontWeight = FontWeight.Medium, fontSize = 16.sp)
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                Button(
-                    onClick = { /* Apple Sign In */ },
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(50.dp)
-                        .border(1.dp, Color(0xFF2A2A2E), RoundedCornerShape(8.dp)),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF161618)),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text("🍎 Sign in with Apple", color = Color.White, fontSize = 13.sp)
-                }
-                Button(
-                    onClick = { /* Facebook Sign In */ },
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(50.dp)
-                        .border(1.dp, Color(0xFF2A2A2E), RoundedCornerShape(8.dp)),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF161618)),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text("f Sign in with Facebook", color = Color.White, fontSize = 13.sp)
-                }
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
-
+            Spacer(modifier = Modifier.height(24.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = if (isSignUp) "Already have an account? " else "Don't have an account? ",

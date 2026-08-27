@@ -100,11 +100,10 @@ fun AppNavigation() {
     androidx.compose.runtime.CompositionLocalProvider(androidx.compose.ui.platform.LocalLayoutDirection provides androidx.compose.ui.unit.LayoutDirection.Rtl) {
     ModalNavigationDrawer(
         drawerState = drawerState,
-        gesturesEnabled = false,
+        gesturesEnabled = drawerState.isOpen,
         drawerContent = {
-            androidx.compose.runtime.CompositionLocalProvider(androidx.compose.ui.platform.LocalLayoutDirection provides androidx.compose.ui.unit.LayoutDirection.Ltr) {
             ModalDrawerSheet(
-                drawerContainerColor = Color(0xFF1E1E20),
+                drawerContainerColor = Color(0xFF161618),
                 modifier = Modifier.width(300.dp)
             ) {
                 // Top Header Section with Gradient
@@ -114,7 +113,7 @@ fun AppNavigation() {
                         .height(200.dp)
                         .background(
                             brush = Brush.verticalGradient(
-                                colors = listOf(Color(0xFF2B2B2B), Color(0xFF161616))
+                                colors = listOf(Color(0xFF2B2B2B), Color(0xFF161618))
                             )
                         )
                         .padding(16.dp)
@@ -129,9 +128,9 @@ fun AppNavigation() {
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = FontFamily.Serif
                             ),
-                            color = Color(0xFFA51B1B),
+                            color = Color(0xFFE50914),
                             modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Start
                         )
                         Spacer(modifier = Modifier.weight(1f))
                         Row(
@@ -145,30 +144,35 @@ fun AppNavigation() {
                                 }
                             }
                         ) {
+                            Column {
+                                Text(
+                                    text = if (isGuest) "Guest User" else "E. Laurent",
+                                    fontSize = 24.sp,
+                                    fontFamily = FontFamily.SansSerif,
+                                    color = Color.White
+                                )
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    if (!isGuest) {
+                                        Icon(painter = painterResource(android.R.drawable.ic_dialog_info), contentDescription = null, tint = Color(0xFFE50914), modifier = Modifier.size(16.dp))
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                    }
+                                    Text(
+                                        text = if (isGuest) "Free Account" else "Premium User",
+                                        fontSize = 14.sp,
+                                        color = Color.LightGray
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.weight(1f))
                             Box(
                                 modifier = Modifier
                                     .size(70.dp)
                                     .clip(CircleShape)
                                     .background(Color.Gray)
-                                    .border(3.dp, Color.DarkGray, CircleShape),
+                                    .border(2.dp, Color(0xFFE50914), CircleShape),
                                 contentAlignment = Alignment.Center
                             ) {
-                                // Placeholder for Avatar
                                 Icon(Icons.Default.Person, contentDescription = "Avatar", tint = Color.White, modifier = Modifier.size(40.dp))
-                            }
-                            Spacer(modifier = Modifier.width(16.dp))
-                            Column {
-                                Text(
-                                    text = if (isGuest) "Guest User" else "E. Laurent",
-                                    fontSize = 24.sp,
-                                    fontFamily = FontFamily.Cursive,
-                                    color = Color.White
-                                )
-                                Text(
-                                    text = if (isGuest) "Free Account" else "Premium User",
-                                    fontSize = 14.sp,
-                                    color = Color.LightGray
-                                )
                             }
                         }
                     }
@@ -177,10 +181,14 @@ fun AppNavigation() {
                 Spacer(modifier = Modifier.height(16.dp))
                 
                 NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.Home, contentDescription = null, tint = Color.White) },
-                    label = { Text("Home", color = Color.White, fontSize = 16.sp) },
+                    icon = { Icon(Icons.Default.Home, contentDescription = null, tint = if (currentRoute == Screen.Home.route) Color(0xFFE50914) else Color.White) },
+                    label = { Text("الرئيسية", color = Color.White, fontSize = 16.sp) },
                     selected = currentRoute == Screen.Home.route,
-                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
+                    colors = NavigationDrawerItemDefaults.colors(
+                        selectedContainerColor = Color(0xFFE50914).copy(alpha = 0.2f),
+                        unselectedContainerColor = Color.Transparent
+                    ),
+                    shape = RoundedCornerShape(16.dp),
                     onClick = {
                         scope.launch { drawerState.close() }
                         navController.navigate(Screen.Home.route)
@@ -190,7 +198,7 @@ fun AppNavigation() {
 
                 NavigationDrawerItem(
                     icon = { Icon(Icons.Outlined.Download, contentDescription = null, tint = Color.White) },
-                    label = { Text("Downloads", color = Color.White, fontSize = 16.sp) },
+                    label = { Text("التنزيلات", color = Color.White, fontSize = 16.sp) },
                     selected = currentRoute == Screen.Downloads.route,
                     colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
                     onClick = {
@@ -200,11 +208,9 @@ fun AppNavigation() {
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
                 
-                HorizontalDivider(color = Color.DarkGray, modifier = Modifier.padding(horizontal = 16.dp))
-                
                 NavigationDrawerItem(
                     icon = { Icon(Icons.Default.Favorite, contentDescription = null, tint = Color.White) },
-                    label = { Text("Library", color = Color.White, fontSize = 16.sp) },
+                    label = { Text("المكتبة", color = Color.White, fontSize = 16.sp) },
                     selected = currentRoute == Screen.Library.route,
                     colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
                     onClick = {
@@ -216,7 +222,7 @@ fun AppNavigation() {
 
                 NavigationDrawerItem(
                     icon = { Icon(Icons.Outlined.Settings, contentDescription = null, tint = Color.White) },
-                    label = { Text("Settings", color = Color.White, fontSize = 16.sp) },
+                    label = { Text("الإعدادات", color = Color.White, fontSize = 16.sp) },
                     selected = currentRoute == Screen.Settings.route,
                     colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
                     onClick = {
@@ -226,11 +232,11 @@ fun AppNavigation() {
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
                 
-                HorizontalDivider(color = Color.DarkGray, modifier = Modifier.padding(horizontal = 16.dp))
+                HorizontalDivider(color = Color(0xFF2A2A2E), modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp))
                 
                 NavigationDrawerItem(
                     icon = { Icon(Icons.Outlined.Info, contentDescription = null, tint = Color.White) },
-                    label = { Text("About Us", color = Color.White, fontSize = 16.sp) },
+                    label = { Text("حول التطبيق", color = Color.White, fontSize = 16.sp) },
                     selected = currentRoute == Screen.About.route,
                     colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
                     onClick = {
@@ -240,24 +246,32 @@ fun AppNavigation() {
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
                 
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.AutoMirrored.Filled.Help, contentDescription = null, tint = Color.White) },
+                    label = { Text("مساعدة ودعم", color = Color.White, fontSize = 16.sp) },
+                    selected = false,
+                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
+                    onClick = { scope.launch { drawerState.close() } },
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+                
                 Spacer(modifier = Modifier.weight(1f))
                 
-                // Bottom Area
+                HorizontalDivider(color = Color(0xFF2A2A2E), modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp))
+
+                // Bottom Area (Logout)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color(0xFF161618))
-                        .padding(16.dp)
+                        .padding(horizontal = 16.dp, vertical = 16.dp)
                 ) {
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // Check if Guest
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.clickable { 
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .border(1.dp, Color(0xFF2A2A2E), RoundedCornerShape(12.dp))
+                            .background(Color(0xFF161618))
+                            .clickable { 
                                 if (isGuest) {
                                     scope.launch { drawerState.close() }
                                     navController.navigate(Screen.Auth.route)
@@ -266,16 +280,15 @@ fun AppNavigation() {
                                     showLogoutDialog = true
                                 }
                             }
-                        ) {
-                            Icon(if (isGuest) Icons.Default.Person else Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Log", tint = Color.White)
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text(if (isGuest) "Log In" else "Log Out", color = Color.White, fontSize = 16.sp)
-                        }
-                        
-                        Icon(Icons.AutoMirrored.Filled.Help, contentDescription = "Help", tint = Color.Gray)
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(if (isGuest) "تسجيل الدخول" else "تسجيل الخروج", color = Color.White, fontSize = 16.sp)
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Icon(if (isGuest) Icons.Default.Person else Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Log", tint = Color(0xFFE50914))
                     }
                 }
-            }
             }
         }
     ) {
