@@ -45,6 +45,7 @@ data class UnifiedMediaResult(val id: String, val title: String, val posterUrl: 
 @Composable
 fun SearchScreen(
     onMediaClick: (String, Boolean) -> Unit,
+    onNavigateToTrending: () -> Unit = {},
     viewModel: SearchViewModel = viewModel(factory = ViewModelFactory())
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -172,7 +173,7 @@ fun SearchScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             // Trending Now
-            SectionTitleShared("Trending Now")
+            SectionTitleShared("Trending Now", onSeeAllClick = onNavigateToTrending)
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)

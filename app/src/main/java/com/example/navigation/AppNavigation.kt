@@ -56,6 +56,8 @@ import com.example.ui.components.BottomNavBar
 import com.example.ui.screens.details.MovieDetailsScreen
 import com.example.ui.screens.details.SeriesDetailsScreen
 import com.example.ui.screens.home.HomeScreen
+import com.example.ui.screens.home.PopularScreen
+import com.example.ui.screens.home.NewReleasesScreen
 import com.example.ui.screens.home.TrendingScreen
 import com.example.ui.screens.home.WatchingScreen
 import com.example.ui.screens.library.LibraryScreen
@@ -490,17 +492,27 @@ fun AppNavigation() {
                         onMovieClick = { id -> navController.navigate(Screen.MovieDetails.createRoute(id)) },
                         onSeriesClick = { id -> navController.navigate(Screen.SeriesDetails.createRoute(id)) },
                         onNavigateToTrending = { navController.navigate(Screen.Trending.route) },
-                        onNavigateToWatching = { navController.navigate(Screen.Watching.route) }
+                        onNavigateToWatching = { navController.navigate(Screen.Watching.route) },
+                        onNavigateToPopular = { navController.navigate(Screen.Popular.route) },
+                        onNavigateToNewReleases = { navController.navigate(Screen.NewReleases.route) }
                     )
                 }
                 composable(Screen.Movies.route) {
                     MoviesScreen(
-                        onMovieClick = { id -> navController.navigate(Screen.MovieDetails.createRoute(id)) }
+                        onMovieClick = { id -> navController.navigate(Screen.MovieDetails.createRoute(id)) },
+                        onNavigateToTrending = { navController.navigate(Screen.Trending.route) },
+                        onNavigateToWatching = { navController.navigate(Screen.Watching.route) },
+                        onNavigateToPopular = { navController.navigate(Screen.Popular.route) },
+                        onNavigateToNewReleases = { navController.navigate(Screen.NewReleases.route) }
                     )
                 }
                 composable(Screen.Series.route) {
                     SeriesScreen(
-                        onSeriesClick = { id -> navController.navigate(Screen.SeriesDetails.createRoute(id)) }
+                        onSeriesClick = { id -> navController.navigate(Screen.SeriesDetails.createRoute(id)) },
+                        onNavigateToTrending = { navController.navigate(Screen.Trending.route) },
+                        onNavigateToWatching = { navController.navigate(Screen.Watching.route) },
+                        onNavigateToPopular = { navController.navigate(Screen.Popular.route) },
+                        onNavigateToNewReleases = { navController.navigate(Screen.NewReleases.route) }
                     )
                 }
                 composable(Screen.Search.route) {
@@ -511,7 +523,8 @@ fun AppNavigation() {
                             } else {
                                 navController.navigate(Screen.SeriesDetails.createRoute(id))
                             }
-                        }
+                        },
+                        onNavigateToTrending = { navController.navigate(Screen.Trending.route) }
                     )
                 }
                 composable(Screen.Library.route) {
@@ -541,6 +554,30 @@ fun AppNavigation() {
                 composable(Screen.About.route) { AboutScreen() }
                 composable(Screen.Trending.route) {
                     TrendingScreen(
+                        onItemClick = { id, isMovie ->
+                            if (isMovie) {
+                                navController.navigate(Screen.MovieDetails.createRoute(id))
+                            } else {
+                                navController.navigate(Screen.SeriesDetails.createRoute(id))
+                            }
+                        },
+                        onBack = { navController.popBackStack() }
+                    )
+                }
+                composable(Screen.Popular.route) {
+                    PopularScreen(
+                        onItemClick = { id, isMovie ->
+                            if (isMovie) {
+                                navController.navigate(Screen.MovieDetails.createRoute(id))
+                            } else {
+                                navController.navigate(Screen.SeriesDetails.createRoute(id))
+                            }
+                        },
+                        onBack = { navController.popBackStack() }
+                    )
+                }
+                composable(Screen.NewReleases.route) {
+                    NewReleasesScreen(
                         onItemClick = { id, isMovie ->
                             if (isMovie) {
                                 navController.navigate(Screen.MovieDetails.createRoute(id))

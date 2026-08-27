@@ -38,6 +38,10 @@ import kotlinx.coroutines.launch
 @Composable
 fun SeriesScreen(
     onSeriesClick: (String) -> Unit,
+    onNavigateToTrending: () -> Unit = {},
+    onNavigateToWatching: () -> Unit = {},
+    onNavigateToPopular: () -> Unit = {},
+    onNavigateToNewReleases: () -> Unit = {},
     viewModel: SeriesViewModel = viewModel(factory = ViewModelFactory())
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -83,6 +87,20 @@ fun SeriesScreen(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         )
 
+        // Hero Section
+        val heroSeries = uiState.series.firstOrNull()
+        if (heroSeries != null) {
+            HeroSectionShared(
+                title = "Demo Series 01", 
+                backdropUrl = heroSeries.backdropUrl, 
+                desc = "A journey of power, betrayal and\ndestiny.", 
+                tag = "TRENDING NOW",
+                onClick = { onSeriesClick(heroSeries.id) }
+            )
+        }
+
+
+        Spacer(modifier = Modifier.height(16.dp))
         // Categories Tab Row
         LazyRow(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
@@ -113,27 +131,16 @@ fun SeriesScreen(
             }
         }
 
-        // Hero Section
-        val heroSeries = uiState.series.firstOrNull()
-        if (heroSeries != null) {
-            HeroSectionShared(
-                title = "Demo Series 01", 
-                backdropUrl = heroSeries.backdropUrl, 
-                desc = "A journey of power, betrayal and\ndestiny.", 
-                tag = "TRENDING NOW",
-                onClick = { onSeriesClick(heroSeries.id) }
-            )
-        }
 
         Spacer(modifier = Modifier.height(24.dp))
         
-        SectionTitleShared("Continue Watching")
+        SectionTitleShared("Continue Watching", onSeeAllClick = onNavigateToWatching)
         ContinueWatchingCardShared()
 
         Spacer(modifier = Modifier.height(24.dp))
 
         // Popular Series
-        SectionTitleShared("Popular Series")
+        SectionTitleShared("Popular Series", onSeeAllClick = onNavigateToPopular)
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -160,7 +167,7 @@ fun SeriesScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         // New Releases
-        SectionTitleShared("New Releases")
+        SectionTitleShared("New Releases", onSeeAllClick = onNavigateToNewReleases)
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)

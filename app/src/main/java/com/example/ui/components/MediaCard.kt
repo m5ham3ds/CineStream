@@ -11,6 +11,11 @@ import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.IconButton
+import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,8 +40,33 @@ fun MediaCard(
     rank: Int? = null,
     rating: Double = 8.7,
     year: String = "2024",
-    isMovie: Boolean = true // Just to differentiate some icons if needed, but not right now
+    isMovie: Boolean = true
 ) {
+    var isBookmarked by remember { mutableStateOf(false) }
+    var showRemoveDialog by remember { mutableStateOf(false) }
+
+    if (showRemoveDialog) {
+        AlertDialog(
+            onDismissRequest = { showRemoveDialog = false },
+            title = { Text("إزالة من المفضلة", color = Color.White) },
+            text = { Text("هل أنت متأكد أنك تريد إزالة هذا العمل من المفضلة؟", color = Color.LightGray) },
+            confirmButton = {
+                TextButton(onClick = {
+                    isBookmarked = false
+                    showRemoveDialog = false
+                }) {
+                    Text("إزالة", color = Color(0xFFE50914))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showRemoveDialog = false }) {
+                    Text("إلغاء", color = Color.White)
+                }
+            },
+            containerColor = Color(0xFF1E1E20)
+        )
+    }
+
     Box(
         modifier = modifier
             .width(140.dp)

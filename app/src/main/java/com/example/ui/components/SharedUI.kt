@@ -124,7 +124,7 @@ fun HeroSectionShared(title: String, backdropUrl: String, desc: String, tag: Str
 }
 
 @Composable
-fun SectionTitleShared(title: String) {
+fun SectionTitleShared(title: String, onSeeAllClick: (() -> Unit)? = null) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -136,12 +136,14 @@ fun SectionTitleShared(title: String) {
             fontWeight = FontWeight.Bold,
             color = Color.White
         )
-        Text(
-            text = "See All",
-            style = MaterialTheme.typography.labelLarge,
-            color = Color(0xFFE50914),
-            modifier = Modifier.clickable { /* See all */ }
-        )
+        if (onSeeAllClick != null) {
+            Text(
+                text = "See All",
+                style = MaterialTheme.typography.labelLarge,
+                color = Color(0xFFE50914),
+                modifier = Modifier.clickable { onSeeAllClick() }
+            )
+        }
     }
 }
 

@@ -86,11 +86,11 @@ fun DownloadsScreen(onItemClick: (String, Boolean) -> Unit = { _, _ -> }) {
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            DownloadStat(icon = Icons.Outlined.Folder, value = "1", label = "Downloaded", isPrimary = true)
+            DownloadStat(icon = Icons.Outlined.Folder, value = "0", label = "Downloaded", isPrimary = true)
             Box(modifier = Modifier.width(1.dp).height(32.dp).background(Color(0xFF2A2A2E)))
             DownloadStat(icon = Icons.Outlined.Timer, value = "0", label = "In Progress")
             Box(modifier = Modifier.width(1.dp).height(32.dp).background(Color(0xFF2A2A2E)))
-            DownloadStat(icon = Icons.Outlined.CheckCircle, value = "1", label = "Completed")
+            DownloadStat(icon = Icons.Outlined.CheckCircle, value = "0", label = "Completed")
             Box(modifier = Modifier.width(1.dp).height(32.dp).background(Color(0xFF2A2A2E)))
             DownloadStat(icon = Icons.Outlined.SdStorage, value = "2.4 GB", label = "Used Space")
         }
@@ -115,62 +115,21 @@ fun DownloadsScreen(onItemClick: (String, Boolean) -> Unit = { _, _ -> }) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Download Item Card
-        Box(
+        // Empty State
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp))
-                .background(Color(0xFF161618))
-                .border(1.dp, Color(0xFF2A2A2E), RoundedCornerShape(16.dp))
-                .padding(16.dp)
+                .padding(vertical = 48.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row {
-                AsyncImage(
-                    model = "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=200&auto=format&fit=crop",
-                    contentDescription = null,
-                    modifier = Modifier.size(100.dp, 150.dp).clip(RoundedCornerShape(12.dp)),
-                    contentScale = ContentScale.Crop
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                Column(modifier = Modifier.weight(1f)) {
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text("Demo Series 10", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
-                        Icon(Icons.Default.MoreVert, contentDescription = "More", tint = Color.LightGray, modifier = Modifier.size(20.dp))
-                    }
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Outlined.Tv, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(14.dp))
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text("Series • 0 Episodes", color = Color.Gray, fontSize = 12.sp)
-                    }
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text("1080p (FHD) • 2.4 GB", color = Color.LightGray, fontSize = 14.sp)
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Outlined.CheckCircle, contentDescription = null, tint = Color(0xFF4CAF50), modifier = Modifier.size(16.dp))
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text("Downloaded", color = Color(0xFF4CAF50), fontSize = 14.sp, fontWeight = FontWeight.Medium)
-                    }
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text("May 25, 2024 • 3:42 PM", color = Color.Gray, fontSize = 12.sp)
-                }
-                
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.Bottom)
-                        .padding(start = 8.dp)
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .background(Color(0xFF2A2A2E)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = Color.White)
-                }
-            }
+            Icon(Icons.Outlined.Download, contentDescription = null, tint = Color.DarkGray, modifier = Modifier.size(64.dp))
+            Spacer(modifier = Modifier.height(16.dp))
+            Text("لم تقم بتنزيل أي عمل بعد", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(8.dp))
+            Text("الأفلام والمسلسلات التي تنزلها ستظهر هنا", color = Color.Gray, fontSize = 14.sp)
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
+        
+        Spacer(modifier = Modifier.height(24.dp))
         // Storage Card
         Box(
             modifier = Modifier

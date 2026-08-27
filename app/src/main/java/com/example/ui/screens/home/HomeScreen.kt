@@ -47,6 +47,8 @@ fun HomeScreen(
     onSeriesClick: (String) -> Unit,
     onNavigateToTrending: () -> Unit = {},
     onNavigateToWatching: () -> Unit = {},
+    onNavigateToPopular: () -> Unit = {},
+    onNavigateToNewReleases: () -> Unit = {},
     viewModel: HomeViewModel = viewModel(factory = ViewModelFactory())
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -85,6 +87,13 @@ fun HomeScreen(
             .verticalScroll(scrollState)
              // Leave space for bottom nav
     ) {
+        // Hero Section
+        if (uiState.trendingMovies.isNotEmpty()) {
+            HeroCarousel(movies = uiState.trendingMovies.take(5), onClick = onMovieClick)
+        }
+
+
+        Spacer(modifier = Modifier.height(16.dp))
         // Categories Tab Row
         LazyRow(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
@@ -114,10 +123,6 @@ fun HomeScreen(
             }
         }
 
-        // Hero Section
-        if (uiState.trendingMovies.isNotEmpty()) {
-            HeroCarousel(movies = uiState.trendingMovies.take(5), onClick = onMovieClick)
-        }
 
         Spacer(modifier = Modifier.height(24.dp))
 
