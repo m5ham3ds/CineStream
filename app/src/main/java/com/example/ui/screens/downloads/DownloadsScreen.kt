@@ -29,6 +29,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.style.TextOverflow
 import coil.compose.AsyncImage
 import com.example.ui.components.SectionTitleShared
 
@@ -252,7 +253,7 @@ fun DownloadsScreen(onItemClick: (String, Boolean) -> Unit = { _, _ -> }) {
 
 @Composable
 fun DownloadStat(icon: androidx.compose.ui.graphics.vector.ImageVector, value: String, label: String, isPrimary: Boolean = false) {
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 8.dp)) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 4.dp)) {
         Box(
             modifier = Modifier
                 .size(36.dp)
@@ -263,10 +264,10 @@ fun DownloadStat(icon: androidx.compose.ui.graphics.vector.ImageVector, value: S
         ) {
             Icon(icon, contentDescription = null, tint = if (isPrimary) Color(0xFFE50914) else Color.Gray, modifier = Modifier.size(18.dp))
         }
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(6.dp))
         Column {
-            Text(value, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-            Text(label, color = Color.Gray, fontSize = 10.sp)
+            Text(value, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold, maxLines = 1)
+            Text(label, color = Color.Gray, fontSize = 10.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
     }
 }

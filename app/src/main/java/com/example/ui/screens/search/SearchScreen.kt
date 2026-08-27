@@ -3,6 +3,8 @@ package com.example.ui.screens.search
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -112,18 +114,18 @@ fun SearchScreen(
                 }
             }
 
-            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    SearchChip("Game of Thrones")
-                    SearchChip("Stranger Things")
-                    SearchChip("The Last of Us")
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    SearchChip("Interstellar")
-                    SearchChip("Money Heist")
-                    SearchChip("Breaking Bad")
-                }
+            @OptIn(ExperimentalLayoutApi::class)
+            FlowRow(
+                modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                SearchChip("Game of Thrones")
+                SearchChip("Stranger Things")
+                SearchChip("The Last of Us")
+                SearchChip("Interstellar")
+                SearchChip("Money Heist")
+                SearchChip("Breaking Bad")
             }
 
             Spacer(modifier = Modifier.height(24.dp))

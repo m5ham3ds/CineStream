@@ -12,6 +12,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.pager.*
+import kotlinx.coroutines.delay
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.PlayArrow
@@ -43,6 +45,8 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     onMovieClick: (String) -> Unit,
     onSeriesClick: (String) -> Unit,
+    onNavigateToTrending: () -> Unit = {},
+    onNavigateToWatching: () -> Unit = {},
     viewModel: HomeViewModel = viewModel(factory = ViewModelFactory())
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -111,15 +115,14 @@ fun HomeScreen(
         }
 
         // Hero Section
-        val heroMovie = uiState.trendingMovies.firstOrNull()
-        if (heroMovie != null) {
-            HeroSection(movie = heroMovie, onClick = { onMovieClick(heroMovie.id) })
+        if (uiState.trendingMovies.isNotEmpty()) {
+            HeroCarousel(movies = uiState.trendingMovies.take(5), onClick = onMovieClick)
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
         // Trending Now
-        SectionTitle("Trending Now")
+        SectionTitle("Trending Now", onSeeAllClick = onNavigateToTrending)
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -146,13 +149,13 @@ fun HomeScreen(
         Spacer(modifier = Modifier.height(24.dp))
         
         // Continue Watching (Demo Item)
-        SectionTitle("Continue Watching")
+        SectionTitle("Continue Watching", onSeeAllClick = onNavigateToWatching)
         ContinueWatchingCard()
 
         Spacer(modifier = Modifier.height(24.dp))
 
         // Trending Series
-        SectionTitle("Trending Series")
+        SectionTitle("Trending Series", onSeeAllClick = onNavigateToTrending)
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -209,8 +212,19 @@ fun HomeScreen(
     }
 }
 
+@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
-fun HeroSection(movie: Movie, onClick: () -> Unit) {
+fun HeroCarousel(movies: List<Movie>, onClick: (String) -> Unit) {
+    val pagerState = rememberPagerState(pageCount = { movies.size })
+
+    LaunchedEffect(pagerState) {
+        while (true) {
+            delay(3000)
+            val nextPage = (pagerState.currentPage + 1) % movies.size
+            pagerState.animateScrollToPage(nextPage)
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -218,76 +232,81 @@ fun HeroSection(movie: Movie, onClick: () -> Unit) {
             .aspectRatio(16f / 10f)
             .clip(RoundedCornerShape(16.dp))
     ) {
-        AsyncImage(
-            model = movie.backdropUrl,
-            contentDescription = movie.title,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
-        // Background Gradient
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.9f)),
-                        startY = 100f
-                    )
+        HorizontalPager(state = pagerState) { page ->
+            val movie = movies[page]
+            Box(modifier = Modifier.fillMaxSize()) {
+                AsyncImage(
+                    model = movie.backdropUrl,
+                    contentDescription = movie.title,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
                 )
-        )
-        
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(16.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .background(Color.White.copy(alpha = 0.2f), RoundedCornerShape(4.dp))
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
-            ) {
-                Text("NEW RELEASE", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = movie.title,
-                style = MaterialTheme.typography.headlineLarge,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "An unforgettable journey\ninto the wild",
-                color = Color.LightGray,
-                fontSize = 12.sp,
-                lineHeight = 16.sp
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
+                // Background Gradient
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(percent = 50))
-                        .background(Color(0xFFE50914))
-                        .clickable { onClick() }
-                        .padding(horizontal = 24.dp, vertical = 10.dp),
-                    contentAlignment = Alignment.Center
+                        .fillMaxSize()
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.9f)),
+                                startY = 100f
+                            )
+                        )
+                )
+                
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(16.dp)
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = Color.White, modifier = Modifier.size(16.dp))
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text("Play", color = Color.White, fontWeight = FontWeight.SemiBold)
+                    Box(
+                        modifier = Modifier
+                            .background(Color.White.copy(alpha = 0.2f), RoundedCornerShape(4.dp))
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    ) {
+                        Text("NEW RELEASE", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
                     }
-                }
-                Spacer(modifier = Modifier.width(12.dp))
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .border(1.dp, Color.White, CircleShape)
-                        .clickable { /* Add to list */ },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(Icons.Default.Add, contentDescription = "Add", tint = Color.White)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = movie.title,
+                        style = MaterialTheme.typography.headlineLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "An unforgettable journey\ninto the wild",
+                        color = Color.LightGray,
+                        fontSize = 12.sp,
+                        lineHeight = 16.sp
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(percent = 50))
+                                .background(Color(0xFFE50914))
+                                .clickable { onClick(movie.id) }
+                                .padding(horizontal = 24.dp, vertical = 10.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = Color.White, modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text("Play", color = Color.White, fontWeight = FontWeight.SemiBold)
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clip(CircleShape)
+                                .border(1.dp, Color.White, CircleShape)
+                                .clickable { /* Add to list */ },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(Icons.Default.Add, contentDescription = "Add", tint = Color.White)
+                        }
+                    }
                 }
             }
         }
@@ -299,17 +318,21 @@ fun HeroSection(movie: Movie, onClick: () -> Unit) {
                 .padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Box(modifier = Modifier.size(16.dp, 4.dp).clip(RoundedCornerShape(2.dp)).background(Color(0xFFE50914)))
-            Box(modifier = Modifier.size(4.dp).clip(CircleShape).background(Color.Gray))
-            Box(modifier = Modifier.size(4.dp).clip(CircleShape).background(Color.Gray))
-            Box(modifier = Modifier.size(4.dp).clip(CircleShape).background(Color.Gray))
-            Box(modifier = Modifier.size(4.dp).clip(CircleShape).background(Color.Gray))
+            repeat(movies.size) { index ->
+                val isSelected = pagerState.currentPage == index
+                Box(
+                    modifier = Modifier
+                        .size(if (isSelected) 16.dp else 4.dp, 4.dp)
+                        .clip(RoundedCornerShape(2.dp))
+                        .background(if (isSelected) Color(0xFFE50914) else Color.Gray)
+                )
+            }
         }
     }
 }
 
 @Composable
-fun SectionTitle(title: String) {
+fun SectionTitle(title: String, onSeeAllClick: (() -> Unit)? = null) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -321,12 +344,14 @@ fun SectionTitle(title: String) {
             fontWeight = FontWeight.Bold,
             color = Color.White
         )
-        Text(
-            text = "See All",
-            style = MaterialTheme.typography.labelLarge,
-            color = Color(0xFFE50914),
-            modifier = Modifier.clickable { /* See all */ }
-        )
+        if (onSeeAllClick != null) {
+            Text(
+                text = "See All",
+                style = MaterialTheme.typography.labelLarge,
+                color = Color(0xFFE50914),
+                modifier = Modifier.clickable { onSeeAllClick() }
+            )
+        }
     }
 }
 

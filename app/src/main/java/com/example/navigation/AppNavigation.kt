@@ -56,6 +56,8 @@ import com.example.ui.components.BottomNavBar
 import com.example.ui.screens.details.MovieDetailsScreen
 import com.example.ui.screens.details.SeriesDetailsScreen
 import com.example.ui.screens.home.HomeScreen
+import com.example.ui.screens.home.TrendingScreen
+import com.example.ui.screens.home.WatchingScreen
 import com.example.ui.screens.library.LibraryScreen
 import com.example.ui.screens.movies.MoviesScreen
 import com.example.ui.screens.search.SearchScreen
@@ -98,6 +100,7 @@ fun AppNavigation() {
     androidx.compose.runtime.CompositionLocalProvider(androidx.compose.ui.platform.LocalLayoutDirection provides androidx.compose.ui.unit.LayoutDirection.Rtl) {
     ModalNavigationDrawer(
         drawerState = drawerState,
+        gesturesEnabled = false,
         drawerContent = {
             androidx.compose.runtime.CompositionLocalProvider(androidx.compose.ui.platform.LocalLayoutDirection provides androidx.compose.ui.unit.LayoutDirection.Ltr) {
             ModalDrawerSheet(
@@ -472,7 +475,9 @@ fun AppNavigation() {
                 composable(Screen.Home.route) {
                     HomeScreen(
                         onMovieClick = { id -> navController.navigate(Screen.MovieDetails.createRoute(id)) },
-                        onSeriesClick = { id -> navController.navigate(Screen.SeriesDetails.createRoute(id)) }
+                        onSeriesClick = { id -> navController.navigate(Screen.SeriesDetails.createRoute(id)) },
+                        onNavigateToTrending = { navController.navigate(Screen.Trending.route) },
+                        onNavigateToWatching = { navController.navigate(Screen.Watching.route) }
                     )
                 }
                 composable(Screen.Movies.route) {
@@ -521,6 +526,30 @@ fun AppNavigation() {
                 }
                 composable(Screen.Settings.route) { SettingsScreen() }
                 composable(Screen.About.route) { AboutScreen() }
+                composable(Screen.Trending.route) {
+                    TrendingScreen(
+                        onItemClick = { id, isMovie ->
+                            if (isMovie) {
+                                navController.navigate(Screen.MovieDetails.createRoute(id))
+                            } else {
+                                navController.navigate(Screen.SeriesDetails.createRoute(id))
+                            }
+                        },
+                        onBack = { navController.popBackStack() }
+                    )
+                }
+                composable(Screen.Watching.route) {
+                    WatchingScreen(
+                        onItemClick = { id, isMovie ->
+                            if (isMovie) {
+                                navController.navigate(Screen.MovieDetails.createRoute(id))
+                            } else {
+                                navController.navigate(Screen.SeriesDetails.createRoute(id))
+                            }
+                        },
+                        onBack = { navController.popBackStack() }
+                    )
+                }
                 composable(Screen.MovieDetails.route) { backStackEntry ->
                     val movieId = backStackEntry.arguments?.getString("movieId") ?: return@composable
                     MovieDetailsScreen(
@@ -554,3 +583,4 @@ fun AppNavigation() {
 }
 }
 }
+// Trending and Watching added at the end using sed later
