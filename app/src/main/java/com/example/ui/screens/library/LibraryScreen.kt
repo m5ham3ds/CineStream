@@ -1,62 +1,156 @@
 package com.example.ui.screens.library
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.data.repository.LibraryRepository
+import androidx.compose.ui.unit.sp
 import com.example.ui.components.MediaCard
-import kotlinx.coroutines.launch
+import com.example.data.repository.LibraryRepository
+import com.example.data.repository.DownloadRepository
 
 @Composable
-fun LibraryScreen(onItemClick: (String, Boolean) -> Unit = { _, _ -> }) {
+fun LibraryScreen(
+    onItemClick: (String, Boolean) -> Unit
+) {
     val context = LocalContext.current
     val libraryRepository = remember { LibraryRepository(context) }
-    val items by libraryRepository.getLibraryItems().collectAsState(initial = emptyList())
+    val downloadRepository = remember { DownloadRepository(context) }
+    
+    val libraryItems by libraryRepository.getLibraryItems().collectAsState(initial = emptyList())
+    val downloadedItems by downloadRepository.getDownloadItems().collectAsState(initial = emptyList())
+    
+    var selectedTab by remember { mutableStateOf("Watchlist") }
+    
+    data class TabItem(val name: String, val icon: androidx.compose.ui.graphics.vector.ImageVector)
+    val tabs = listOf(
+        TabItem("Watchlist", Icons.Default.Favorite),
+        TabItem("Downloads", Icons.Default.Download),
+        TabItem("History", Icons.Default.History)
+    )
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            
     ) {
         Text(
-            text = "My Library",
+            text = "Library",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
-            color = androidx.compose.ui.graphics.Color.White,
-            modifier = Modifier.padding(bottom = 24.dp)
+            color = Color.White,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         )
 
-        if (items.isEmpty()) {
-            Spacer(modifier = Modifier.weight(1f))
-            Text(
-                text = "Your Watchlist and History will appear here.",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(modifier = Modifier.weight(1f))
+        // Tabs
+        LazyRow(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(tabs) { tab ->
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(percent = 50))
+                        .background(if (selectedTab == tab.name) Color(0xFFE50914) else Color.Transparent)
+                        .border(
+                            1.dp,
+                            if (selectedTab == tab.name) Color.Transparent else Color.DarkGray,
+                            RoundedCornerShape(percent = 50)
+                        )
+                        .clickable { selectedTab = tab.name }
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = tab.icon, 
+                            contentDescription = tab.name, 
+                            tint = if (selectedTab == tab.name) Color.White else Color.Gray,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = tab.name,
+                            color = if (selectedTab == tab.name) Color.White else Color.Gray,
+                            fontSize = 14.sp,
+                            fontWeight = if (selectedTab == tab.name) FontWeight.SemiBold else FontWeight.Normal
+                        )
+                    }
+                }
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        // Items grid
+        val displayItems = if (selectedTab == "Watchlist") {
+            libraryItems
+        } else if (selectedTab == "Downloads") {
+            downloadedItems.map { 
+                com.example.data.model.LibraryItem(
+                    id = it.id, 
+                    title = it.title, 
+                    posterUrl = it.posterUrl, 
+                    isMovie = it.isMovie
+                ) 
+            }
+        } else {
+            emptyList()
+        }
+
+        if (displayItems.isEmpty()) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Icon(
+                        if (selectedTab == "Watchlist") Icons.Default.Favorite else Icons.Default.Download,
+                        contentDescription = "Empty",
+                        tint = Color.DarkGray,
+                        modifier = Modifier.size(64.dp)
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Your ${selectedTab.lowercase()} is empty",
+                        color = Color.Gray,
+                        fontSize = 16.sp
+                    )
+                }
+            }
         } else {
             LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
+                columns = GridCells.Adaptive(minSize = 120.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
-                contentPadding = PaddingValues(bottom = 80.dp)
+                modifier = Modifier.fillMaxSize()
             ) {
-                items(items) { item ->
+                items(displayItems) { item ->
                     MediaCard(
                         title = item.title,
                         posterUrl = item.posterUrl,
+                        rank = null,
+                        rating = 8.8,
+                        year = if (item.isMovie) "2024" else "Series",
                         onClick = { onItemClick(item.id, item.isMovie) },
-                        onLongClick = { /* Maybe remove? */ }
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }

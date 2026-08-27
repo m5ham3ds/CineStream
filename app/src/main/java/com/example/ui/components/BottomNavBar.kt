@@ -41,8 +41,8 @@ fun BottomNavBar(navController: NavController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(percent = 50))
-                .background(Color(0xFF2A2A2E))
-                .padding(horizontal = 8.dp, vertical = 4.dp),
+                .background(Color(0xFF1E1E20)) // Dark grey background for the container
+                .padding(horizontal = 8.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -50,12 +50,11 @@ fun BottomNavBar(navController: NavController) {
                 val selected = currentRoute == screen.route
                 val label = if (screen == Screen.Library) "المكتبات" else screen.title
                 
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                Box(
                     modifier = Modifier
                         .weight(1f)
                         .clip(RoundedCornerShape(percent = 50))
-                        .background(if (selected) Color(0xFF4A4A4F) else Color.Transparent)
+                        .background(if (selected) Color(0xFFE50914) else Color.Transparent) // Red when active
                         .clickable {
                             navController.navigate(screen.route) {
                                 popUpTo(Screen.Home.route) {
@@ -65,22 +64,25 @@ fun BottomNavBar(navController: NavController) {
                                 restoreState = true
                             }
                         }
-                        .padding(vertical = 4.dp)
+                        .padding(vertical = 8.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = screen.icon,
-                        contentDescription = label,
-                        tint = Color.White,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(
-                        text = label,
-                        color = Color.White,
-                        fontSize = 9.sp,
-                        maxLines = 1,
-                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
-                    )
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(
+                            imageVector = screen.icon,
+                            contentDescription = label,
+                            tint = if (selected) Color.White else Color.Gray,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = label,
+                            color = if (selected) Color.White else Color.Gray,
+                            fontSize = 10.sp,
+                            maxLines = 1,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                        )
+                    }
                 }
             }
         }

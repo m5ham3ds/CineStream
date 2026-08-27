@@ -306,68 +306,59 @@ fun AppNavigation() {
                             .fillMaxWidth()
                             .windowInsetsPadding(WindowInsets.statusBars)
                     ) {
-                        Box(
+                        Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 12.dp)
-                                .clip(RoundedCornerShape(percent = 50))
-                                .background(Color(0xFF2A2A2E))
-                                .padding(horizontal = 8.dp, vertical = 8.dp)
+                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                // Avatar on left
-                                Box(
-                                    modifier = Modifier
-                                        .size(40.dp)
-                                        .clip(CircleShape)
-                                        .background(Color.Gray)
-                                        .clickable { 
-                                            if (isGuest) {
-                                                navController.navigate(Screen.Auth.route)
-                                            } else {
-                                                navController.navigate(Screen.Profile.route)
-                                            }
-                                        },
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(Icons.Default.Person, contentDescription = "Avatar", tint = Color.White)
-                                }
-                                Spacer(modifier = Modifier.weight(1f))
-                                
-                                // Center App Name
-                                Text(
-                                    "CineStream",
-                                    fontWeight = FontWeight.Bold,
-                                    fontFamily = FontFamily.Serif,
-                                    color = Color(0xFFA51B1B),
-                                    fontSize = 20.sp
-                                )
-                                
-                                Spacer(modifier = Modifier.weight(1f))
-                                
-                                // Right Icons
-                                Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.White, modifier = Modifier.clickable { isSearchExpanded = !isSearchExpanded })
-                                Spacer(modifier = Modifier.width(16.dp))
-                                BadgedBox(
-                                    badge = {
-                                        Badge(
-                                            containerColor = Color.White,
-                                            contentColor = Color.Black,
-                                            modifier = Modifier.offset(x = (-4).dp, y = 4.dp)
-                                        ) {
-                                            Text("1")
+                            // Avatar on left
+                            Box(
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.DarkGray)
+                                    .clickable {
+                                         if (isGuest) {
+                                            navController.navigate(Screen.Auth.route)
+                                        } else {
+                                            navController.navigate(Screen.Profile.route)
                                         }
-                                    }
-                                ) {
-                                    Icon(Icons.Outlined.Notifications, contentDescription = "Notifications", tint = Color.White)
-                                }
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color.White, modifier = Modifier.clickable { scope.launch { drawerState.open() } })
-                                Spacer(modifier = Modifier.width(8.dp))
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(Icons.Default.Person, contentDescription = "Avatar", tint = Color.LightGray)
                             }
+                            Spacer(modifier = Modifier.weight(1f))
+                            
+                            // Center App Name
+                            Text(
+                                "CineStream",
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFFE50914), // Red
+                                fontSize = 22.sp
+                            )
+                            
+                            Spacer(modifier = Modifier.weight(1f))
+                            
+                            // Right Icons
+                            Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.White, modifier = Modifier.size(24.dp).clickable { isSearchExpanded = !isSearchExpanded })
+                            Spacer(modifier = Modifier.width(16.dp))
+                            BadgedBox(
+                                badge = {
+                                    Badge(
+                                        containerColor = Color(0xFFE50914), // Red badge
+                                        contentColor = Color.White,
+                                        modifier = Modifier.offset(x = (-4).dp, y = 4.dp)
+                                    ) {
+                                        Text("1")
+                                    }
+                                }
+                            ) {
+                                Icon(Icons.Outlined.Notifications, contentDescription = "Notifications", tint = Color.White, modifier = Modifier.size(24.dp))
+                            }
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color.White, modifier = Modifier.size(24.dp).clickable { scope.launch { drawerState.open() } })
                         }
                         
                         androidx.compose.animation.AnimatedVisibility(visible = isSearchExpanded) {
