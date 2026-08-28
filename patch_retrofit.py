@@ -1,29 +1,17 @@
-package com.example.data.remote
+with open("app/src/main/java/com/example/data/remote/RetrofitClient.kt", "r") as f:
+    content = f.read()
 
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-
+new_imports = """
 import okhttp3.Cache
 import okhttp3.Interceptor
 import com.example.MyApplication
 import java.io.File
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
+"""
 
-object RetrofitClient {
-    private const val BASE_URL = "https://api.themoviedb.org/3/"
+if "import okhttp3.Cache" not in content:
+    content = content.replace("import okhttp3.OkHttpClient", new_imports + "import okhttp3.OkHttpClient")
 
-    private val moshi = Moshi.Builder()
-        .add(KotlinJsonAdapterFactory())
-        .build()
-
-    private val loggingInterceptor = HttpLoggingInterceptor().apply {
-        level = HttpLoggingInterceptor.Level.BODY
-    }
-
-
+new_client = """
     private val cacheSize = (10 * 1024 * 1024).toLong() // 10 MB
     private val okHttpClient by lazy {
         OkHttpClient.Builder()
@@ -40,14 +28,10 @@ object RetrofitClient {
             .addInterceptor(loggingInterceptor)
             .build()
     }
+"""
 
+if "cacheSize" not in content:
+    content = content.replace("    private val okHttpClient = OkHttpClient.Builder()\n        .addInterceptor(loggingInterceptor)\n        .build()", new_client)
 
-    val tmdbApi: TmdbApiService by lazy {
-        Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .client(okHttpClient)
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .build()
-            .create(TmdbApiService::class.java)
-    }
-}
+with open("app/src/main/java/com/example/data/remote/RetrofitClient.kt", "w") as f:
+    f.write(content)

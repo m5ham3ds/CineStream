@@ -108,7 +108,7 @@ fun PersonDetailsScreen(
                 // Movies
                 if (person.movies.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(24.dp))
-                    Text("Movies", color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
+                    Text("Top Movies", color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
                     Spacer(modifier = Modifier.height(8.dp))
                     LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         items(person.movies) { movie ->
@@ -120,7 +120,7 @@ fun PersonDetailsScreen(
                 // Series
                 if (person.series.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(24.dp))
-                    Text("TV Shows", color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
+                    Text("Top TV Shows", color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
                     Spacer(modifier = Modifier.height(8.dp))
                     LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         items(person.series) { series ->

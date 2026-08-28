@@ -600,14 +600,31 @@ fun AppNavigation() {
                         onBack = { navController.popBackStack() }
                     )
                 }
+                
+                composable("person/{personId}") { backStackEntry ->
+                    val personId = backStackEntry.arguments?.getString("personId") ?: return@composable
+                    com.example.ui.screens.details.PersonDetailsScreen(
+                        personId = personId,
+                        onBack = { navController.popBackStack() },
+                        onMovieClick = { navController.navigate(Screen.MovieDetails.createRoute(it)) },
+                        onSeriesClick = { navController.navigate(Screen.SeriesDetails.createRoute(it)) }
+                    )
+                }
+
                 composable(Screen.MovieDetails.route) { backStackEntry ->
                     val movieId = backStackEntry.arguments?.getString("movieId") ?: return@composable
                     MovieDetailsScreen(
                         movieId = movieId, 
                         onBack = { navController.popBackStack() },
+                        onPersonClick = { personId -> navController.navigate("person/$personId") },
                         onPlay = { url -> 
-                            val encodedUrl = URLEncoder.encode(url, "UTF-8")
-                            navController.navigate("player?url=$encodedUrl")
+                            if (url.startsWith("trailer:")) {
+                                val trailerId = url.removePrefix("trailer:")
+                                navController.navigate("trailer/$trailerId")
+                            } else {
+                                val encodedUrl = URLEncoder.encode(url, "UTF-8")
+                                navController.navigate("player?url=$encodedUrl")
+                            }
                         }
                     )
                 }
@@ -616,12 +633,24 @@ fun AppNavigation() {
                     SeriesDetailsScreen(
                         seriesId = seriesId, 
                         onBack = { navController.popBackStack() },
+                        onPersonClick = { personId -> navController.navigate("person/$personId") },
                         onPlay = { url -> 
-                            val encodedUrl = URLEncoder.encode(url, "UTF-8")
-                            navController.navigate("player?url=$encodedUrl")
+                            if (url.startsWith("trailer:")) {
+                                val trailerId = url.removePrefix("trailer:")
+                                navController.navigate("trailer/$trailerId")
+                            } else {
+                                val encodedUrl = URLEncoder.encode(url, "UTF-8")
+                                navController.navigate("player?url=$encodedUrl")
+                            }
                         }
                     )
                 }
+                
+                composable("trailer/{trailerId}") { backStackEntry ->
+                    val trailerId = backStackEntry.arguments?.getString("trailerId") ?: return@composable
+                    com.example.ui.screens.player.TrailerScreen(trailerId = trailerId, onBack = { navController.popBackStack() })
+                }
+
                 composable("player?url={url}") { backStackEntry ->
                     val url = backStackEntry.arguments?.getString("url") ?: return@composable
                     val decodedUrl = URLDecoder.decode(url, "UTF-8")

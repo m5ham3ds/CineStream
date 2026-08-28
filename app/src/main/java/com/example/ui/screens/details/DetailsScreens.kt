@@ -155,7 +155,7 @@ fun MovieDetailsScreen(
                         },
                         modifier = Modifier.size(50.dp).background(Color.DarkGray, CircleShape)
                     ) {
-                        Icon(if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder, contentDescription = "Favorite", tint = if (isFavorite) Color.Red else Color.White)
+                        Icon(if (isFavorite) Icons.Default.Bookmark else Icons.Default.BookmarkBorder, contentDescription = "Favorite", tint = Color.White)
                     }
                 }
                 
@@ -168,8 +168,7 @@ fun MovieDetailsScreen(
                     LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         items(movie.trailers) { trailer ->
                             TrailerCard(trailer) {
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=${trailer.key}"))
-                                context.startActivity(intent)
+                                onPlay("trailer:${trailer.key}")
                             }
                         }
                     }
@@ -331,7 +330,7 @@ fun SeriesDetailsScreen(
                         },
                         modifier = Modifier.size(50.dp).background(Color.DarkGray, CircleShape)
                     ) {
-                        Icon(if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder, contentDescription = "Favorite", tint = if (isFavorite) Color.Red else Color.White)
+                        Icon(if (isFavorite) Icons.Default.Bookmark else Icons.Default.BookmarkBorder, contentDescription = "Favorite", tint = Color.White)
                     }
                 }
                 
@@ -344,8 +343,7 @@ fun SeriesDetailsScreen(
                     LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         items(series.trailers) { trailer ->
                             TrailerCard(trailer) {
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=${trailer.key}"))
-                                context.startActivity(intent)
+                                onPlay("trailer:${trailer.key}")
                             }
                         }
                     }

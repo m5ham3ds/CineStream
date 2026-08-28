@@ -188,6 +188,9 @@ class TmdbMediaRepositoryImpl : MediaRepository {
                 }
             }
             
+            movies.sortByDescending { it.rating }
+            series.sortByDescending { it.rating }
+
             PersonDetails(
                 id = response.id.toString(),
                 name = response.name ?: "Unknown",
