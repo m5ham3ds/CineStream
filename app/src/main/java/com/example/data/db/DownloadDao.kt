@@ -16,6 +16,9 @@ interface DownloadDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertItem(item: DownloadItem)
 
+    @androidx.room.Update
+    suspend fun updateItem(item: DownloadItem)
+
     @Delete
     suspend fun deleteItem(item: DownloadItem)
 }

@@ -9,5 +9,8 @@ data class DownloadItem(
     val title: String,
     val posterUrl: String,
     val isMovie: Boolean,
-    val quality: String
+    val quality: String,
+    val progress: Float = 0f,
+    val isPaused: Boolean = false,
+    val isCompleted: Boolean = false
 )

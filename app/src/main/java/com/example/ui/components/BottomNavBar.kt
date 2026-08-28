@@ -35,14 +35,15 @@ fun BottomNavBar(navController: NavController) {
         modifier = Modifier
             .windowInsetsPadding(WindowInsets.navigationBars)
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp) // adjusted vertical padding
+            .padding(horizontal = 16.dp, vertical = 0.dp) // adjusted vertical padding
+            .padding(bottom = 8.dp) // slightly above the bottom line
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(percent = 50))
                 .background(Color(0xFF161618)) // Dark grey background for the container
-                .padding(horizontal = 8.dp, vertical = 8.dp),
+                .padding(horizontal = 8.dp, vertical = 4.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -80,7 +81,7 @@ fun BottomNavBar(navController: NavController) {
                                 }
                             }
                         }
-                        .padding(vertical = 8.dp),
+                        .padding(vertical = 4.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {

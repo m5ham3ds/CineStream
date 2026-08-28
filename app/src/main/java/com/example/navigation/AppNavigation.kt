@@ -547,6 +547,11 @@ fun AppNavigation() {
                 composable(Screen.Profile.route) { ProfileScreen() }
                 composable(Screen.Downloads.route) { 
                     DownloadsScreen(
+                        onNavigateToHome = {
+                            navController.navigate(Screen.Home.route) {
+                                popUpTo(Screen.Home.route) { inclusive = true }
+                            }
+                        },
                         onItemClick = { id, isMovie ->
                             if (isMovie) {
                                 navController.navigate(Screen.MovieDetails.createRoute(id))

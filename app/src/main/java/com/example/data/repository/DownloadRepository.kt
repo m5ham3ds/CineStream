@@ -22,6 +22,10 @@ class DownloadRepository(context: Context) {
         downloadDao.insertItem(item)
     }
 
+    suspend fun updateDownload(item: DownloadItem) {
+        downloadDao.updateItem(item)
+    }
+
     suspend fun removeFromDownloads(item: DownloadItem) {
         downloadDao.deleteItem(item)
     }
