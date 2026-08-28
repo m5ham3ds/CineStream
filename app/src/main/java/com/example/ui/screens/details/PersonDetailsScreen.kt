@@ -60,7 +60,8 @@ fun PersonDetailsScreen(
                     containerColor = Color.Black,
                     titleContentColor = Color.White,
                     navigationIconContentColor = Color.White
-                )
+                ),
+                windowInsets = WindowInsets(0.dp)
             )
         },
         containerColor = Color.Black

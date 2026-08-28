@@ -38,6 +38,7 @@ class HomeViewModel(
     fun loadData() {
         _uiState.update { it.copy(isLoading = true, error = null) }
         viewModelScope.launch {
+            kotlinx.coroutines.delay(400) // Ensure shimmer effect is visible for a moment even if loading from cache
             repository.getTrendingMovies()
                 .catch { e -> _uiState.update { it.copy(error = e.message, isLoading = false) } }
                 .collect { movies ->

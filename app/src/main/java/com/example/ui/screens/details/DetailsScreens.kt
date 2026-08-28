@@ -82,6 +82,7 @@ fun MovieDetailsScreen(
             val historyRepository = remember { com.example.data.repository.HistoryRepository(ctx) }
             var showSourceSheet by remember { mutableStateOf(false) }
             var isDownloadMode by remember { mutableStateOf(false) }
+            var selectedTrailerId by remember { mutableStateOf<String?>(null) }
 
             val ptrState = rememberPullToRefreshState()
             PullToRefreshBox(
@@ -95,23 +96,16 @@ fun MovieDetailsScreen(
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
             ) {
-                // Hero Image with Gradient
-                Box(modifier = Modifier.fillMaxWidth().aspectRatio(0.8f)) {
-                    AsyncImage(
-                        model = movie.posterUrl.takeIf { it.isNotBlank() } ?: movie.backdropUrl,
-                        contentDescription = movie.title,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                    Box(modifier = Modifier.fillMaxSize().background(
-                        Brush.verticalGradient(
-                            colors = listOf(Color.Transparent, Color.Black.copy(alpha=0.6f), Color.Black),
-                            startY = 0f
+                // Hero Image or Video Player
+                if (selectedTrailerId != null) {
+                    Box(modifier = Modifier.fillMaxWidth().aspectRatio(16f/9f)) {
+                        com.example.ui.components.InlineYouTubePlayer(
+                            videoId = selectedTrailerId!!,
+                            modifier = Modifier.fillMaxSize()
                         )
-                    ))
-                    Column(
-                        modifier = Modifier.align(Alignment.BottomStart).padding(16.dp)
-                    ) {
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                         Text(text = movie.title, style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold, color = Color.White)
                         Spacer(modifier = Modifier.height(8.dp))
                         
@@ -126,7 +120,42 @@ fun MovieDetailsScreen(
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(String.format("%.1f", movie.rating), color = Color.White, fontWeight = FontWeight.Bold)
                             }
-                            Badge(containerColor = Color.DarkGray) { Text("18+", color = Color.White) } // Placeholder for age rating
+                            Badge(containerColor = Color.DarkGray) { Text("18+", color = Color.White) }
+                        }
+                    }
+                } else {
+                    Box(modifier = Modifier.fillMaxWidth().aspectRatio(0.8f)) {
+                        AsyncImage(
+                            model = movie.posterUrl.takeIf { it.isNotBlank() } ?: movie.backdropUrl,
+                            contentDescription = movie.title,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                        Box(modifier = Modifier.fillMaxSize().background(
+                            Brush.verticalGradient(
+                                colors = listOf(Color.Transparent, Color.Black.copy(alpha=0.6f), Color.Black),
+                                startY = 0f
+                            )
+                        ))
+                        Column(
+                            modifier = Modifier.align(Alignment.BottomStart).padding(16.dp)
+                        ) {
+                            Text(text = movie.title, style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold, color = Color.White)
+                            Spacer(modifier = Modifier.height(8.dp))
+                            
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text("${movie.year} • ${movie.genres.take(3).joinToString(" • ")}", color = Color.LightGray, style = MaterialTheme.typography.bodyMedium)
+                            }
+                            Spacer(modifier = Modifier.height(8.dp))
+                            
+                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(Icons.Default.Star, contentDescription = "Rating", tint = Color(0xFFFFC107), modifier = Modifier.size(18.dp))
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(String.format("%.1f", movie.rating), color = Color.White, fontWeight = FontWeight.Bold)
+                                }
+                                Badge(containerColor = Color.DarkGray) { Text("18+", color = Color.White) } // Placeholder for age rating
+                            }
                         }
                     }
                 }
@@ -171,7 +200,7 @@ fun MovieDetailsScreen(
                     LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         items(movie.trailers) { trailer ->
                             TrailerCard(trailer) {
-                                onPlay("trailer:${trailer.key}")
+                                selectedTrailerId = trailer.key
                             }
                         }
                     }
@@ -276,6 +305,7 @@ fun SeriesDetailsScreen(
             val historyRepository = remember { com.example.data.repository.HistoryRepository(ctx) }
             var showSourceSheet by remember { mutableStateOf(false) }
             var isDownloadMode by remember { mutableStateOf(false) }
+            var selectedTrailerId by remember { mutableStateOf<String?>(null) }
 
             val ptrState = rememberPullToRefreshState()
             PullToRefreshBox(
@@ -289,23 +319,16 @@ fun SeriesDetailsScreen(
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
             ) {
-                // Hero Image with Gradient
-                Box(modifier = Modifier.fillMaxWidth().aspectRatio(0.8f)) {
-                    AsyncImage(
-                        model = series.posterUrl.takeIf { it.isNotBlank() } ?: series.backdropUrl,
-                        contentDescription = series.title,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                    Box(modifier = Modifier.fillMaxSize().background(
-                        Brush.verticalGradient(
-                            colors = listOf(Color.Transparent, Color.Black.copy(alpha=0.6f), Color.Black),
-                            startY = 0f
+                // Hero Image or Video Player
+                if (selectedTrailerId != null) {
+                    Box(modifier = Modifier.fillMaxWidth().aspectRatio(16f/9f)) {
+                        com.example.ui.components.InlineYouTubePlayer(
+                            videoId = selectedTrailerId!!,
+                            modifier = Modifier.fillMaxSize()
                         )
-                    ))
-                    Column(
-                        modifier = Modifier.align(Alignment.BottomStart).padding(16.dp)
-                    ) {
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                         Text(text = series.title, style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold, color = Color.White)
                         Spacer(modifier = Modifier.height(8.dp))
                         
@@ -320,7 +343,42 @@ fun SeriesDetailsScreen(
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(String.format("%.1f", series.rating), color = Color.White, fontWeight = FontWeight.Bold)
                             }
-                            Badge(containerColor = Color.DarkGray) { Text("18+", color = Color.White) } 
+                            Badge(containerColor = Color.DarkGray) { Text("18+", color = Color.White) }
+                        }
+                    }
+                } else {
+                    Box(modifier = Modifier.fillMaxWidth().aspectRatio(0.8f)) {
+                        AsyncImage(
+                            model = series.posterUrl.takeIf { it.isNotBlank() } ?: series.backdropUrl,
+                            contentDescription = series.title,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                        Box(modifier = Modifier.fillMaxSize().background(
+                            Brush.verticalGradient(
+                                colors = listOf(Color.Transparent, Color.Black.copy(alpha=0.6f), Color.Black),
+                                startY = 0f
+                            )
+                        ))
+                        Column(
+                            modifier = Modifier.align(Alignment.BottomStart).padding(16.dp)
+                        ) {
+                            Text(text = series.title, style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold, color = Color.White)
+                            Spacer(modifier = Modifier.height(8.dp))
+                            
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text("${series.year} • ${series.genres.take(3).joinToString(" • ")}", color = Color.LightGray, style = MaterialTheme.typography.bodyMedium)
+                            }
+                            Spacer(modifier = Modifier.height(8.dp))
+                            
+                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(Icons.Default.Star, contentDescription = "Rating", tint = Color(0xFFFFC107), modifier = Modifier.size(18.dp))
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(String.format("%.1f", series.rating), color = Color.White, fontWeight = FontWeight.Bold)
+                                }
+                                Badge(containerColor = Color.DarkGray) { Text("18+", color = Color.White) } 
+                            }
                         }
                     }
                 }
@@ -365,7 +423,7 @@ fun SeriesDetailsScreen(
                     LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         items(series.trailers) { trailer ->
                             TrailerCard(trailer) {
-                                onPlay("trailer:${trailer.key}")
+                                selectedTrailerId = trailer.key
                             }
                         }
                     }
