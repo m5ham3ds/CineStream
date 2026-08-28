@@ -13,6 +13,7 @@ import com.example.domain.models.CastMember
 import com.example.domain.models.VideoTrailer
 import com.example.domain.models.Season
 import com.example.domain.models.Episode
+import com.example.domain.models.PersonDetails
 
 class TmdbMediaRepositoryImpl : MediaRepository {
     
@@ -149,6 +150,60 @@ class TmdbMediaRepositoryImpl : MediaRepository {
         )
     }
 
+    
+    override suspend fun getPersonDetails(personId: String): PersonDetails? = withContext(Dispatchers.IO) {
+        try {
+            val response = RetrofitClient.tmdbApi.getPersonDetails(personId.toInt(), apiKey)
+            val movies = mutableListOf<Movie>()
+            val series = mutableListOf<Series>()
+            response.combinedCredits?.cast?.forEach { item ->
+                if (item.mediaType == "movie") {
+                    val yearInt = item.releaseDate?.take(4)?.toIntOrNull() ?: 2024
+                    movies.add(Movie(
+                        id = item.id.toString(),
+                        title = item.title ?: "Unknown",
+                        overview = "",
+                        posterUrl = item.fullPosterUrl,
+                        backdropUrl = item.fullBackdropUrl,
+                        year = yearInt,
+                        releaseDate = item.releaseDate,
+                        rating = item.voteAverage ?: 0.0,
+                        genres = emptyList(),
+                        runtime = 120
+                    ))
+                } else if (item.mediaType == "tv") {
+                    val yearInt = item.firstAirDate?.take(4)?.toIntOrNull() ?: 2024
+                    series.add(Series(
+                        id = item.id.toString(),
+                        title = item.name ?: "Unknown",
+                        overview = "",
+                        posterUrl = item.fullPosterUrl,
+                        backdropUrl = item.fullBackdropUrl,
+                        year = yearInt,
+                        firstAirDate = item.firstAirDate,
+                        rating = item.voteAverage ?: 0.0,
+                        genres = emptyList(),
+                        seasons = emptyList()
+                    ))
+                }
+            }
+            
+            PersonDetails(
+                id = response.id.toString(),
+                name = response.name ?: "Unknown",
+                biography = response.biography ?: "",
+                profileUrl = response.fullProfileUrl,
+                birthday = response.birthday,
+                placeOfBirth = response.placeOfBirth,
+                knownFor = response.knownForDepartment,
+                movies = movies,
+                series = series
+            )
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     override suspend fun getSeasonEpisodes(seriesId: String, seasonNumber: Int): List<Episode> = withContext(Dispatchers.IO) {
         try {
             val response = RetrofitClient.tmdbApi.getSeasonDetails(seriesId.toInt(), seasonNumber, apiKey)
@@ -183,8 +238,8 @@ class TmdbMediaRepositoryImpl : MediaRepository {
             genres = genres?.map { it.name } ?: emptyList(),
             runtime = runtime ?: 120,
             language = originalLanguage ?: "en",
-            cast = credits?.cast?.take(15)?.map { CastMember(it.name, it.character ?: "", it.fullProfileUrl) } ?: emptyList(),
-            trailers = videos?.results?.filter { it.site == "YouTube" }?.map { VideoTrailer(it.name, it.key, it.type) } ?: emptyList()
+            cast = credits?.cast?.take(15)?.map { CastMember(it.id.toString(), it.name, it.character ?: "", it.fullProfileUrl) } ?: emptyList(),
+            trailers = videos?.results?.filter { it.site == "YouTube" && it.type == "Trailer" }?.map { VideoTrailer(it.name, it.key, it.type) } ?: emptyList()
         )
     }
 
@@ -200,8 +255,8 @@ class TmdbMediaRepositoryImpl : MediaRepository {
             firstAirDate = firstAirDate,
             rating = voteAverage ?: 0.0,
             genres = genres?.map { it.name } ?: emptyList(),
-            cast = credits?.cast?.take(15)?.map { CastMember(it.name, it.character ?: "", it.fullProfileUrl) } ?: emptyList(),
-            trailers = videos?.results?.filter { it.site == "YouTube" }?.map { VideoTrailer(it.name, it.key, it.type) } ?: emptyList(),
+            cast = credits?.cast?.take(15)?.map { CastMember(it.id.toString(), it.name, it.character ?: "", it.fullProfileUrl) } ?: emptyList(),
+            trailers = videos?.results?.filter { it.site == "YouTube" && it.type == "Trailer" }?.map { VideoTrailer(it.name, it.key, it.type) } ?: emptyList(),
             seasons = seasons?.map { 
                 Season(
                     id = it.id.toString(),

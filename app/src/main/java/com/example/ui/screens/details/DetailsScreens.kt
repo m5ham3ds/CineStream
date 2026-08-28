@@ -45,6 +45,7 @@ import java.net.URLEncoder
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MovieDetailsScreen(
+    onPersonClick: (String) -> Unit = {},
     movieId: String, 
     onBack: () -> Unit,
     onPlay: (String) -> Unit,
@@ -187,7 +188,7 @@ fun MovieDetailsScreen(
                     Text("Cast", color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
                     Spacer(modifier = Modifier.height(8.dp))
                     LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                        items(movie.cast) { CastMemberCard(it) }
+                        items(movie.cast) { CastMemberCard(it) { onPersonClick(it.id) } }
                     }
                     Spacer(modifier = Modifier.height(32.dp))
                 }
@@ -220,6 +221,7 @@ fun MovieDetailsScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SeriesDetailsScreen(
+    onPersonClick: (String) -> Unit = {},
     seriesId: String, 
     onBack: () -> Unit,
     onPlay: (String) -> Unit,
@@ -362,7 +364,7 @@ fun SeriesDetailsScreen(
                     Text("Cast", color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
                     Spacer(modifier = Modifier.height(8.dp))
                     LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                        items(series.cast) { CastMemberCard(it) }
+                        items(series.cast) { CastMemberCard(it) { onPersonClick(it.id) } }
                     }
                     Spacer(modifier = Modifier.height(32.dp))
                 }
@@ -458,8 +460,8 @@ fun TrailerCard(trailer: VideoTrailer, onClick: () -> Unit) {
 }
 
 @Composable
-fun CastMemberCard(cast: CastMember) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(80.dp)) {
+fun CastMemberCard(cast: CastMember, onClick: () -> Unit) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(80.dp).clickable { onClick() }) {
         AsyncImage(
             model = cast.profileUrl ?: "https://via.placeholder.com/150",
             contentDescription = cast.name,

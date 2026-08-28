@@ -1,6 +1,7 @@
 package com.example.domain.models
 
 data class CastMember(
+    val id: String,
     val name: String,
     val character: String,
     val profileUrl: String?
@@ -66,4 +67,17 @@ data class Episode(
     val thumbnailUrl: String,
     val duration: Int, // in minutes
     val rating: Double = 0.0
+)
+
+
+data class PersonDetails(
+    val id: String,
+    val name: String,
+    val biography: String,
+    val profileUrl: String?,
+    val birthday: String?,
+    val placeOfBirth: String?,
+    val knownFor: String?,
+    val movies: List<Movie>,
+    val series: List<Series>
 )

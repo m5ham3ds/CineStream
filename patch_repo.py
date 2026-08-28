@@ -3,76 +3,81 @@ import re
 with open("app/src/main/java/com/example/data/repository/TmdbMediaRepositoryImpl.kt", "r") as f:
     content = f.read()
 
-# Add missing imports for new models
-imports = """import com.example.domain.models.CastMember
-import com.example.domain.models.VideoTrailer
-import com.example.domain.models.Season
-import com.example.domain.models.Episode
-"""
-content = content.replace("import kotlinx.coroutines.withContext\n", "import kotlinx.coroutines.withContext\n" + imports)
+# Make sure imports are present
+imports_str = """import com.example.domain.models.PersonDetails"""
+if "PersonDetails" not in content:
+    content = content.replace("import com.example.domain.models.Episode", "import com.example.domain.models.Episode\n" + imports_str)
 
-# We need to change the mappings for getMovieById and getSeriesById to use the Details mappers
-# The API methods were changed to return TmdbMovieDetails and TmdbSeriesDetails respectively
+# Filter trailers -> only "Trailer" type and "YouTube" site.
+# In `toDomainDetails` for Movie:
+content = content.replace(
+    """trailers = videos?.results?.filter { it.site == "YouTube" }?.map { VideoTrailer(it.name, it.key, it.type) } ?: emptyList()""",
+    """trailers = videos?.results?.filter { it.site == "YouTube" && it.type == "Trailer" }?.map { VideoTrailer(it.name, it.key, it.type) } ?: emptyList()"""
+)
+# Note: we need CastMember to include `it.id.toString()` since we added `id` to CastMember.
+content = content.replace(
+    """cast = credits?.cast?.take(15)?.map { CastMember(it.name, it.character ?: "", it.fullProfileUrl) } ?: emptyList()""",
+    """cast = credits?.cast?.take(15)?.map { CastMember(it.id.toString(), it.name, it.character ?: "", it.fullProfileUrl) } ?: emptyList()"""
+)
 
-# In getMovieById: response is TmdbMovieDetails, so response.toDomainDetails()
-content = content.replace("response.toDomain()", "response.toDomainDetails()", 1)
-
-# In getSeriesById: response is TmdbSeriesDetails, so response.toDomainDetails()
-content = content.replace("response.toDomain()", "response.toDomainDetails()", 1)
-
-
-mappers = """
-    private fun com.example.data.remote.TmdbMovieDetails.toDomainDetails(): Movie {
-        val yearInt = releaseDate?.take(4)?.toIntOrNull() ?: 2024
-        return Movie(
-            id = id.toString(),
-            title = title ?: "Unknown",
-            originalTitle = originalTitle,
-            overview = overview ?: "",
-            posterUrl = fullPosterUrl,
-            backdropUrl = fullBackdropUrl,
-            year = yearInt,
-            releaseDate = releaseDate,
-            rating = voteAverage ?: 0.0,
-            genres = genres?.map { it.name } ?: emptyList(),
-            runtime = runtime ?: 120,
-            language = originalLanguage ?: "en",
-            cast = credits?.cast?.take(15)?.map { CastMember(it.name, it.character ?: "", it.fullProfileUrl) } ?: emptyList(),
-            trailers = videos?.results?.filter { it.site == "YouTube" }?.map { VideoTrailer(it.name, it.key, it.type) } ?: emptyList()
-        )
+# And now add the `getPersonDetails`
+get_person_details = """
+    override suspend fun getPersonDetails(personId: String): PersonDetails? = withContext(Dispatchers.IO) {
+        try {
+            val response = RetrofitClient.tmdbApi.getPersonDetails(personId.toInt(), apiKey)
+            val movies = mutableListOf<Movie>()
+            val series = mutableListOf<Series>()
+            response.combinedCredits?.cast?.forEach { item ->
+                if (item.mediaType == "movie") {
+                    val yearInt = item.releaseDate?.take(4)?.toIntOrNull() ?: 2024
+                    movies.add(Movie(
+                        id = item.id.toString(),
+                        title = item.title ?: "Unknown",
+                        overview = "",
+                        posterUrl = item.fullPosterUrl,
+                        backdropUrl = item.fullBackdropUrl,
+                        year = yearInt,
+                        releaseDate = item.releaseDate,
+                        rating = item.voteAverage ?: 0.0,
+                        genres = emptyList(),
+                        runtime = 120
+                    ))
+                } else if (item.mediaType == "tv") {
+                    val yearInt = item.firstAirDate?.take(4)?.toIntOrNull() ?: 2024
+                    series.add(Series(
+                        id = item.id.toString(),
+                        title = item.name ?: "Unknown",
+                        overview = "",
+                        posterUrl = item.fullPosterUrl,
+                        backdropUrl = item.fullBackdropUrl,
+                        year = yearInt,
+                        firstAirDate = item.firstAirDate,
+                        rating = item.voteAverage ?: 0.0,
+                        genres = emptyList(),
+                        seasons = emptyList()
+                    ))
+                }
+            }
+            
+            PersonDetails(
+                id = response.id.toString(),
+                name = response.name ?: "Unknown",
+                biography = response.biography ?: "",
+                profileUrl = response.fullProfileUrl,
+                birthday = response.birthday,
+                placeOfBirth = response.placeOfBirth,
+                knownFor = response.knownForDepartment,
+                movies = movies,
+                series = series
+            )
+        } catch (e: Exception) {
+            null
+        }
     }
-
-    private fun com.example.data.remote.TmdbSeriesDetails.toDomainDetails(): Series {
-        val yearInt = firstAirDate?.take(4)?.toIntOrNull() ?: 2024
-        return Series(
-            id = id.toString(),
-            title = name ?: "Unknown",
-            overview = overview ?: "",
-            posterUrl = fullPosterUrl,
-            backdropUrl = fullBackdropUrl,
-            year = yearInt,
-            firstAirDate = firstAirDate,
-            rating = voteAverage ?: 0.0,
-            genres = genres?.map { it.name } ?: emptyList(),
-            cast = credits?.cast?.take(15)?.map { CastMember(it.name, it.character ?: "", it.fullProfileUrl) } ?: emptyList(),
-            trailers = videos?.results?.filter { it.site == "YouTube" }?.map { VideoTrailer(it.name, it.key, it.type) } ?: emptyList(),
-            seasons = seasons?.map { 
-                Season(
-                    id = it.id.toString(),
-                    seriesId = this.id.toString(),
-                    seasonNumber = it.seasonNumber,
-                    title = it.name,
-                    posterUrl = it.fullPosterUrl ?: fullPosterUrl,
-                    episodeCount = it.episodeCount
-                ) 
-            } ?: emptyList(),
-            creator = createdBy?.firstOrNull()?.name,
-            status = status
-        )
-    }
 """
 
-content = content + mappers
+if "override suspend fun getPersonDetails" not in content:
+    content = content.replace("override suspend fun getSeasonEpisodes", get_person_details + "\n    override suspend fun getSeasonEpisodes")
 
 with open("app/src/main/java/com/example/data/repository/TmdbMediaRepositoryImpl.kt", "w") as f:
     f.write(content)

@@ -5,7 +5,6 @@ import retrofit2.http.Query
 import retrofit2.http.Path
 
 interface TmdbApiService {
-
     // Movies
     @GET("trending/movie/day")
     suspend fun getTrendingMovies(
@@ -65,4 +64,11 @@ interface TmdbApiService {
         @Query("api_key") apiKey: String,
         @Query("query") query: String
     ): TmdbResponse<TmdbMulti>
+
+    @GET("person/{person_id}")
+    suspend fun getPersonDetails(
+        @Path("person_id") personId: Int,
+        @Query("api_key") apiKey: String,
+        @Query("append_to_response") appendToResponse: String = "combined_credits"
+    ): TmdbPersonDetails
 }

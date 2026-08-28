@@ -1,4 +1,4 @@
-package com.example.data.repository
+content = """package com.example.data.repository
 
 import com.example.domain.models.Movie
 import com.example.domain.models.Series
@@ -27,3 +27,6 @@ class MockMediaRepositoryImpl : MediaRepository {
     override suspend fun getSeasonEpisodes(seriesId: String, seasonNumber: Int): List<Episode> = emptyList()
     override suspend fun getPersonDetails(personId: String): PersonDetails? = null
 }
+"""
+with open("app/src/main/java/com/example/data/repository/MockMediaRepositoryImpl.kt", "w") as f:
+    f.write(content)
