@@ -12,4 +12,5 @@ interface MediaRepository {
     suspend fun getMovieById(id: String): Movie?
     suspend fun getSeriesById(id: String): Series?
     suspend fun searchMulti(query: String): Pair<List<Movie>, List<Series>>
+    suspend fun getSeasonEpisodes(seriesId: String, seasonNumber: Int): List<com.example.domain.models.Episode>
 }

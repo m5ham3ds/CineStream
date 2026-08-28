@@ -1,48 +1,27 @@
 package com.example.data.repository
 
-import com.example.data.mock.MockData
 import com.example.domain.models.Movie
 import com.example.domain.models.Series
+import com.example.domain.models.Episode
 import com.example.domain.repository.MediaRepository
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 class MockMediaRepositoryImpl : MediaRepository {
-
     override fun getMovies(): Flow<List<Movie>> = flow {
-        delay(500)
-        emit(MockData.movies)
+        emit(emptyList())
     }
-
     override fun getSeries(): Flow<List<Series>> = flow {
-        delay(500)
-        emit(MockData.series)
+        emit(emptyList())
     }
-
     override fun getTrendingMovies(): Flow<List<Movie>> = flow {
-        delay(300)
-        emit(MockData.trendingMovies)
+        emit(emptyList())
     }
-
     override fun getTrendingSeries(): Flow<List<Series>> = flow {
-        delay(300)
-        emit(MockData.trendingSeries)
+        emit(emptyList())
     }
-
-    override suspend fun getMovieById(id: String): Movie? {
-        delay(300)
-        return MockData.movies.find { it.id == id }
-    }
-
-    override suspend fun getSeriesById(id: String): Series? {
-        delay(300)
-        return MockData.series.find { it.id == id }
-    }
-
-    override suspend fun searchMulti(query: String): Pair<List<Movie>, List<Series>> {
-        val movies = MockData.movies.filter { it.title.contains(query, ignoreCase = true) }
-        val series = MockData.series.filter { it.title.contains(query, ignoreCase = true) }
-        return Pair(movies, series)
-    }
+    override suspend fun getMovieById(id: String): Movie? = null
+    override suspend fun getSeriesById(id: String): Series? = null
+    override suspend fun searchMulti(query: String): Pair<List<Movie>, List<Series>> = Pair(emptyList(), emptyList())
+    override suspend fun getSeasonEpisodes(seriesId: String, seasonNumber: Int): List<Episode> = emptyList()
 }

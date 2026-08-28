@@ -1,4 +1,6 @@
-package com.example.ui.screens.details
+import os
+
+content = """package com.example.ui.screens.details
 
 import android.content.Intent
 import android.net.Uri
@@ -38,7 +40,7 @@ import com.example.domain.models.Episode
 import com.example.domain.models.Season
 import com.example.domain.models.VideoTrailer
 import com.example.ui.components.SourceSelectionSheet
-import com.example.ui.ViewModelFactory
+import com.example.ui.theme.ViewModelFactory
 import kotlinx.coroutines.launch
 import java.net.URLEncoder
 
@@ -511,3 +513,7 @@ fun EpisodeCard(episode: Episode, onClick: () -> Unit) {
         }
     }
 }
+"""
+
+with open("app/src/main/java/com/example/ui/screens/details/DetailsScreens.kt", "w") as f:
+    f.write(content)

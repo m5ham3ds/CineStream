@@ -1,4 +1,7 @@
-package com.example.domain.models
+import os
+
+with open("app/src/main/java/com/example/domain/models/Media.kt", "w") as f:
+    f.write("""package com.example.domain.models
 
 data class CastMember(
     val name: String,
@@ -67,3 +70,4 @@ data class Episode(
     val duration: Int, // in minutes
     val rating: Double = 0.0
 )
+""")

@@ -25,8 +25,9 @@ interface TmdbApiService {
     @GET("movie/{movie_id}")
     suspend fun getMovieDetails(
         @Path("movie_id") movieId: Int,
-        @Query("api_key") apiKey: String
-    ): TmdbMovie
+        @Query("api_key") apiKey: String,
+        @Query("append_to_response") appendToResponse: String = "credits,videos"
+    ): TmdbMovieDetails
 
     // Series
     @GET("trending/tv/day")
@@ -47,8 +48,16 @@ interface TmdbApiService {
     @GET("tv/{tv_id}")
     suspend fun getSeriesDetails(
         @Path("tv_id") seriesId: Int,
+        @Query("api_key") apiKey: String,
+        @Query("append_to_response") appendToResponse: String = "credits,videos"
+    ): TmdbSeriesDetails
+    
+    @GET("tv/{tv_id}/season/{season_number}")
+    suspend fun getSeasonDetails(
+        @Path("tv_id") seriesId: Int,
+        @Path("season_number") seasonNumber: Int,
         @Query("api_key") apiKey: String
-    ): TmdbSeries
+    ): TmdbSeasonDetails
     
     // Search
     @GET("search/multi")
