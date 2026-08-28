@@ -43,7 +43,13 @@ import com.example.data.repository.LibraryRepository
 import com.example.domain.models.Movie
 import com.example.ui.ViewModelFactory
 import com.example.ui.components.MediaActionBottomSheet
+
+import androidx.compose.ui.platform.LocalContext
+import com.example.data.repository.HistoryRepository
+import androidx.compose.runtime.collectAsState
+
 import com.example.ui.components.MediaCard
+import com.example.ui.components.ContinueWatchingCardShared
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,10 +61,13 @@ fun HomeScreen(
     onNavigateToWatching: () -> Unit = {},
     onNavigateToPopular: () -> Unit = {},
     onNavigateToNewReleases: () -> Unit = {},
+    onNavigateToUpcoming: () -> Unit = {},
     viewModel: HomeViewModel = viewModel(factory = ViewModelFactory())
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+    val historyRepository = remember { HistoryRepository(context) }
+    val historyItems by historyRepository.getHistoryItems().collectAsState(initial = emptyList())
     val libraryRepository = remember { LibraryRepository(context) }
     val downloadRepository = remember { DownloadRepository(context) }
     val scope = rememberCoroutineScope()
@@ -154,7 +163,8 @@ fun HomeScreen(
                     rank = index + 1,
                     rating = 8.0 + (index * 0.1),
                     year = "2024",
-                    onClick = { onMovieClick(movie.id) },
+                    mediaId = movie.id,
+                            onClick = { onMovieClick(movie.id) },
                     onLongClick = { 
                         bottomSheetIsMovie = true
                         selectedMediaId = movie.id
@@ -168,11 +178,21 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
         
-        // Continue Watching (Demo Item)
-        SectionTitle("Continue Watching", onSeeAllClick = onNavigateToWatching)
-        ContinueWatchingCard()
-
-        Spacer(modifier = Modifier.height(24.dp))
+        // Continue Watching
+        if (historyItems.isNotEmpty()) {
+            SectionTitle("متابعة المشاهدة", onSeeAllClick = onNavigateToWatching)
+            LazyRow(
+                contentPadding = PaddingValues(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(historyItems) { item ->
+                    ContinueWatchingCardShared(item = item) {
+                        if (item.isMovie) onMovieClick(item.id) else onSeriesClick(item.id)
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(24.dp))
+        }
 
         // Trending Series
         SectionTitle("Trending Series", onSeeAllClick = onNavigateToTrending)
@@ -188,7 +208,8 @@ fun HomeScreen(
                     rating = 8.5 + (index * 0.1),
                     year = "${series.seasons.size} Seasons",
                     isMovie = false,
-                    onClick = { onSeriesClick(series.id) },
+                    mediaId = series.id,
+                            onClick = { onSeriesClick(series.id) },
                     onLongClick = { 
                         bottomSheetIsMovie = false
                         selectedMediaId = series.id
@@ -218,7 +239,8 @@ fun HomeScreen(
                         rating = series.rating,
                         year = series.year.toString(),
                         isMovie = false,
-                        onClick = { onSeriesClick(series.id) },
+                        mediaId = series.id,
+                            onClick = { onSeriesClick(series.id) },
                         onLongClick = { 
                             bottomSheetIsMovie = false
                             selectedMediaId = series.id
@@ -234,7 +256,7 @@ fun HomeScreen(
 
         // Coming Soon
         if (uiState.upcomingMovies.isNotEmpty()) {
-            SectionTitle("Coming Soon", onSeeAllClick = {})
+            SectionTitle("Coming Soon", onSeeAllClick = onNavigateToUpcoming)
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -246,7 +268,8 @@ fun HomeScreen(
                         rank = 0,
                         rating = movie.rating,
                         year = movie.year.toString(),
-                        onClick = { onMovieClick(movie.id) },
+                        mediaId = movie.id,
+                            onClick = { onMovieClick(movie.id) },
                         onLongClick = { 
                             bottomSheetIsMovie = true
                             selectedMediaId = movie.id
@@ -467,57 +490,4 @@ fun SectionTitle(title: String, onSeeAllClick: (() -> Unit)? = null) {
     }
 }
 
-@Composable
-fun ContinueWatchingCard() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFF1E1E20))
-            .clickable { /* Resume */ }
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(modifier = Modifier.width(120.dp).height(80.dp)) {
-                AsyncImage(
-                    model = "https://image.tmdb.org/t/p/w500/8Y43POKjjKDGI9MH89NW0NAzzp8.jpg", // Placeholder
-                    contentDescription = "Continue Watching",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
-                )
-                // Red progress bar at bottom of image
-                Box(modifier = Modifier.align(Alignment.BottomStart).fillMaxWidth().height(3.dp).background(Color.DarkGray)) {
-                    Box(modifier = Modifier.fillMaxWidth(0.6f).height(3.dp).background(Color(0xFFE50914)))
-                }
-            }
-            
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 12.dp)
-            ) {
-                Text("Demo Series 01", color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
-                Spacer(modifier = Modifier.height(4.dp))
-                Text("S1 • E3", color = Color.Gray, fontSize = 12.sp)
-                Spacer(modifier = Modifier.height(2.dp))
-                Text("24m left", color = Color.Gray, fontSize = 12.sp)
-            }
-            
-            Box(
-                modifier = Modifier
-                    .padding(end = 16.dp)
-                    .size(36.dp)
-                    .clip(CircleShape)
-                    .background(Color.White.copy(alpha = 0.1f)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = Color.White, modifier = Modifier.size(20.dp))
-            }
-            
-            Text("⋮", color = Color.Gray, fontSize = 24.sp, modifier = Modifier.padding(end = 12.dp).clickable { /* Options */ })
-        }
-    }
-}
+

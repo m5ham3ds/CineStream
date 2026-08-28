@@ -10,7 +10,7 @@ class DownloadRepository(context: Context) {
     private val db = Room.databaseBuilder(
         context.applicationContext,
         AppDatabase::class.java, "cinestream-db"
-    ).build()
+    ).fallbackToDestructiveMigration().build()
 
     private val downloadDao = db.downloadDao()
 

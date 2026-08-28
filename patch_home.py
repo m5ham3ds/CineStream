@@ -3,99 +3,46 @@ import re
 with open("app/src/main/java/com/example/ui/screens/home/HomeScreen.kt", "r") as f:
     content = f.read()
 
-new_sections = """
-        Spacer(modifier = Modifier.height(24.dp))
-        
-        // Anime
-        if (uiState.animeSeries.isNotEmpty()) {
-            SectionTitle("Anime", onSeeAllClick = {})
-            LazyRow(
-                contentPadding = PaddingValues(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                itemsIndexed(uiState.animeSeries) { index, series ->
-                    MediaCard(
-                        title = series.title,
-                        posterUrl = series.posterUrl,
-                        rank = 0,
-                        rating = series.rating,
-                        year = series.year,
-                        isMovie = false,
-                        onClick = { onSeriesClick(series.id) },
-                        onLongClick = { 
-                            bottomSheetIsMovie = false
-                            selectedMediaId = series.id
-                            selectedMediaTitle = series.title
-                            selectedMediaPoster = series.posterUrl
-                            showBottomSheet = true
-                        }
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(24.dp))
-        }
+# Add HistoryRepository and HistoryItem imports
+imports = """
+import androidx.compose.ui.platform.LocalContext
+import com.example.data.repository.HistoryRepository
+import androidx.compose.runtime.collectAsState
+"""
+content = content.replace("import com.example.ui.components.MediaCard", imports + "\nimport com.example.ui.components.MediaCard\nimport com.example.ui.components.ContinueWatchingCardShared")
 
-        // Coming Soon
-        if (uiState.upcomingMovies.isNotEmpty()) {
-            SectionTitle("Coming Soon", onSeeAllClick = {})
-            LazyRow(
-                contentPadding = PaddingValues(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                itemsIndexed(uiState.upcomingMovies) { index, movie ->
-                    MediaCard(
-                        title = movie.title,
-                        posterUrl = movie.posterUrl,
-                        rank = 0,
-                        rating = movie.rating,
-                        year = movie.year,
-                        onClick = { onMovieClick(movie.id) },
-                        onLongClick = { 
-                            bottomSheetIsMovie = true
-                            selectedMediaId = movie.id
-                            selectedMediaTitle = movie.title
-                            selectedMediaPoster = movie.posterUrl
-                            showBottomSheet = true
-                        }
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(24.dp))
-        }
+# Add HistoryRepository instance
+state_def = """
+    val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+    val historyRepository = remember { HistoryRepository(context) }
+    val historyItems by historyRepository.getHistoryItems().collectAsState(initial = emptyList())
+"""
+content = content.replace("val uiState by viewModel.uiState.collectAsState()", state_def.strip())
 
-        // New Releases
-        if (uiState.newReleasesMovies.isNotEmpty()) {
-            SectionTitle("New Releases", onSeeAllClick = onNavigateToNewReleases)
+# Replace the Continue Watching section
+old_continue = r'// Continue Watching \(Demo Item\)\s*SectionTitle\("Continue Watching", onSeeAllClick = onNavigateToWatching\)\s*ContinueWatchingCard\(\)\s*Spacer\(modifier = Modifier\.height\(24\.dp\)\)'
+new_continue = """
+        // Continue Watching
+        if (historyItems.isNotEmpty()) {
+            SectionTitle("متابعة المشاهدة", onSeeAllClick = onNavigateToWatching)
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                val mix = (uiState.newReleasesMovies.take(10) + uiState.newReleasesSeries.map { 
-                    Movie(it.id, it.title, it.overview, it.posterUrl, it.backdropUrl, it.rating, it.year, it.genres)
-                }.take(10)).shuffled()
-                itemsIndexed(mix) { index, item ->
-                    MediaCard(
-                        title = item.title,
-                        posterUrl = item.posterUrl,
-                        rank = 0,
-                        rating = item.rating,
-                        year = item.year,
-                        onClick = { onMovieClick(item.id) },
-                        onLongClick = { 
-                            bottomSheetIsMovie = true
-                            selectedMediaId = item.id
-                            selectedMediaTitle = item.title
-                            selectedMediaPoster = item.posterUrl
-                            showBottomSheet = true
-                        }
-                    )
+                items(historyItems) { item ->
+                    ContinueWatchingCardShared(item = item) {
+                        if (item.isMovie) onMovieClick(item.id) else onSeriesClick(item.id)
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(24.dp))
         }
 """
+content = re.sub(old_continue, new_continue.strip(), content)
 
-content = content.replace("    }\n        if (showBottomSheet) {", new_sections + "\n    }\n        if (showBottomSheet) {")
+# Remove the ContinueWatchingCard definition at the bottom
+content = re.sub(r'@Composable\nfun ContinueWatchingCard\(\).*?\}\s*\}\s*\}', "", content, flags=re.DOTALL)
 
 with open("app/src/main/java/com/example/ui/screens/home/HomeScreen.kt", "w") as f:
     f.write(content)

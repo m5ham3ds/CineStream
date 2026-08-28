@@ -16,6 +16,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.ui.ViewModelFactory
+
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items as lazyRowItems
+import androidx.compose.ui.platform.LocalContext
+import com.example.data.repository.HistoryRepository
+import com.example.ui.components.SectionTitleShared
+import com.example.ui.components.ContinueWatchingCardShared
+
 import com.example.ui.components.MediaCard
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -25,6 +34,11 @@ fun AnimeScreen(
     viewModel: AnimeViewModel = viewModel(factory = ViewModelFactory())
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+    val historyRepository = remember { HistoryRepository(context) }
+    val historyItems by historyRepository.getHistoryItems().collectAsState(initial = emptyList())
+    // For anime, we assume it's series for now
+    val animeHistory = historyItems.filter { !it.isMovie }
 
     val ptrState = rememberPullToRefreshState()
     PullToRefreshBox(
@@ -49,6 +63,26 @@ fun AnimeScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
+                if (animeHistory.isNotEmpty()) {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        Column {
+                            SectionTitleShared("متابعة المشاهدة")
+                            LazyRow(
+                                contentPadding = PaddingValues(horizontal = 0.dp),
+                                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                lazyRowItems(animeHistory) { item ->
+                                    ContinueWatchingCardShared(item = item) {
+                                        onAnimeClick(item.id)
+                                    }
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(16.dp))
+                            SectionTitleShared("الأنمي")
+                        }
+                    }
+                }
+                
                 items(uiState.series) { series ->
                     MediaCard(
                         title = series.title,
@@ -57,6 +91,7 @@ fun AnimeScreen(
                         rating = series.rating,
                         year = series.year.toString(),
                         isMovie = false,
+                        mediaId = series.id,
                         onClick = { onAnimeClick(series.id) }
                     )
                 }

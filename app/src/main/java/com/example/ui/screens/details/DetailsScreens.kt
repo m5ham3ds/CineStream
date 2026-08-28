@@ -89,6 +89,18 @@ fun MovieDetailsScreen(
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
         } else if (uiState.movie != null) {
             val movie = uiState.movie!!
+            val ctx = LocalContext.current
+            val historyRepository = remember { com.example.data.repository.HistoryRepository(ctx) }
+            LaunchedEffect(movie) {
+                historyRepository.addToHistory(
+                    com.example.data.model.HistoryItem(
+                        id = movie.id,
+                        title = movie.title,
+                        posterUrl = movie.posterUrl,
+                        isMovie = true
+                    )
+                )
+            }
             var showSourceSheet by remember { mutableStateOf(false) }
             var isDownloadMode by remember { mutableStateOf(false) }
 
@@ -272,6 +284,18 @@ fun SeriesDetailsScreen(
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
         } else if (uiState.series != null) {
             val series = uiState.series!!
+            val ctx = LocalContext.current
+            val historyRepository = remember { com.example.data.repository.HistoryRepository(ctx) }
+            LaunchedEffect(series) {
+                historyRepository.addToHistory(
+                    com.example.data.model.HistoryItem(
+                        id = series.id,
+                        title = series.title,
+                        posterUrl = series.posterUrl,
+                        isMovie = false
+                    )
+                )
+            }
             var showSourceSheet by remember { mutableStateOf(false) }
             var isDownloadMode by remember { mutableStateOf(false) }
 

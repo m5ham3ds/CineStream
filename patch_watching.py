@@ -1,29 +1,9 @@
-package com.example.ui.screens.home
+import re
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
+with open("app/src/main/java/com/example/ui/screens/home/WatchingScreen.kt", "r") as f:
+    content = f.read()
+
+imports = """
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -31,7 +11,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.foundation.lazy.items
 import com.example.data.repository.HistoryRepository
 import com.example.data.model.HistoryItem
+"""
+content = content.replace("import coil.compose.AsyncImage", imports + "\nimport coil.compose.AsyncImage")
 
+# Replace screen
+new_screen = """
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WatchingScreen(
@@ -74,7 +58,15 @@ fun WatchingScreen(
         }
     }
 }
+"""
+content = re.sub(r'@OptIn\(ExperimentalMaterial3Api::class\)\n@Composable\nfun WatchingScreen.*?\}\n\}\n\n', new_screen.strip() + "\n\n", content, flags=re.DOTALL)
 
+# Delete DetailedWatchingItem
+content = re.sub(r'data class DetailedWatchingItem.*?\)\n', '', content, flags=re.DOTALL)
+
+# Modify DetailedContinueWatchingCard
+old_card = r'@Composable\nfun DetailedContinueWatchingCard.*?\}'
+new_card = """
 @Composable
 fun DetailedContinueWatchingCard(item: HistoryItem, onClick: () -> Unit) {
     Row(
@@ -153,3 +145,9 @@ fun DetailedContinueWatchingCard(item: HistoryItem, onClick: () -> Unit) {
         }
     }
 }
+"""
+content = re.sub(old_card, new_card.strip(), content, flags=re.DOTALL)
+
+with open("app/src/main/java/com/example/ui/screens/home/WatchingScreen.kt", "w") as f:
+    f.write(content)
+

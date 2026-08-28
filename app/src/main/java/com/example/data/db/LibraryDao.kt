@@ -13,6 +13,9 @@ interface LibraryDao {
     @Query("SELECT * FROM library_items")
     fun getAllItems(): Flow<List<LibraryItem>>
 
+    @Query("SELECT EXISTS(SELECT * FROM library_items WHERE id = :id)")
+    fun isItemInLibrary(id: String): Flow<Boolean>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertItem(item: LibraryItem)
 

@@ -149,6 +149,7 @@ fun LibraryScreen(
                         rank = null,
                         rating = 8.8,
                         year = if (item.isMovie) "2024" else "Series",
+                        mediaId = item.id,
                         onClick = { onItemClick(item.id, item.isMovie) },
                         modifier = Modifier.fillMaxWidth()
                     )

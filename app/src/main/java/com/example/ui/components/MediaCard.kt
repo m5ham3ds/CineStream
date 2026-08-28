@@ -16,6 +16,10 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.filled.Bookmark
+
+import kotlinx.coroutines.launch
+import com.example.data.model.LibraryItem
+
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,6 +32,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+
+import androidx.compose.ui.platform.LocalContext
+import com.example.data.repository.LibraryRepository
+import androidx.compose.runtime.collectAsState
+import androidx.compose.material.icons.filled.Bookmark
+
 import coil.compose.AsyncImage
 
 @Composable
@@ -40,9 +50,19 @@ fun MediaCard(
     rank: Int? = null,
     rating: Double = 8.7,
     year: String = "2024",
-    isMovie: Boolean = true
+    isMovie: Boolean = true,
+    mediaId: String? = null
 ) {
-    var isBookmarked by remember { mutableStateOf(false) }
+    
+    val context = LocalContext.current
+    val libraryRepository = remember { LibraryRepository(context) }
+    
+    val isBookmarked by if (mediaId != null) {
+        libraryRepository.isItemInLibrary(mediaId).collectAsState(initial = false)
+    } else {
+        remember { mutableStateOf(false) }
+    }
+
     var showRemoveDialog by remember { mutableStateOf(false) }
 
     if (showRemoveDialog) {
@@ -51,8 +71,13 @@ fun MediaCard(
             title = { Text("إزالة من المفضلة", color = Color.White) },
             text = { Text("هل أنت متأكد أنك تريد إزالة هذا العمل من المفضلة؟", color = Color.LightGray) },
             confirmButton = {
+                val scope = rememberCoroutineScope()
                 TextButton(onClick = {
-                    isBookmarked = false
+                    if (mediaId != null) {
+                        scope.launch {
+                            libraryRepository.removeFromLibrary(LibraryItem(mediaId, title, posterUrl, isMovie))
+                        }
+                    }
                     showRemoveDialog = false
                 }) {
                     Text("إزالة", color = Color(0xFFE50914))
@@ -119,9 +144,9 @@ fun MediaCard(
             }
             
             Icon(
-                imageVector = Icons.Outlined.BookmarkBorder, 
+                imageVector = if (isBookmarked) Icons.Default.Bookmark else Icons.Outlined.BookmarkBorder, 
                 contentDescription = "Bookmark", 
-                tint = Color.White,
+                tint = if (isBookmarked) Color(0xFFE50914) else Color.White,
                 modifier = Modifier.size(20.dp)
             )
         }

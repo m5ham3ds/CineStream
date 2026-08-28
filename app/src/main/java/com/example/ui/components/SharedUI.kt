@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.domain.models.Movie
 import com.example.domain.models.Series
+import com.example.data.model.HistoryItem
 
 @Composable
 fun HeroSectionShared(title: String, backdropUrl: String, desc: String, tag: String = "NEW RELEASE", onClick: () -> Unit) {
@@ -148,28 +149,27 @@ fun SectionTitleShared(title: String, onSeeAllClick: (() -> Unit)? = null) {
 }
 
 @Composable
-fun ContinueWatchingCardShared() {
+fun ContinueWatchingCardShared(item: HistoryItem, onClick: () -> Unit) {
     Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+            .width(260.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(Color(0xFF1E1E20))
-            .clickable { /* Resume */ }
+            .clickable { onClick() }
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(modifier = Modifier.width(120.dp).height(80.dp)) {
+            Box(modifier = Modifier.width(100.dp).height(70.dp)) {
                 AsyncImage(
-                    model = "https://image.tmdb.org/t/p/w500/8Y43POKjjKDGI9MH89NW0NAzzp8.jpg",
-                    contentDescription = "Continue Watching",
+                    model = item.posterUrl,
+                    contentDescription = item.title,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
                 )
                 Box(modifier = Modifier.align(Alignment.BottomStart).fillMaxWidth().height(3.dp).background(Color.DarkGray)) {
-                    Box(modifier = Modifier.fillMaxWidth(0.72f).height(3.dp).background(Color(0xFFE50914)))
+                    Box(modifier = Modifier.fillMaxWidth(0.5f).height(3.dp).background(Color(0xFFE50914)))
                 }
             }
             
@@ -178,12 +178,10 @@ fun ContinueWatchingCardShared() {
                     .weight(1f)
                     .padding(horizontal = 12.dp)
             ) {
-                Text("Demo Movie 01", color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                Text(item.title, color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, maxLines = 1)
                 Spacer(modifier = Modifier.height(4.dp))
-                Text("1h 45m left", color = Color.Gray, fontSize = 12.sp)
+                Text(if (item.isMovie) "فيلم" else "مسلسل", color = Color.Gray, fontSize = 12.sp)
             }
-            
-            Text("⋮", color = Color.Gray, fontSize = 24.sp, modifier = Modifier.padding(end = 12.dp).clickable { /* Options */ })
         }
     }
 }

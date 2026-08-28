@@ -12,10 +12,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material3.*
-
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
-
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,7 +22,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,7 +31,7 @@ import com.example.ui.components.MediaCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TrendingScreen(
+fun UpcomingScreen(
     onItemClick: (String, Boolean) -> Unit,
     onBack: () -> Unit,
     viewModel: HomeViewModel = viewModel(factory = ViewModelFactory())
@@ -49,16 +46,16 @@ fun TrendingScreen(
                     Text(
                         text = buildAnnotatedString {
                             withStyle(style = SpanStyle(color = Color.White)) {
-                                append("Trending ")
+                                append("Coming ")
                             }
                             withStyle(style = SpanStyle(color = Color(0xFFE50914))) {
-                                append("Now")
+                                append("Soon")
                             }
                         },
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp
                     )
-                    Text("See what's popular today", color = Color.Gray, fontSize = 12.sp)
+                    Text("Upcoming movies & series", color = Color.Gray, fontSize = 12.sp)
                 }
             },
             navigationIcon = {
@@ -77,14 +74,14 @@ fun TrendingScreen(
             },
             colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.Black)
         )
-
+        
         Spacer(modifier = Modifier.height(16.dp))
-
+        
         // Tabs
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 48.dp)
+                .padding(horizontal = 24.dp)
                 .height(40.dp)
                 .clip(RoundedCornerShape(8.dp))
                 .border(1.dp, Color(0xFF2A2A2E), RoundedCornerShape(8.dp)),
@@ -108,20 +105,21 @@ fun TrendingScreen(
                         text = tab,
                         color = if (isSelected) Color.White else Color.Gray,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                        fontSize = 14.sp
+                        fontSize = 12.sp
                     )
                 }
             }
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
         
+        Spacer(modifier = Modifier.height(16.dp))
+
         val items = when (selectedTab) {
-            "Movies" -> uiState.trendingMovies
-            "Series" -> uiState.trendingSeries
+            "Movies" -> uiState.upcomingMovies
+            "Series" -> uiState.trendingSeries // mock
             "Anime" -> uiState.animeSeries
-            else -> (uiState.trendingMovies + uiState.trendingSeries + uiState.animeSeries).shuffled()
+            else -> (uiState.upcomingMovies + uiState.trendingSeries + uiState.animeSeries).shuffled()
         }
+
         val ptrState = rememberPullToRefreshState()
         PullToRefreshBox(
             isRefreshing = uiState.isLoading,
@@ -129,32 +127,30 @@ fun TrendingScreen(
             state = ptrState,
             modifier = Modifier.fillMaxSize()
         ) {
-
-
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            contentPadding = PaddingValues(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.fillMaxSize()
-        ) {
-            itemsIndexed(items) { index, item ->
-                val isMovie = item is com.example.domain.models.Movie
-                val title = if (isMovie) (item as com.example.domain.models.Movie).title else (item as com.example.domain.models.Series).title
-                val posterUrl = if (isMovie) (item as com.example.domain.models.Movie).posterUrl else (item as com.example.domain.models.Series).posterUrl
-                val id = if (isMovie) (item as com.example.domain.models.Movie).id else (item as com.example.domain.models.Series).id
-                MediaCard(
-                    title = title,
-                    posterUrl = posterUrl,
-                    rank = index + 1,
-                    rating = 8.0 + (index * 0.1),
-                    year = "2024",
-                    isMovie = isMovie,
-                    mediaId = id,
-                    onClick = { onItemClick(id, isMovie) }
-                )
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                contentPadding = PaddingValues(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                itemsIndexed(items) { index, item ->
+                    val isMovie = item is com.example.domain.models.Movie
+                    val title = if (isMovie) (item as com.example.domain.models.Movie).title else (item as com.example.domain.models.Series).title
+                    val posterUrl = if (isMovie) (item as com.example.domain.models.Movie).posterUrl else (item as com.example.domain.models.Series).posterUrl
+                    val id = if (isMovie) (item as com.example.domain.models.Movie).id else (item as com.example.domain.models.Series).id
+                    MediaCard(
+                        title = title,
+                        posterUrl = posterUrl,
+                        rank = null,
+                        rating = 8.0 + (index * 0.1),
+                        year = "2024",
+                        isMovie = isMovie,
+                        mediaId = id,
+                        onClick = { onItemClick(id, isMovie) }
+                    )
+                }
             }
         }
     }
-}
 }

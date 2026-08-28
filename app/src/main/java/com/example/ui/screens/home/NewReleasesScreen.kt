@@ -1,6 +1,8 @@
 package com.example.ui.screens.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -37,6 +39,7 @@ fun NewReleasesScreen(
     viewModel: HomeViewModel = viewModel(factory = ViewModelFactory())
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    var selectedTab by remember { mutableStateOf("All") }
 
     Column(modifier = Modifier.fillMaxSize().background(Color.Black)) {
         CenterAlignedTopAppBar(
@@ -74,8 +77,49 @@ fun NewReleasesScreen(
             colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.Black)
         )
         Spacer(modifier = Modifier.height(16.dp))
+        
+        // Tabs
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+                .height(40.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .border(1.dp, Color(0xFF2A2A2E), RoundedCornerShape(8.dp)),
+        ) {
+            listOf("All", "Movies", "Series", "Anime").forEach { tab ->
+                val isSelected = selectedTab == tab
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .background(if (isSelected) Color(0xFF2A2A2E).copy(alpha = 0.3f) else Color.Transparent)
+                        .border(
+                            width = 1.dp,
+                            color = if (isSelected) Color(0xFFE50914) else Color.Transparent,
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .clickable { selectedTab = tab },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = tab,
+                        color = if (isSelected) Color.White else Color.Gray,
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                        fontSize = 12.sp
+                    )
+                }
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(16.dp))
 
-        val items = (uiState.trendingMovies + uiState.trendingSeries).shuffled()
+        val items = when (selectedTab) {
+            "Movies" -> uiState.newReleasesMovies
+            "Series" -> uiState.newReleasesSeries
+            "Anime" -> uiState.animeSeries
+            else -> (uiState.newReleasesMovies + uiState.newReleasesSeries + uiState.animeSeries).shuffled()
+        }
         val ptrState = rememberPullToRefreshState()
         PullToRefreshBox(
             isRefreshing = uiState.isLoading,
@@ -105,6 +149,7 @@ fun NewReleasesScreen(
                     rating = 8.0 + (index * 0.1),
                     year = "2024",
                     isMovie = isMovie,
+                    mediaId = id,
                     onClick = { onItemClick(id, isMovie) }
                 )
             }

@@ -10,9 +10,11 @@ class LibraryRepository(context: Context) {
     private val db = Room.databaseBuilder(
         context.applicationContext,
         AppDatabase::class.java, "cinestream-db"
-    ).build()
+    ).fallbackToDestructiveMigration().build()
 
     private val libraryDao = db.libraryDao()
+
+    fun isItemInLibrary(id: String): Flow<Boolean> = libraryDao.isItemInLibrary(id)
 
     fun getLibraryItems(): Flow<List<LibraryItem>> {
         return libraryDao.getAllItems()

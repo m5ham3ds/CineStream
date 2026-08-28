@@ -1,114 +1,46 @@
 import re
 
+with open("app/src/main/java/com/example/navigation/Screen.kt", "r") as f:
+    content = f.read()
+
+if "object Upcoming" not in content:
+    content = content.replace("object NewReleases : Screen(\"new_releases\", \"New Releases\", Icons.Default.Movie)", "object NewReleases : Screen(\"new_releases\", \"New Releases\", Icons.Default.Movie)\n    object Upcoming : Screen(\"upcoming\", \"Coming Soon\", Icons.Default.Movie)")
+    with open("app/src/main/java/com/example/navigation/Screen.kt", "w") as f:
+        f.write(content)
+
 with open("app/src/main/java/com/example/navigation/AppNavigation.kt", "r") as f:
     content = f.read()
 
-# Add imports for new screens
-imports = """import com.example.ui.screens.home.PopularScreen
-import com.example.ui.screens.home.NewReleasesScreen
+imports = """
+import com.example.ui.screens.home.UpcomingScreen
 """
-content = content.replace("import com.example.ui.screens.home.TrendingScreen", imports + "import com.example.ui.screens.home.TrendingScreen")
+if "import com.example.ui.screens.home.UpcomingScreen" not in content:
+    content = content.replace("import com.example.ui.screens.home.NewReleasesScreen", "import com.example.ui.screens.home.NewReleasesScreen\nimport com.example.ui.screens.home.UpcomingScreen")
 
-# Replace MoviesScreen block
-movies_old = """                composable(Screen.Movies.route) {
-                    MoviesScreen(
-                        onMovieClick = { id -> navController.navigate(Screen.MovieDetails.createRoute(id)) }
-                    )
-                }"""
-movies_new = """                composable(Screen.Movies.route) {
-                    MoviesScreen(
-                        onMovieClick = { id -> navController.navigate(Screen.MovieDetails.createRoute(id)) },
-                        onNavigateToTrending = { navController.navigate(Screen.Trending.route) },
-                        onNavigateToWatching = { navController.navigate(Screen.Watching.route) },
-                        onNavigateToPopular = { navController.navigate(Screen.Popular.route) },
-                        onNavigateToNewReleases = { navController.navigate(Screen.NewReleases.route) }
-                    )
-                }"""
-content = content.replace(movies_old, movies_new)
+route = """
+        composable(Screen.Upcoming.route) {
+            UpcomingScreen(
+                onItemClick = { id, isMovie ->
+                    if (isMovie) {
+                        navController.navigate(Screen.MovieDetails.createRoute(id))
+                    } else {
+                        navController.navigate(Screen.SeriesDetails.createRoute(id))
+                    }
+                },
+                onBack = { navController.popBackStack() }
+            )
+        }
+"""
+if "composable(Screen.Upcoming.route)" not in content:
+    content = content.replace("composable(Screen.NewReleases.route) {", route.strip() + "\n        composable(Screen.NewReleases.route) {")
+    with open("app/src/main/java/com/example/navigation/AppNavigation.kt", "w") as f:
+        f.write(content)
+        
+with open("app/src/main/java/com/example/ui/screens/home/HomeScreen.kt", "r") as f:
+    content = f.read()
 
-# Replace SeriesScreen block
-series_old = """                composable(Screen.Series.route) {
-                    SeriesScreen(
-                        onSeriesClick = { id -> navController.navigate(Screen.SeriesDetails.createRoute(id)) }
-                    )
-                }"""
-series_new = """                composable(Screen.Series.route) {
-                    SeriesScreen(
-                        onSeriesClick = { id -> navController.navigate(Screen.SeriesDetails.createRoute(id)) },
-                        onNavigateToTrending = { navController.navigate(Screen.Trending.route) },
-                        onNavigateToWatching = { navController.navigate(Screen.Watching.route) },
-                        onNavigateToPopular = { navController.navigate(Screen.Popular.route) },
-                        onNavigateToNewReleases = { navController.navigate(Screen.NewReleases.route) }
-                    )
-                }"""
-content = content.replace(series_old, series_new)
-
-# Replace SearchScreen block
-search_old = """                composable(Screen.Search.route) {
-                    SearchScreen(
-                        onMediaClick = { id, isMovie ->
-                            if (isMovie) {
-                                navController.navigate(Screen.MovieDetails.createRoute(id))
-                            } else {
-                                navController.navigate(Screen.SeriesDetails.createRoute(id))
-                            }
-                        }
-                    )
-                }"""
-search_new = """                composable(Screen.Search.route) {
-                    SearchScreen(
-                        onMediaClick = { id, isMovie ->
-                            if (isMovie) {
-                                navController.navigate(Screen.MovieDetails.createRoute(id))
-                            } else {
-                                navController.navigate(Screen.SeriesDetails.createRoute(id))
-                            }
-                        },
-                        onNavigateToTrending = { navController.navigate(Screen.Trending.route) }
-                    )
-                }"""
-content = content.replace(search_old, search_new)
-
-# Add new routes near TrendingScreen
-trending_str = """                composable(Screen.Trending.route) {
-                    TrendingScreen(
-                        onItemClick = { id, isMovie ->
-                            if (isMovie) {
-                                navController.navigate(Screen.MovieDetails.createRoute(id))
-                            } else {
-                                navController.navigate(Screen.SeriesDetails.createRoute(id))
-                            }
-                        },
-                        onBack = { navController.popBackStack() }
-                    )
-                }"""
-
-new_routes = """                composable(Screen.Popular.route) {
-                    PopularScreen(
-                        onItemClick = { id, isMovie ->
-                            if (isMovie) {
-                                navController.navigate(Screen.MovieDetails.createRoute(id))
-                            } else {
-                                navController.navigate(Screen.SeriesDetails.createRoute(id))
-                            }
-                        },
-                        onBack = { navController.popBackStack() }
-                    )
-                }
-                composable(Screen.NewReleases.route) {
-                    NewReleasesScreen(
-                        onItemClick = { id, isMovie ->
-                            if (isMovie) {
-                                navController.navigate(Screen.MovieDetails.createRoute(id))
-                            } else {
-                                navController.navigate(Screen.SeriesDetails.createRoute(id))
-                            }
-                        },
-                        onBack = { navController.popBackStack() }
-                    )
-                }"""
-content = content.replace(trending_str, trending_str + "\n" + new_routes)
-
-with open("app/src/main/java/com/example/navigation/AppNavigation.kt", "w") as f:
+content = content.replace("onNavigateToNewReleases: () -> Unit = {}", "onNavigateToNewReleases: () -> Unit = {},\n    onNavigateToUpcoming: () -> Unit = {}")
+content = content.replace("SectionTitle(\"Coming Soon\", onSeeAllClick = {})", "SectionTitle(\"Coming Soon\", onSeeAllClick = onNavigateToUpcoming)")
+with open("app/src/main/java/com/example/ui/screens/home/HomeScreen.kt", "w") as f:
     f.write(content)
 

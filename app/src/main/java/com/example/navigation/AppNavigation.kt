@@ -60,6 +60,7 @@ import com.example.ui.screens.home.HomeScreen
 import com.example.ui.screens.anime.AnimeScreen
 import com.example.ui.screens.home.PopularScreen
 import com.example.ui.screens.home.NewReleasesScreen
+import com.example.ui.screens.home.UpcomingScreen
 import com.example.ui.screens.home.TrendingScreen
 import com.example.ui.screens.home.WatchingScreen
 import com.example.ui.screens.library.LibraryScreen
@@ -491,7 +492,8 @@ fun AppNavigation() {
                         onNavigateToTrending = { navController.navigate(Screen.Trending.route) },
                         onNavigateToWatching = { navController.navigate(Screen.Watching.route) },
                         onNavigateToPopular = { navController.navigate(Screen.Popular.route) },
-                        onNavigateToNewReleases = { navController.navigate(Screen.NewReleases.route) }
+                        onNavigateToNewReleases = { navController.navigate(Screen.NewReleases.route) },
+                        onNavigateToUpcoming = { navController.navigate(Screen.Upcoming.route) }
                     )
                 }
                 composable(Screen.Movies.route) {
@@ -578,7 +580,19 @@ fun AppNavigation() {
                         onBack = { navController.popBackStack() }
                     )
                 }
-                composable(Screen.NewReleases.route) {
+                composable(Screen.Upcoming.route) {
+            UpcomingScreen(
+                onItemClick = { id, isMovie ->
+                    if (isMovie) {
+                        navController.navigate(Screen.MovieDetails.createRoute(id))
+                    } else {
+                        navController.navigate(Screen.SeriesDetails.createRoute(id))
+                    }
+                },
+                onBack = { navController.popBackStack() }
+            )
+        }
+        composable(Screen.NewReleases.route) {
                     NewReleasesScreen(
                         onItemClick = { id, isMovie ->
                             if (isMovie) {

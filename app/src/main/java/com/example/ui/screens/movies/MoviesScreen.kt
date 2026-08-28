@@ -8,6 +8,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -57,7 +61,12 @@ fun MoviesScreen(
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     val libraryRepository = remember { LibraryRepository(context) }
+    val historyRepository = remember { com.example.data.repository.HistoryRepository(context) }
     val downloadRepository = remember { DownloadRepository(context) }
+
+    val historyItems by historyRepository.getHistoryItems().collectAsState(initial = emptyList())
+    val movieHistoryItems = historyItems.filter { it.isMovie }
+
     val scope = rememberCoroutineScope()
 
     if (uiState.isLoading) {
@@ -155,10 +164,21 @@ fun MoviesScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
         
-        SectionTitleShared("Continue Watching", onSeeAllClick = onNavigateToWatching)
-        ContinueWatchingCardShared()
+        if (movieHistoryItems.isNotEmpty()) {
+            SectionTitleShared("متابعة المشاهدة", onSeeAllClick = onNavigateToWatching)
+            LazyRow(
+                contentPadding = PaddingValues(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(movieHistoryItems) { item ->
+                    ContinueWatchingCardShared(item = item) {
+                        onMovieClick(item.id)
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(24.dp))
+        }
 
-        Spacer(modifier = Modifier.height(24.dp))
 
         // Popular Movies
         SectionTitleShared("Popular Movies", onSeeAllClick = onNavigateToPopular)
@@ -173,7 +193,8 @@ fun MoviesScreen(
                     rank = index + 1,
                     rating = 8.7 - (index * 0.1),
                     year = "2024",
-                    onClick = { onMovieClick(movie.id) },
+                    mediaId = movie.id,
+                            onClick = { onMovieClick(movie.id) },
                     onLongClick = { 
                         selectedMediaId = movie.id
                         selectedMediaTitle = movie.title
@@ -199,7 +220,8 @@ fun MoviesScreen(
                     rank = null, // No rank for new releases
                     rating = 8.5,
                     year = "2024",
-                    onClick = { onMovieClick(movie.id) },
+                    mediaId = movie.id,
+                            onClick = { onMovieClick(movie.id) },
                     onLongClick = { 
                         selectedMediaId = movie.id
                         selectedMediaTitle = movie.title

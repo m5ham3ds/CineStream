@@ -87,7 +87,7 @@ fun PopularScreen(
                 .clip(RoundedCornerShape(8.dp))
                 .border(1.dp, Color(0xFF2A2A2E), RoundedCornerShape(8.dp)),
         ) {
-            listOf("All", "Movies", "Series").forEach { tab ->
+            listOf("All", "Movies", "Series", "Anime").forEach { tab ->
                 val isSelected = selectedTab == tab
                 Box(
                     modifier = Modifier
@@ -116,7 +116,8 @@ fun PopularScreen(
         val items = when (selectedTab) {
             "Movies" -> uiState.trendingMovies
             "Series" -> uiState.trendingSeries
-            else -> uiState.trendingMovies + uiState.trendingSeries
+            "Anime" -> uiState.animeSeries
+            else -> (uiState.trendingMovies + uiState.trendingSeries + uiState.animeSeries).shuffled()
         }
         val ptrState = rememberPullToRefreshState()
         PullToRefreshBox(
@@ -147,6 +148,7 @@ fun PopularScreen(
                     rating = 8.0 + (index * 0.1),
                     year = "2024",
                     isMovie = isMovie,
+                    mediaId = id,
                     onClick = { onItemClick(id, isMovie) }
                 )
             }
