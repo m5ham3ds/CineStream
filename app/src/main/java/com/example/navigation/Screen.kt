@@ -21,6 +21,7 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
     object Movies : Screen("movies", "Movies", Icons.Default.Movie)
     object Series : Screen("series", "Series", Icons.Default.Tv)
     object Search : Screen("search", "Search", Icons.Default.Search)
+    object Anime : Screen("anime", "الأنمي", Icons.Default.Tv)
     object Library : Screen("library", "Library", Icons.AutoMirrored.Filled.LibraryBooks)
 
     object Profile : Screen("profile", "Profile", Icons.Default.Person)

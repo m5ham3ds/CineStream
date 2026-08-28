@@ -20,6 +20,52 @@ class TmdbMediaRepositoryImpl : MediaRepository {
     // Fallback to empty string if missing
     private val apiKey = BuildConfig.TMDB_API_KEY
 
+
+    override fun getUpcomingMovies(): Flow<List<Movie>> = flow {
+        try {
+            val response = RetrofitClient.tmdbApi.getUpcomingMovies(apiKey)
+            emit(response.results.map { it.toDomain() })
+        } catch (e: Exception) {
+            emit(emptyList())
+        }
+    }
+
+    override fun getAnimeSeries(): Flow<List<Series>> = flow {
+        try {
+            val response = RetrofitClient.tmdbApi.getAnimeSeries(apiKey)
+            emit(response.results.map { it.toDomain() })
+        } catch (e: Exception) {
+            emit(emptyList())
+        }
+    }
+
+    override fun getAnimeMovies(): Flow<List<Movie>> = flow {
+        try {
+            val response = RetrofitClient.tmdbApi.getAnimeMovies(apiKey)
+            emit(response.results.map { it.toDomain() })
+        } catch (e: Exception) {
+            emit(emptyList())
+        }
+    }
+
+    override fun getNewReleasesMovies(): Flow<List<Movie>> = flow {
+        try {
+            val response = RetrofitClient.tmdbApi.getNewReleasesMovies(apiKey)
+            emit(response.results.map { it.toDomain() })
+        } catch (e: Exception) {
+            emit(emptyList())
+        }
+    }
+
+    override fun getNewReleasesSeries(): Flow<List<Series>> = flow {
+        try {
+            val response = RetrofitClient.tmdbApi.getNewReleasesSeries(apiKey)
+            emit(response.results.map { it.toDomain() })
+        } catch (e: Exception) {
+            emit(emptyList())
+        }
+    }
+
     override fun getMovies(): Flow<List<Movie>> = flow {
         try {
             val response = RetrofitClient.tmdbApi.getPopularMovies(apiKey)

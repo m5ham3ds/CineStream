@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.di.AppContainer
 import com.example.ui.screens.home.HomeViewModel
+import com.example.ui.screens.anime.AnimeViewModel
 
 class ViewModelFactory : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")

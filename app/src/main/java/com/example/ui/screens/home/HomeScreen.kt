@@ -200,6 +200,97 @@ fun HomeScreen(
             }
         }
 
+
+        Spacer(modifier = Modifier.height(24.dp))
+        
+        // Anime
+        if (uiState.animeSeries.isNotEmpty()) {
+            SectionTitle("Anime", onSeeAllClick = {})
+            LazyRow(
+                contentPadding = PaddingValues(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                itemsIndexed(uiState.animeSeries) { index, series ->
+                    MediaCard(
+                        title = series.title,
+                        posterUrl = series.posterUrl,
+                        rank = 0,
+                        rating = series.rating,
+                        year = series.year.toString(),
+                        isMovie = false,
+                        onClick = { onSeriesClick(series.id) },
+                        onLongClick = { 
+                            bottomSheetIsMovie = false
+                            selectedMediaId = series.id
+                            selectedMediaTitle = series.title
+                            selectedMediaPoster = series.posterUrl
+                            showBottomSheet = true
+                        }
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+
+        // Coming Soon
+        if (uiState.upcomingMovies.isNotEmpty()) {
+            SectionTitle("Coming Soon", onSeeAllClick = {})
+            LazyRow(
+                contentPadding = PaddingValues(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                itemsIndexed(uiState.upcomingMovies) { index, movie ->
+                    MediaCard(
+                        title = movie.title,
+                        posterUrl = movie.posterUrl,
+                        rank = 0,
+                        rating = movie.rating,
+                        year = movie.year.toString(),
+                        onClick = { onMovieClick(movie.id) },
+                        onLongClick = { 
+                            bottomSheetIsMovie = true
+                            selectedMediaId = movie.id
+                            selectedMediaTitle = movie.title
+                            selectedMediaPoster = movie.posterUrl
+                            showBottomSheet = true
+                        }
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+
+        // New Releases
+        if (uiState.newReleasesMovies.isNotEmpty()) {
+            SectionTitle("New Releases", onSeeAllClick = onNavigateToNewReleases)
+            LazyRow(
+                contentPadding = PaddingValues(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                val mix = (uiState.newReleasesMovies.take(10) + uiState.newReleasesSeries.map { 
+                    Movie(id = it.id, title = it.title, overview = it.overview, posterUrl = it.posterUrl, backdropUrl = it.backdropUrl, year = it.year, rating = it.rating, genres = it.genres, runtime = 0)
+                }.take(10)).shuffled()
+                itemsIndexed(mix) { index, item ->
+                    MediaCard(
+                        title = item.title,
+                        posterUrl = item.posterUrl,
+                        rank = 0,
+                        rating = item.rating,
+                        year = item.year.toString(),
+                        onClick = { onMovieClick(item.id) },
+                        onLongClick = { 
+                            bottomSheetIsMovie = true
+                            selectedMediaId = item.id
+                            selectedMediaTitle = item.title
+                            selectedMediaPoster = item.posterUrl
+                            showBottomSheet = true
+                        }
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+
     }
         if (showBottomSheet) {
             MediaActionBottomSheet(

@@ -20,12 +20,12 @@ import com.example.navigation.Screen
 
 @Composable
 fun BottomNavBar(navController: NavController) {
-    val items = listOf(
+        val items = listOf(
         Screen.Home,
         Screen.Movies,
-        Screen.Series,
         Screen.Search,
-        Screen.Library
+        Screen.Series,
+        Screen.Anime
     )
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -48,7 +48,14 @@ fun BottomNavBar(navController: NavController) {
         ) {
             items.forEach { screen ->
                 val selected = currentRoute == screen.route
-                val label = if (screen == Screen.Library) "المكتبات" else screen.title
+                                val label = when (screen) {
+                    Screen.Home -> "الرئيسية"
+                    Screen.Movies -> "الأفلام"
+                    Screen.Series -> "المسلسلات"
+                    Screen.Search -> "البحث"
+                    Screen.Anime -> "الأنمي"
+                    else -> screen.title
+                }
                 
                 Box(
                     modifier = Modifier

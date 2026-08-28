@@ -9,6 +9,15 @@ interface MediaRepository {
     fun getSeries(): Flow<List<Series>>
     fun getTrendingMovies(): Flow<List<Movie>>
     fun getTrendingSeries(): Flow<List<Series>>
+
+    fun getUpcomingMovies(): Flow<List<Movie>>
+    fun getAnimeSeries(): Flow<List<Series>>
+    fun getAnimeMovies(): Flow<List<Movie>>
+
+    fun getNewReleasesMovies(): Flow<List<Movie>>
+    fun getNewReleasesSeries(): Flow<List<Series>>
+
+
     suspend fun getMovieById(id: String): Movie?
     suspend fun getSeriesById(id: String): Series?
     suspend fun searchMulti(query: String): Pair<List<Movie>, List<Series>>

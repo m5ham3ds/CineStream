@@ -4,12 +4,11 @@ with open("app/src/main/java/com/example/domain/repository/MediaRepository.kt", 
     content = f.read()
 
 new_methods = """
-    fun getUpcomingMovies(): Flow<List<Movie>>
-    fun getAnimeSeries(): Flow<List<Series>>
-    fun getAnimeMovies(): Flow<List<Movie>>
+    fun getNewReleasesMovies(): Flow<List<Movie>>
+    fun getNewReleasesSeries(): Flow<List<Series>>
 """
 
-content = content.replace("    fun getTrendingSeries(): Flow<List<Series>>", "    fun getTrendingSeries(): Flow<List<Series>>\n" + new_methods)
+content = content.replace("    fun getAnimeMovies(): Flow<List<Movie>>", "    fun getAnimeMovies(): Flow<List<Movie>>\n" + new_methods)
 
 with open("app/src/main/java/com/example/domain/repository/MediaRepository.kt", "w") as f:
     f.write(content)
@@ -19,27 +18,18 @@ with open("app/src/main/java/com/example/data/repository/TmdbMediaRepositoryImpl
     impl_content = f.read()
 
 new_impl = """
-    override fun getUpcomingMovies(): Flow<List<Movie>> = flow {
+    override fun getNewReleasesMovies(): Flow<List<Movie>> = flow {
         try {
-            val response = RetrofitClient.tmdbApi.getUpcomingMovies(apiKey)
+            val response = RetrofitClient.tmdbApi.getNewReleasesMovies(apiKey)
             emit(response.results.map { it.toDomain() })
         } catch (e: Exception) {
             emit(emptyList())
         }
     }
 
-    override fun getAnimeSeries(): Flow<List<Series>> = flow {
+    override fun getNewReleasesSeries(): Flow<List<Series>> = flow {
         try {
-            val response = RetrofitClient.tmdbApi.getAnimeSeries(apiKey)
-            emit(response.results.map { it.toDomain() })
-        } catch (e: Exception) {
-            emit(emptyList())
-        }
-    }
-
-    override fun getAnimeMovies(): Flow<List<Movie>> = flow {
-        try {
-            val response = RetrofitClient.tmdbApi.getAnimeMovies(apiKey)
+            val response = RetrofitClient.tmdbApi.getNewReleasesSeries(apiKey)
             emit(response.results.map { it.toDomain() })
         } catch (e: Exception) {
             emit(emptyList())

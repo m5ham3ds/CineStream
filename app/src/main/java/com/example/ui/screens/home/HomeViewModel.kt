@@ -17,6 +17,10 @@ data class HomeUiState(
     val trendingMovies: List<Movie> = emptyList(),
     val trendingSeries: List<Series> = emptyList(),
     val actionMovies: List<Movie> = emptyList(),
+    val animeSeries: List<Series> = emptyList(),
+    val upcomingMovies: List<Movie> = emptyList(),
+    val newReleasesMovies: List<Movie> = emptyList(),
+    val newReleasesSeries: List<Series> = emptyList(),
     val error: String? = null
 )
 
@@ -38,6 +42,26 @@ class HomeViewModel(
                 .catch { e -> _uiState.update { it.copy(error = e.message, isLoading = false) } }
                 .collect { movies ->
                     _uiState.update { it.copy(trendingMovies = movies) }
+                }
+            repository.getAnimeSeries()
+                .catch { e -> _uiState.update { it.copy(error = e.message) } }
+                .collect { animes ->
+                    _uiState.update { it.copy(animeSeries = animes) }
+                }
+            repository.getUpcomingMovies()
+                .catch { e -> _uiState.update { it.copy(error = e.message) } }
+                .collect { upcoming ->
+                    _uiState.update { it.copy(upcomingMovies = upcoming) }
+                }
+            repository.getNewReleasesMovies()
+                .catch { e -> _uiState.update { it.copy(error = e.message) } }
+                .collect { movies ->
+                    _uiState.update { it.copy(newReleasesMovies = movies) }
+                }
+            repository.getNewReleasesSeries()
+                .catch { e -> _uiState.update { it.copy(error = e.message) } }
+                .collect { series ->
+                    _uiState.update { it.copy(newReleasesSeries = series) }
                 }
             repository.getTrendingSeries()
                 .catch { e -> _uiState.update { it.copy(error = e.message, isLoading = false) } }

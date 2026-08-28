@@ -56,6 +56,7 @@ import com.example.ui.components.BottomNavBar
 import com.example.ui.screens.details.MovieDetailsScreen
 import com.example.ui.screens.details.SeriesDetailsScreen
 import com.example.ui.screens.home.HomeScreen
+import com.example.ui.screens.anime.AnimeScreen
 import com.example.ui.screens.home.PopularScreen
 import com.example.ui.screens.home.NewReleasesScreen
 import com.example.ui.screens.home.TrendingScreen
@@ -484,7 +485,12 @@ fun AppNavigation() {
                         onNavigateToNewReleases = { navController.navigate(Screen.NewReleases.route) }
                     )
                 }
-                composable(Screen.Series.route) {
+                        composable(Screen.Anime.route) {
+            AnimeScreen(onAnimeClick = { seriesId ->
+                navController.navigate(Screen.SeriesDetails.createRoute(seriesId))
+            })
+        }
+        composable(Screen.Series.route) {
                     SeriesScreen(
                         onSeriesClick = { id -> navController.navigate(Screen.SeriesDetails.createRoute(id)) },
                         onNavigateToTrending = { navController.navigate(Screen.Trending.route) },

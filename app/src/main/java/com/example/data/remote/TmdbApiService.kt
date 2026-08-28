@@ -58,6 +58,28 @@ interface TmdbApiService {
         @Query("api_key") apiKey: String
     ): TmdbSeasonDetails
     
+
+    @GET("movie/upcoming")
+    suspend fun getUpcomingMovies(
+        @Query("api_key") apiKey: String
+    ): TmdbResponse<TmdbMovie>
+
+    @GET("discover/tv")
+    suspend fun getAnimeSeries(
+        @Query("api_key") apiKey: String,
+        @Query("with_genres") withGenres: String = "16",
+        @Query("with_original_language") withOriginalLanguage: String = "ja",
+        @Query("sort_by") sortBy: String = "popularity.desc"
+    ): TmdbResponse<TmdbSeries>
+    
+    @GET("discover/movie")
+    suspend fun getAnimeMovies(
+        @Query("api_key") apiKey: String,
+        @Query("with_genres") withGenres: String = "16",
+        @Query("with_original_language") withOriginalLanguage: String = "ja",
+        @Query("sort_by") sortBy: String = "popularity.desc"
+    ): TmdbResponse<TmdbMovie>
+
     // Search
     @GET("search/multi")
     suspend fun searchMulti(

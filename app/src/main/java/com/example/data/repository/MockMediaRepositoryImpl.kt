@@ -23,6 +23,13 @@ class MockMediaRepositoryImpl : MediaRepository {
     }
     override suspend fun getMovieById(id: String): Movie? = null
     override suspend fun getSeriesById(id: String): Series? = null
+
+    override fun getUpcomingMovies(): Flow<List<Movie>> = flow { emit(emptyList()) }
+    override fun getAnimeSeries(): Flow<List<Series>> = flow { emit(emptyList()) }
+    override fun getAnimeMovies(): Flow<List<Movie>> = flow { emit(emptyList()) }
+    override fun getNewReleasesMovies(): Flow<List<Movie>> = flow { emit(emptyList()) }
+    override fun getNewReleasesSeries(): Flow<List<Series>> = flow { emit(emptyList()) }
+
     override suspend fun searchMulti(query: String): Pair<List<Movie>, List<Series>> = Pair(emptyList(), emptyList())
     override suspend fun getSeasonEpisodes(seriesId: String, seasonNumber: Int): List<Episode> = emptyList()
     override suspend fun getPersonDetails(personId: String): PersonDetails? = null
