@@ -99,7 +99,8 @@ fun AppNavigation() {
         Screen.Movies.route,
         Screen.Series.route,
         Screen.Search.route,
-        Screen.Library.route
+        Screen.Library.route,
+        Screen.Anime.route
     )
 
     androidx.compose.runtime.CompositionLocalProvider(androidx.compose.ui.platform.LocalLayoutDirection provides androidx.compose.ui.unit.LayoutDirection.Rtl) {

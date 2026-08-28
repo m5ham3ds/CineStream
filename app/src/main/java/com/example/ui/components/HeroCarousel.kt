@@ -9,23 +9,36 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.data.model.LibraryItem
+import com.example.data.repository.LibraryRepository
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun HeroCarousel(
@@ -34,6 +47,35 @@ fun HeroCarousel(
 ) {
     if (items.isEmpty()) return
     val pagerState = rememberPagerState(pageCount = { items.size })
+    val context = LocalContext.current
+    val libraryRepository = remember { LibraryRepository(context) }
+    val scope = rememberCoroutineScope()
+    var showRemoveDialog by remember { mutableStateOf<HeroItem?>(null) }
+
+    if (showRemoveDialog != null) {
+        val itemToRemove = showRemoveDialog!!
+        AlertDialog(
+            onDismissRequest = { showRemoveDialog = null },
+            title = { Text("إزالة من المفضلة", color = Color.White) },
+            text = { Text("هل أنت متأكد أنك تريد إزالة هذا العمل من المفضلة؟", color = Color.LightGray) },
+            confirmButton = {
+                TextButton(onClick = {
+                    scope.launch {
+                        libraryRepository.removeFromLibrary(LibraryItem(itemToRemove.id, itemToRemove.title, itemToRemove.backdropUrl, itemToRemove.isMovie))
+                    }
+                    showRemoveDialog = null
+                }) {
+                    Text("إزالة", color = Color(0xFFE50914))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showRemoveDialog = null }) {
+                    Text("إلغاء", color = Color.White)
+                }
+            },
+            containerColor = Color(0xFF1E1E20)
+        )
+    }
 
     LaunchedEffect(pagerState) {
         while (true) {
@@ -46,11 +88,16 @@ fun HeroCarousel(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(450.dp)
+            .aspectRatio(16f / 9f) // Set aspect ratio to 16:9
     ) {
         HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
             val item = items[page]
-            Box(modifier = Modifier.fillMaxSize()) {
+            val isBookmarked by libraryRepository.isItemInLibrary(item.id).collectAsState(initial = false)
+
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .clickable { onClick(item.id) } // Clickable whole box
+            ) {
                 AsyncImage(
                     model = item.backdropUrl,
                     contentDescription = item.title,
@@ -64,7 +111,7 @@ fun HeroCarousel(
                         .background(
                             Brush.verticalGradient(
                                 colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.9f)),
-                                startY = 100f
+                                startY = 50f
                             )
                         )
                 )
@@ -79,48 +126,54 @@ fun HeroCarousel(
                             .background(Color.White.copy(alpha = 0.2f), RoundedCornerShape(4.dp))
                             .padding(horizontal = 8.dp, vertical = 4.dp)
                     ) {
-                        Text("NEW RELEASE", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                        Text("NEW RELEASE", color = Color.White, fontSize = 8.sp, fontWeight = FontWeight.Bold)
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = item.title,
-                        style = MaterialTheme.typography.headlineLarge,
+                        style = MaterialTheme.typography.titleLarge, // Slightly smaller text since box is smaller
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "An unforgettable journey\ninto the wild",
-                        color = Color.LightGray,
-                        fontSize = 12.sp,
-                        lineHeight = 16.sp
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(percent = 50))
                                 .background(Color(0xFFE50914))
                                 .clickable { onClick(item.id) }
-                                .padding(horizontal = 24.dp, vertical = 10.dp),
+                                .padding(horizontal = 16.dp, vertical = 6.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = Color.White, modifier = Modifier.size(16.dp))
                                 Spacer(modifier = Modifier.width(4.dp))
-                                Text("Play", color = Color.White, fontWeight = FontWeight.SemiBold)
+                                Text("Play", color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 12.sp)
                             }
                         }
                         Spacer(modifier = Modifier.width(12.dp))
                         Box(
                             modifier = Modifier
-                                .size(40.dp)
+                                .size(32.dp)
                                 .clip(CircleShape)
                                 .border(1.dp, Color.White, CircleShape)
-                                .clickable { /* Add to list */ },
+                                .clickable {
+                                    if (isBookmarked) {
+                                        showRemoveDialog = item
+                                    } else {
+                                        scope.launch {
+                                            libraryRepository.addToLibrary(LibraryItem(item.id, item.title, item.backdropUrl, item.isMovie))
+                                        }
+                                    }
+                                },
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(Icons.Default.Add, contentDescription = "Add", tint = Color.White)
+                            Icon(
+                                if (isBookmarked) Icons.Default.Check else Icons.Default.Add, 
+                                contentDescription = "Library", 
+                                tint = Color.White,
+                                modifier = Modifier.size(18.dp)
+                            )
                         }
                     }
                 }
@@ -147,4 +200,4 @@ fun HeroCarousel(
     }
 }
 
-data class HeroItem(val id: String, val title: String, val backdropUrl: String)
+data class HeroItem(val id: String, val title: String, val backdropUrl: String, val isMovie: Boolean = true)

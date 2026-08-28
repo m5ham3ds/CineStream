@@ -49,6 +49,7 @@ import com.example.data.repository.HistoryRepository
 import androidx.compose.runtime.collectAsState
 
 import com.example.ui.components.MediaCard
+import com.example.ui.components.MediaScreenSkeleton
 import com.example.ui.components.HeroCarousel
 import com.example.ui.components.HeroItem
 import com.example.ui.components.ContinueWatchingCardShared
@@ -76,9 +77,7 @@ fun HomeScreen(
     val scope = rememberCoroutineScope()
 
     if (uiState.isLoading) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(color = Color(0xFFE50914))
-        }
+        MediaScreenSkeleton()
         return
     }
 
@@ -116,7 +115,7 @@ fun HomeScreen(
     ) {
         // Hero Section
         if (uiState.trendingMovies.isNotEmpty()) {
-            HeroCarousel(items = uiState.trendingMovies.take(5).map { HeroItem(it.id, it.title, it.backdropUrl) }, onClick = onMovieClick)
+            HeroCarousel(items = uiState.trendingMovies.take(5).map { HeroItem(it.id, it.title, it.backdropUrl, true) }, onClick = onMovieClick)
         }
 
 

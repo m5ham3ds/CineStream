@@ -41,6 +41,7 @@ import com.example.ui.components.ContinueWatchingCardShared
 import com.example.ui.components.HeroSectionShared
 import com.example.ui.components.MediaActionBottomSheet
 import com.example.ui.components.MediaCard
+import com.example.ui.components.MediaScreenSkeleton
 import com.example.ui.components.HeroCarousel
 import com.example.ui.components.HeroItem
 import com.example.ui.components.SectionTitleShared
@@ -68,9 +69,7 @@ fun SeriesScreen(
     val scope = rememberCoroutineScope()
 
     if (uiState.isLoading) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(color = Color(0xFFE50914))
-        }
+        MediaScreenSkeleton()
         return
     }
 
@@ -114,7 +113,7 @@ fun SeriesScreen(
         )
 
         // Hero Section
-        HeroCarousel(items = uiState.series.take(5).map { HeroItem(it.id, it.title, it.backdropUrl) }, onClick = onSeriesClick)
+        HeroCarousel(items = uiState.series.take(5).map { HeroItem(it.id, it.title, it.backdropUrl, false) }, onClick = onSeriesClick)
 
 
         Spacer(modifier = Modifier.height(16.dp))
