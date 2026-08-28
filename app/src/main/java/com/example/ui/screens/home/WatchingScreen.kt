@@ -1,9 +1,11 @@
 package com.example.ui.screens.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -11,28 +13,23 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.foundation.lazy.items
-import com.example.data.repository.HistoryRepository
+import com.example.R
 import com.example.data.model.HistoryItem
+import com.example.data.repository.HistoryRepository
+import com.example.ui.components.CustomTopBar
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WatchingScreen(
     onItemClick: (String, Boolean) -> Unit,
@@ -41,22 +38,52 @@ fun WatchingScreen(
     val context = LocalContext.current
     val historyRepository = remember { HistoryRepository(context) }
     val historyItems by historyRepository.getHistoryItems().collectAsState(initial = emptyList())
+    var selectedTab by remember { mutableStateOf("All") }
+
+    val filteredItems = when (selectedTab) {
+        "Movies" -> historyItems.filter { it.isMovie }
+        "TV Series" -> historyItems.filter { !it.isMovie } // Assume TV Series if not movie
+        "Anime" -> emptyList() // You can adjust this if HistoryItem adds anime type
+        else -> historyItems
+    }
 
     Column(modifier = Modifier.fillMaxSize().background(Color.Black)) {
-        CenterAlignedTopAppBar(
-            title = {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("متابعة المشاهدة", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 20.sp)
-                }
-            },
-            navigationIcon = {
-                IconButton(onClick = onBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
-                }
-            },
-            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.Black)
+        CustomTopBar(
+            titleFirst = "Continue",
+            titleSecond = "Watching",
+            subtitle = "Pick up where you left off",
+            onBack = onBack,
+            showFilter = false
         )
-        
+
+        // Pill Tabs
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            val tabs = listOf("All", "TV Series", "Movies", "Anime")
+            tabs.forEach { tab ->
+                val isSelected = selectedTab == tab
+                Box(
+                    modifier = Modifier
+                        .clickable { selectedTab = tab }
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(if (isSelected) Color(0xFFE50914) else Color(0xFF161618))
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = tab,
+                        color = Color.White,
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                        fontSize = 14.sp
+                    )
+                }
+            }
+        }
+
         if (historyItems.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text("لا توجد عناصر للمتابعة", color = Color.Gray, fontSize = 16.sp)
@@ -67,7 +94,7 @@ fun WatchingScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(historyItems) { item ->
+                items(filteredItems) { item ->
                     DetailedContinueWatchingCard(item = item, onClick = { onItemClick(item.id, item.isMovie) })
                 }
             }
@@ -80,15 +107,17 @@ fun DetailedContinueWatchingCard(item: HistoryItem, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(100.dp)
+            .height(110.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFF161618))
+            .border(1.dp, Color(0xFF2A2A2E), RoundedCornerShape(12.dp))
+            .background(Color(0xFF0A0A0C))
             .clickable { onClick() },
         verticalAlignment = Alignment.CenterVertically
     ) {
+        // Left Image Box
         Box(
             modifier = Modifier
-                .width(140.dp)
+                .width(160.dp)
                 .fillMaxHeight()
         ) {
             AsyncImage(
@@ -97,31 +126,49 @@ fun DetailedContinueWatchingCard(item: HistoryItem, onClick: () -> Unit) {
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
             )
-            
-            // Progress Bar
+            // Play Button Overlay
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(4.dp)
-                    .align(Alignment.BottomStart)
-                    .background(Color.White.copy(alpha = 0.3f))
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.3f)),
+                contentAlignment = Alignment.Center
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(0.5f)
-                        .fillMaxHeight()
-                        .background(Color(0xFFE50914))
+                Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = Color.White, modifier = Modifier.size(32.dp))
+            }
+            // Tag (Bottom Left)
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(8.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(Color.Black.copy(alpha = 0.6f))
+                    .padding(horizontal = 6.dp, vertical = 2.dp)
+            ) {
+                Text(
+                    text = if (item.isMovie) "Movie" else "S1 • E3", // Hardcoded episode for now
+                    color = Color.White,
+                    fontSize = 10.sp
                 )
             }
         }
-        
+
+        // Right Content Column
         Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 8.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Column {
+                // Type Tag
+                Text(
+                    text = if (item.isMovie) "Movie" else "TV Series",
+                    color = Color(0xFFE50914),
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                // Title
                 Text(
                     text = item.title,
                     color = Color.White,
@@ -129,26 +176,57 @@ fun DetailedContinueWatchingCard(item: HistoryItem, onClick: () -> Unit) {
                     fontSize = 14.sp,
                     maxLines = 1
                 )
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(if (item.isMovie) "فيلم" else "مسلسل", color = Color.Gray, fontSize = 12.sp)
-            }
-            
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clip(CircleShape)
-                        .background(Color(0xFF2A2A2E)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = Color(0xFFE50914), modifier = Modifier.size(16.dp))
+                Spacer(modifier = Modifier.height(4.dp))
+                // Meta info
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(painter = painterResource(id = android.R.drawable.btn_star_big_on), contentDescription = "Rating", tint = Color(0xFFFFC107), modifier = Modifier.size(12.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("8.1", color = Color.White, fontSize = 12.sp)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("2024", color = Color.Gray, fontSize = 12.sp)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Box(modifier = Modifier.border(1.dp, Color.Gray, RoundedCornerShape(4.dp)).padding(horizontal = 4.dp, vertical = 1.dp)) {
+                        Text("16+", color = Color.Gray, fontSize = 10.sp)
+                    }
                 }
-                Spacer(modifier = Modifier.width(12.dp))
-                Icon(Icons.Default.MoreVert, contentDescription = "More", tint = Color.Gray, modifier = Modifier.size(20.dp))
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            // Progress Bar area
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text("24m left of 48m", color = Color.Gray, fontSize = 10.sp)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(2.dp)
+                            .background(Color(0xFF2A2A2E))
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth(0.5f)
+                                .fillMaxHeight()
+                                .background(Color(0xFFE50914))
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                
+                // Action Buttons
+                Column(horizontalAlignment = Alignment.End) {
+                    Box(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .border(1.dp, Color(0xFFE50914), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = Color(0xFFE50914), modifier = Modifier.size(16.dp))
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Icon(Icons.Default.MoreVert, contentDescription = "More", tint = Color.Gray, modifier = Modifier.size(16.dp))
+                }
             }
         }
     }

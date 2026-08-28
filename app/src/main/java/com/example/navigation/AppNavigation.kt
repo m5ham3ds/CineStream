@@ -493,7 +493,8 @@ fun AppNavigation() {
                         onNavigateToWatching = { navController.navigate(Screen.Watching.route) },
                         onNavigateToPopular = { navController.navigate(Screen.Popular.route) },
                         onNavigateToNewReleases = { navController.navigate(Screen.NewReleases.route) },
-                        onNavigateToUpcoming = { navController.navigate(Screen.Upcoming.route) }
+                        onNavigateToUpcoming = { navController.navigate(Screen.Upcoming.route) },
+                        onNavigateToAnime = { navController.navigate(Screen.Anime.route) }
                     )
                 }
                 composable(Screen.Movies.route) {

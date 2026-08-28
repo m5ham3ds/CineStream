@@ -1,4 +1,25 @@
-package com.example.ui.screens.home
+import os
+
+screens = {
+    "TrendingScreen": {
+        "titleFirst": "Trending", "titleSecond": "Now", "subtitle": "See what's popular today",
+        "movieList": "trendingMovies", "seriesList": "trendingSeries", "animeList": "animeSeries"
+    },
+    "PopularScreen": {
+        "titleFirst": "Popular", "titleSecond": "Picks", "subtitle": "Most watched this week",
+        "movieList": "trendingMovies", "seriesList": "trendingSeries", "animeList": "animeSeries"
+    },
+    "NewReleasesScreen": {
+        "titleFirst": "New", "titleSecond": "Releases", "subtitle": "Latest additions",
+        "movieList": "newReleasesMovies", "seriesList": "newReleasesSeries", "animeList": "animeSeries"
+    },
+    "UpcomingScreen": {
+        "titleFirst": "Coming", "titleSecond": "Soon", "subtitle": "Upcoming movies & series",
+        "movieList": "upcomingMovies", "seriesList": "trendingSeries", "animeList": "animeSeries"
+    }
+}
+
+template = """package com.example.ui.screens.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -26,52 +47,52 @@ import com.example.ui.components.CustomTopBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PopularScreen(
+fun {Name}(
     onItemClick: (String, Boolean) -> Unit,
     onBack: () -> Unit,
     viewModel: HomeViewModel = viewModel(factory = ViewModelFactory())
-) {
+) {{
     val uiState by viewModel.uiState.collectAsState()
-    var selectedTab by remember { mutableStateOf("All") }
+    var selectedTab by remember {{ mutableStateOf("All") }}
     
-    val items = when (selectedTab) {
-        "Movies" -> uiState.trendingMovies.map { it to true }
-        "Series" -> uiState.trendingSeries.map { it to false }
-        "Anime" -> uiState.animeSeries.map { it to false }
-        else -> (uiState.trendingMovies.map { it to true } + uiState.trendingSeries.map { it to false } + uiState.animeSeries.map { it to false })
-    }
+    val items = when (selectedTab) {{
+        "Movies" -> uiState.{movieList}.map {{ it to true }}
+        "Series" -> uiState.{seriesList}.map {{ it to false }}
+        "Anime" -> uiState.{animeList}.map {{ it to false }}
+        else -> (uiState.{movieList}.map {{ it to true }} + uiState.{seriesList}.map {{ it to false }} + uiState.{animeList}.map {{ it to false }})
+    }}
     
-    Column(modifier = Modifier.fillMaxSize().background(Color.Black)) {
+    Column(modifier = Modifier.fillMaxSize().background(Color.Black)) {{
         CustomTopBar(
-            titleFirst = "Popular", titleSecond = "Picks", subtitle = "Most watched this week", onBack = onBack, showFilter = true
+            titleFirst = "{titleFirst}", titleSecond = "{titleSecond}", subtitle = "{subtitle}", onBack = onBack, showFilter = true
         )
         
         Row(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
                 .border(1.dp, Color(0xFF2A2A2E), RoundedCornerShape(12.dp)).clip(RoundedCornerShape(12.dp)),
             horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
+        ) {{
             val tabs = listOf("All", "Movies", "Series", "Anime")
-            tabs.forEach { tab ->
+            tabs.forEach {{ tab ->
                 val isSelected = selectedTab == tab
                 Box(
-                    modifier = Modifier.weight(1f).clickable { selectedTab = tab }
+                    modifier = Modifier.weight(1f).clickable {{ selectedTab = tab }}
                         .background(if (isSelected) Color(0xFF2A2A2E) else Color.Transparent)
                         .border(if (isSelected) 1.dp else 0.dp, if (isSelected) Color(0xFFE50914) else Color.Transparent, RoundedCornerShape(12.dp))
                         .padding(vertical = 12.dp),
                     contentAlignment = Alignment.Center
-                ) {
+                ) {{
                     Text(tab, color = if (isSelected) Color.White else Color.Gray, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal, fontSize = 14.sp)
-                }
-            }
-        }
+                }}
+            }}
+        }}
         
         Spacer(modifier = Modifier.height(8.dp))
         
         val ptrState = rememberPullToRefreshState()
-        PullToRefreshBox(isRefreshing = uiState.isLoading, onRefresh = { viewModel.loadData() }, state = ptrState, modifier = Modifier.fillMaxSize()) {
-            LazyVerticalGrid(columns = GridCells.Fixed(3), contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 100.dp), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                itemsIndexed(items) { index, (media, isMovie) ->
+        PullToRefreshBox(isRefreshing = uiState.isLoading, onRefresh = {{ viewModel.loadData() }}, state = ptrState, modifier = Modifier.fillMaxSize()) {{
+            LazyVerticalGrid(columns = GridCells.Fixed(3), contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 100.dp), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {{
+                itemsIndexed(items) {{ index, (media, isMovie) ->
                     // Dynamic check for Media type
                     val title = if (isMovie) (media as com.example.domain.models.Movie).title else (media as com.example.domain.models.Series).title
                     val poster = if (isMovie) (media as com.example.domain.models.Movie).posterUrl else (media as com.example.domain.models.Series).posterUrl
@@ -83,10 +104,16 @@ fun PopularScreen(
                         isMovie = isMovie,
                         rank = index + 1,
                         mediaId = id,
-                        onClick = { onItemClick(id, isMovie) }
+                        onClick = {{ onItemClick(id, isMovie) }}
                     )
-                }
-            }
-        }
-    }
-}
+                }}
+            }}
+        }}
+    }}
+}}
+"""
+
+for name, cfg in screens.items():
+    with open(f"app/src/main/java/com/example/ui/screens/home/{name}.kt", "w") as f:
+        f.write(template.format(Name=name, **cfg))
+

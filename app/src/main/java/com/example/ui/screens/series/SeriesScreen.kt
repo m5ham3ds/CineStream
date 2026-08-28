@@ -41,6 +41,8 @@ import com.example.ui.components.ContinueWatchingCardShared
 import com.example.ui.components.HeroSectionShared
 import com.example.ui.components.MediaActionBottomSheet
 import com.example.ui.components.MediaCard
+import com.example.ui.components.HeroCarousel
+import com.example.ui.components.HeroItem
 import com.example.ui.components.SectionTitleShared
 import kotlinx.coroutines.launch
 
@@ -112,16 +114,7 @@ fun SeriesScreen(
         )
 
         // Hero Section
-        val heroSeries = uiState.series.firstOrNull()
-        if (heroSeries != null) {
-            HeroSectionShared(
-                title = "Demo Series 01", 
-                backdropUrl = heroSeries.backdropUrl, 
-                desc = "A journey of power, betrayal and\ndestiny.", 
-                tag = "TRENDING NOW",
-                onClick = { onSeriesClick(heroSeries.id) }
-            )
-        }
+        HeroCarousel(items = uiState.series.take(5).map { HeroItem(it.id, it.title, it.backdropUrl) }, onClick = onSeriesClick)
 
 
         Spacer(modifier = Modifier.height(16.dp))

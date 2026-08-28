@@ -49,6 +49,8 @@ import com.example.data.repository.HistoryRepository
 import androidx.compose.runtime.collectAsState
 
 import com.example.ui.components.MediaCard
+import com.example.ui.components.HeroCarousel
+import com.example.ui.components.HeroItem
 import com.example.ui.components.ContinueWatchingCardShared
 import kotlinx.coroutines.launch
 
@@ -62,6 +64,7 @@ fun HomeScreen(
     onNavigateToPopular: () -> Unit = {},
     onNavigateToNewReleases: () -> Unit = {},
     onNavigateToUpcoming: () -> Unit = {},
+    onNavigateToAnime: () -> Unit = {},
     viewModel: HomeViewModel = viewModel(factory = ViewModelFactory())
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -113,7 +116,7 @@ fun HomeScreen(
     ) {
         // Hero Section
         if (uiState.trendingMovies.isNotEmpty()) {
-            HeroCarousel(movies = uiState.trendingMovies.take(5), onClick = onMovieClick)
+            HeroCarousel(items = uiState.trendingMovies.take(5).map { HeroItem(it.id, it.title, it.backdropUrl) }, onClick = onMovieClick)
         }
 
 
@@ -226,7 +229,7 @@ fun HomeScreen(
         
         // Anime
         if (uiState.animeSeries.isNotEmpty()) {
-            SectionTitle("Anime", onSeeAllClick = {})
+            SectionTitle("Anime", onSeeAllClick = onNavigateToAnime)
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -347,124 +350,7 @@ fun HomeScreen(
     }
 }
 
-@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
-@Composable
-fun HeroCarousel(movies: List<Movie>, onClick: (String) -> Unit) {
-    val pagerState = rememberPagerState(pageCount = { movies.size })
 
-    LaunchedEffect(pagerState) {
-        while (true) {
-            delay(3000)
-            val nextPage = (pagerState.currentPage + 1) % movies.size
-            pagerState.animateScrollToPage(nextPage)
-        }
-    }
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .aspectRatio(16f / 10f)
-            .clip(RoundedCornerShape(16.dp))
-    ) {
-        HorizontalPager(state = pagerState) { page ->
-            val movie = movies[page]
-            Box(modifier = Modifier.fillMaxSize()) {
-                AsyncImage(
-                    model = movie.backdropUrl,
-                    contentDescription = movie.title,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
-                )
-                // Background Gradient
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            Brush.verticalGradient(
-                                colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.9f)),
-                                startY = 100f
-                            )
-                        )
-                )
-                
-                Column(
-                    modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .padding(16.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .background(Color.White.copy(alpha = 0.2f), RoundedCornerShape(4.dp))
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
-                    ) {
-                        Text("NEW RELEASE", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = movie.title,
-                        style = MaterialTheme.typography.headlineLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "An unforgettable journey\ninto the wild",
-                        color = Color.LightGray,
-                        fontSize = 12.sp,
-                        lineHeight = 16.sp
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(percent = 50))
-                                .background(Color(0xFFE50914))
-                                .clickable { onClick(movie.id) }
-                                .padding(horizontal = 24.dp, vertical = 10.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = Color.White, modifier = Modifier.size(16.dp))
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text("Play", color = Color.White, fontWeight = FontWeight.SemiBold)
-                            }
-                        }
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Box(
-                            modifier = Modifier
-                                .size(40.dp)
-                                .clip(CircleShape)
-                                .border(1.dp, Color.White, CircleShape)
-                                .clickable { /* Add to list */ },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(Icons.Default.Add, contentDescription = "Add", tint = Color.White)
-                        }
-                    }
-                }
-            }
-        }
-        
-        // Carousel Dots
-        Row(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            repeat(movies.size) { index ->
-                val isSelected = pagerState.currentPage == index
-                Box(
-                    modifier = Modifier
-                        .size(if (isSelected) 16.dp else 4.dp, 4.dp)
-                        .clip(RoundedCornerShape(2.dp))
-                        .background(if (isSelected) Color(0xFFE50914) else Color.Gray)
-                )
-            }
-        }
-    }
-}
 
 @Composable
 fun SectionTitle(title: String, onSeeAllClick: (() -> Unit)? = null) {
@@ -489,5 +375,3 @@ fun SectionTitle(title: String, onSeeAllClick: (() -> Unit)? = null) {
         }
     }
 }
-
-

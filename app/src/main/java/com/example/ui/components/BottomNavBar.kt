@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -20,14 +21,13 @@ import com.example.navigation.Screen
 
 @Composable
 fun BottomNavBar(navController: NavController) {
-        val items = listOf(
+    val items = listOf(
         Screen.Home,
         Screen.Movies,
         Screen.Search,
         Screen.Series,
         Screen.Anime
     )
-
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -35,42 +35,46 @@ fun BottomNavBar(navController: NavController) {
         modifier = Modifier
             .windowInsetsPadding(WindowInsets.navigationBars)
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp) // adjusted vertical padding
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(percent = 50))
-                .background(Color(0xFF1E1E20)) // Dark grey background for the container
+                .background(Color(0xFF161618)) // Dark grey background for the container
                 .padding(horizontal = 8.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             items.forEach { screen ->
                 val selected = currentRoute == screen.route
-                                val label = when (screen) {
-                    Screen.Home -> "الرئيسية"
-                    Screen.Movies -> "الأفلام"
-                    Screen.Series -> "المسلسلات"
-                    Screen.Search -> "البحث"
-                    Screen.Anime -> "الأنمي"
+                
+                // English labels based on image
+                val label = when (screen) {
+                    Screen.Home -> "Home"
+                    Screen.Movies -> "Movies"
+                    Screen.Series -> "Series"
+                    Screen.Search -> "Search"
+                    Screen.Anime -> "Anime"
                     else -> screen.title
                 }
                 
                 Box(
                     modifier = Modifier
                         .weight(1f)
-                        .clip(RoundedCornerShape(percent = 50))
-                        .background(if (selected) Color(0xFFE50914) else Color.Transparent) // Red when active
-                                                .clickable {
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(
+                            if (selected) Brush.verticalGradient(
+                                colors = listOf(Color(0xFFE50914).copy(alpha = 0.3f), Color.Transparent)
+                            ) else Brush.verticalGradient(listOf(Color.Transparent, Color.Transparent))
+                        )
+                        .clickable {
                             if (selected) {
                                 navController.popBackStack(screen.route, inclusive = true)
                                 navController.navigate(screen.route)
                             } else {
                                 navController.navigate(screen.route) {
-                                    popUpTo(Screen.Home.route) {
-                                        saveState = true
-                                    }
+                                    popUpTo(Screen.Home.route) { saveState = true }
                                     launchSingleTop = true
                                     restoreState = true
                                 }
@@ -83,13 +87,13 @@ fun BottomNavBar(navController: NavController) {
                         Icon(
                             imageVector = screen.icon,
                             contentDescription = label,
-                            tint = if (selected) Color.White else Color.Gray,
+                            tint = if (selected) Color(0xFFE50914) else Color.Gray,
                             modifier = Modifier.size(24.dp)
                         )
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
                             text = label,
-                            color = if (selected) Color.White else Color.Gray,
+                            color = if (selected) Color(0xFFE50914) else Color.Gray,
                             fontSize = 10.sp,
                             maxLines = 1,
                             overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis

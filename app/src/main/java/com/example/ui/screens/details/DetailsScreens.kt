@@ -72,17 +72,6 @@ fun MovieDetailsScreen(
     }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("") },
-                navigationIcon = {
-                    IconButton(onClick = onBack, modifier = Modifier.background(Color.Black.copy(alpha=0.3f), CircleShape)) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
-            )
-        },
         containerColor = Color.Black
     ) { padding ->
         if (uiState.isLoading) {
@@ -91,16 +80,6 @@ fun MovieDetailsScreen(
             val movie = uiState.movie!!
             val ctx = LocalContext.current
             val historyRepository = remember { com.example.data.repository.HistoryRepository(ctx) }
-            LaunchedEffect(movie) {
-                historyRepository.addToHistory(
-                    com.example.data.model.HistoryItem(
-                        id = movie.id,
-                        title = movie.title,
-                        posterUrl = movie.posterUrl,
-                        isMovie = true
-                    )
-                )
-            }
             var showSourceSheet by remember { mutableStateOf(false) }
             var isDownloadMode by remember { mutableStateOf(false) }
 
@@ -109,7 +88,7 @@ fun MovieDetailsScreen(
                 isRefreshing = uiState.isLoading,
                 onRefresh = { viewModel.loadMovie(movieId) },
                 state = ptrState,
-                modifier = Modifier.fillMaxSize().padding(padding)
+                modifier = Modifier.fillMaxSize().padding(bottom = padding.calculateBottomPadding())
             ) {
             Column(
                 modifier = Modifier
@@ -233,11 +212,31 @@ fun MovieDetailsScreen(
                                 Toast.makeText(context, "Download Started", Toast.LENGTH_SHORT).show()
                             }
                         } else {
-                            onPlay(source.url)
+                            scope.launch {
+                                historyRepository.addToHistory(
+                                    com.example.data.model.HistoryItem(
+                                        id = movie.id,
+                                        title = movie.title,
+                                        posterUrl = movie.posterUrl,
+                                        isMovie = true
+                                    )
+                                )
+                                onPlay(source.url)
+                            }
                         }
                     }
                 )
             }
+
+            IconButton(
+                onClick = onBack,
+                modifier = Modifier
+                    .padding(top = padding.calculateTopPadding() + 8.dp, start = 16.dp)
+                    .background(Color.Black.copy(alpha=0.3f), CircleShape)
+            ) {
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+            }
+
         }
     }
 }
@@ -267,17 +266,6 @@ fun SeriesDetailsScreen(
     }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("") },
-                navigationIcon = {
-                    IconButton(onClick = onBack, modifier = Modifier.background(Color.Black.copy(alpha=0.3f), CircleShape)) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
-            )
-        },
         containerColor = Color.Black
     ) { padding ->
         if (uiState.isLoading) {
@@ -286,16 +274,6 @@ fun SeriesDetailsScreen(
             val series = uiState.series!!
             val ctx = LocalContext.current
             val historyRepository = remember { com.example.data.repository.HistoryRepository(ctx) }
-            LaunchedEffect(series) {
-                historyRepository.addToHistory(
-                    com.example.data.model.HistoryItem(
-                        id = series.id,
-                        title = series.title,
-                        posterUrl = series.posterUrl,
-                        isMovie = false
-                    )
-                )
-            }
             var showSourceSheet by remember { mutableStateOf(false) }
             var isDownloadMode by remember { mutableStateOf(false) }
 
@@ -304,7 +282,7 @@ fun SeriesDetailsScreen(
                 isRefreshing = uiState.isLoading,
                 onRefresh = { viewModel.loadSeries(seriesId) },
                 state = ptrState,
-                modifier = Modifier.fillMaxSize().padding(padding)
+                modifier = Modifier.fillMaxSize().padding(bottom = padding.calculateBottomPadding())
             ) {
             Column(
                 modifier = Modifier
@@ -464,11 +442,31 @@ fun SeriesDetailsScreen(
                                 Toast.makeText(context, "Download Started: ${source.name}", Toast.LENGTH_SHORT).show()
                             }
                         } else {
-                            onPlay(source.url)
+                            scope.launch {
+                                historyRepository.addToHistory(
+                                    com.example.data.model.HistoryItem(
+                                        id = series.id,
+                                        title = series.title,
+                                        posterUrl = series.posterUrl,
+                                        isMovie = false
+                                    )
+                                )
+                                onPlay(source.url)
+                            }
                         }
                     }
                 )
             }
+
+            IconButton(
+                onClick = onBack,
+                modifier = Modifier
+                    .padding(top = padding.calculateTopPadding() + 8.dp, start = 16.dp)
+                    .background(Color.Black.copy(alpha=0.3f), CircleShape)
+            ) {
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+            }
+
         }
     }
 }
