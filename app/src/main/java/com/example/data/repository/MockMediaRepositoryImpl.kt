@@ -9,8 +9,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 class MockMediaRepositoryImpl : MediaRepository {
+
     override fun getMovies(): Flow<List<Movie>> = flow {
-        delay(500) // Simulate network delay
+        delay(500)
         emit(MockData.movies)
     }
 
@@ -37,5 +38,11 @@ class MockMediaRepositoryImpl : MediaRepository {
     override suspend fun getSeriesById(id: String): Series? {
         delay(300)
         return MockData.series.find { it.id == id }
+    }
+
+    override suspend fun searchMulti(query: String): Pair<List<Movie>, List<Series>> {
+        val movies = MockData.movies.filter { it.title.contains(query, ignoreCase = true) }
+        val series = MockData.series.filter { it.title.contains(query, ignoreCase = true) }
+        return Pair(movies, series)
     }
 }

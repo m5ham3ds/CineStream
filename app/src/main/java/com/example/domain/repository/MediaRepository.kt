@@ -11,4 +11,5 @@ interface MediaRepository {
     fun getTrendingSeries(): Flow<List<Series>>
     suspend fun getMovieById(id: String): Movie?
     suspend fun getSeriesById(id: String): Series?
+    suspend fun searchMulti(query: String): Pair<List<Movie>, List<Series>>
 }

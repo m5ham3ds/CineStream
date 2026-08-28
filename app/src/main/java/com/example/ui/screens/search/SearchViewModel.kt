@@ -50,13 +50,8 @@ class SearchViewModel(private val repository: MediaRepository) : ViewModel() {
 
     private fun performSearch(query: String) {
         viewModelScope.launch {
-            repository.getMovies().combine(repository.getSeries()) { movies, series ->
-                val m = movies.filter { it.title.contains(query, ignoreCase = true) }
-                val s = series.filter { it.title.contains(query, ignoreCase = true) }
-                Pair(m, s)
-            }.collect { (m, s) ->
-                _uiState.update { it.copy(movieResults = m, seriesResults = s, isSearching = false) }
-            }
+            val (m, s) = repository.searchMulti(query)
+            _uiState.update { it.copy(movieResults = m, seriesResults = s, isSearching = false) }
         }
     }
 }
