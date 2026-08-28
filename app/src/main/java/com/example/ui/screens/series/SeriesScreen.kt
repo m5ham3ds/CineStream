@@ -13,6 +13,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
+
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,6 +40,7 @@ import com.example.ui.components.MediaCard
 import com.example.ui.components.SectionTitleShared
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SeriesScreen(
     onSeriesClick: (String) -> Unit,
@@ -72,6 +78,15 @@ fun SeriesScreen(
 
     var selectedCategory by remember { mutableStateOf("All") }
     val categories = listOf("All", "Trending", "New Releases", "Top Rated", "Genres")
+    val ptrState = rememberPullToRefreshState()
+    
+    PullToRefreshBox(
+        isRefreshing = uiState.isLoading,
+        onRefresh = { viewModel.loadSeries() },
+        state = ptrState,
+        modifier = Modifier.fillMaxSize()
+    ) {
+
 
     Column(
         modifier = Modifier
@@ -191,6 +206,7 @@ fun SeriesScreen(
             }
         }
 
+    }
         if (showBottomSheet) {
             MediaActionBottomSheet(
                 isMovie = false,

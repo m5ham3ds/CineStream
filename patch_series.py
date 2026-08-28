@@ -1,6 +1,6 @@
 import re
 
-with open("app/src/main/java/com/example/ui/screens/home/HomeScreen.kt", "r") as f:
+with open("app/src/main/java/com/example/ui/screens/series/SeriesScreen.kt", "r") as f:
     content = f.read()
 
 imports = """
@@ -12,32 +12,21 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 if "import androidx.compose.material3.pulltorefresh.PullToRefreshBox" not in content:
     content = content.replace("import androidx.compose.material3.*", "import androidx.compose.material3.*\n" + imports)
 
-# We need to wrap the Column that has verticalScroll in a PullToRefreshBox
-# Or if it's the root Column.
-# Currently, it looks like:
-#    val categories = listOf("Home", "Movies", "Series", "Anime", "Documentaries")
-#    Column(
-#        modifier = Modifier
-#            .fillMaxSize()
-#            .verticalScroll(scrollState) 
-#            // Leave space for bottom nav
-#    ) {
-
 def add_ptr(match):
-    prefix = match.group(1) # everything up to categories
+    prefix = match.group(1) 
     return prefix + """
     val ptrState = rememberPullToRefreshState()
     
     PullToRefreshBox(
         isRefreshing = uiState.isLoading,
-        onRefresh = { viewModel.loadData() },
+        onRefresh = { viewModel.loadSeries() },
         state = ptrState,
         modifier = Modifier.fillMaxSize()
     ) {
 """
 
 content = re.sub(
-    r'(    val categories = listOf\("Home", "Movies", "Series", "Anime", "Documentaries"\))',
+    r'(    val categories = listOf\("All", "Trending", "New Releases", "Top Rated", "Genres"\))',
     add_ptr,
     content
 )
@@ -48,11 +37,10 @@ content = content.replace(
     "    }\n        if (showBottomSheet) {\n            MediaActionBottomSheet("
 )
 
-# Also add @OptIn(ExperimentalMaterial3Api::class) to HomeScreen
+# Also add @OptIn(ExperimentalMaterial3Api::class) to SeriesScreen
 if "@OptIn(ExperimentalMaterial3Api::class)" not in content:
-    content = content.replace("@Composable\nfun HomeScreen", "@OptIn(ExperimentalMaterial3Api::class)\n@Composable\nfun HomeScreen")
+    content = content.replace("@Composable\nfun SeriesScreen", "@OptIn(ExperimentalMaterial3Api::class)\n@Composable\nfun SeriesScreen")
 
-
-with open("app/src/main/java/com/example/ui/screens/home/HomeScreen.kt", "w") as f:
+with open("app/src/main/java/com/example/ui/screens/series/SeriesScreen.kt", "w") as f:
     f.write(content)
 

@@ -1,22 +1,15 @@
 import re
 
-with open("app/src/main/java/com/example/ui/screens/search/SearchScreen.kt", "r") as f:
+with open("app/src/main/java/com/example/navigation/AppNavigation.kt", "r") as f:
     content = f.read()
 
-old_sig = """fun SearchScreen(
-    onMediaClick: (String, Boolean) -> Unit,
-    viewModel: SearchViewModel = viewModel(factory = ViewModelFactory())
-)"""
+# Replace the search icon clickable
+content = re.sub(
+    r'Icon\(Icons.Default.Search, contentDescription = "Search", tint = Color.White, modifier = Modifier.size\(24.dp\).clickable \{ isSearchExpanded = !isSearchExpanded \}\)',
+    'Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.White, modifier = Modifier.size(24.dp).clickable { navController.navigate(Screen.Search.route) { launchSingleTop = true; restoreState = true } })',
+    content
+)
 
-new_sig = """fun SearchScreen(
-    onMediaClick: (String, Boolean) -> Unit,
-    onNavigateToTrending: () -> Unit = {},
-    viewModel: SearchViewModel = viewModel(factory = ViewModelFactory())
-)"""
-
-content = content.replace(old_sig, new_sig)
-content = content.replace('SectionTitleShared("Trending Now")', 'SectionTitleShared("Trending Now", onSeeAllClick = onNavigateToTrending)')
-
-with open("app/src/main/java/com/example/ui/screens/search/SearchScreen.kt", "w") as f:
-    f.write(content)
-
+# Remove the AnimatedVisibility block
+pattern = r'androidx.compose.animation.AnimatedVisibility\(visible = isSearchExpanded\) \{.*?(?=                        \} // end AnimatedVisibility|\Z).*?\}'
+# Actually, since it spans many lines, let's use string operations instead.

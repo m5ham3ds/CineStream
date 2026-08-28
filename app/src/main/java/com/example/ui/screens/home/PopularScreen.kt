@@ -12,6 +12,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material3.*
+
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -114,6 +118,14 @@ fun PopularScreen(
             "Series" -> uiState.trendingSeries
             else -> uiState.trendingMovies + uiState.trendingSeries
         }
+        val ptrState = rememberPullToRefreshState()
+        PullToRefreshBox(
+            isRefreshing = uiState.isLoading,
+            onRefresh = { viewModel.loadData() },
+            state = ptrState,
+            modifier = Modifier.fillMaxSize()
+        ) {
+
 
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
@@ -140,4 +152,5 @@ fun PopularScreen(
             }
         }
     }
+}
 }

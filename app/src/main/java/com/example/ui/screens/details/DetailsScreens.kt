@@ -16,6 +16,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -87,6 +92,13 @@ fun MovieDetailsScreen(
             var showSourceSheet by remember { mutableStateOf(false) }
             var isDownloadMode by remember { mutableStateOf(false) }
 
+            val ptrState = rememberPullToRefreshState()
+            PullToRefreshBox(
+                isRefreshing = uiState.isLoading,
+                onRefresh = { viewModel.loadMovie(movieId) },
+                state = ptrState,
+                modifier = Modifier.fillMaxSize().padding(padding)
+            ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -193,6 +205,7 @@ fun MovieDetailsScreen(
                 }
             }
 
+            }
             if (showSourceSheet) {
                 SourceSelectionSheet(
                     mediaId = movie.id,
@@ -262,6 +275,13 @@ fun SeriesDetailsScreen(
             var showSourceSheet by remember { mutableStateOf(false) }
             var isDownloadMode by remember { mutableStateOf(false) }
 
+            val ptrState = rememberPullToRefreshState()
+            PullToRefreshBox(
+                isRefreshing = uiState.isLoading,
+                onRefresh = { viewModel.loadSeries(seriesId) },
+                state = ptrState,
+                modifier = Modifier.fillMaxSize().padding(padding)
+            ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -404,6 +424,7 @@ fun SeriesDetailsScreen(
                 }
             }
 
+            }
             if (showSourceSheet) {
                 SourceSelectionSheet(
                     mediaId = series.id,

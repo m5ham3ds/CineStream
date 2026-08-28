@@ -55,13 +55,18 @@ fun BottomNavBar(navController: NavController) {
                         .weight(1f)
                         .clip(RoundedCornerShape(percent = 50))
                         .background(if (selected) Color(0xFFE50914) else Color.Transparent) // Red when active
-                        .clickable {
-                            navController.navigate(screen.route) {
-                                popUpTo(Screen.Home.route) {
-                                    saveState = true
+                                                .clickable {
+                            if (selected) {
+                                navController.popBackStack(screen.route, inclusive = true)
+                                navController.navigate(screen.route)
+                            } else {
+                                navController.navigate(screen.route) {
+                                    popUpTo(Screen.Home.route) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
-                                launchSingleTop = true
-                                restoreState = true
                             }
                         }
                         .padding(vertical = 8.dp),

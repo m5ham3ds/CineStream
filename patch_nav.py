@@ -1,33 +1,34 @@
-import re
-
 with open("app/src/main/java/com/example/navigation/AppNavigation.kt", "r") as f:
     content = f.read()
 
-# Add PersonDetails route
-person_route = """
-                composable("person/{personId}") { backStackEntry ->
-                    val personId = backStackEntry.arguments?.getString("personId") ?: return@composable
-                    com.example.ui.screens.details.PersonDetailsScreen(
-                        personId = personId,
-                        onBack = { navController.popBackStack() },
-                        onMovieClick = { navController.navigate(Screen.MovieDetails.createRoute(it)) },
-                        onSeriesClick = { navController.navigate(Screen.SeriesDetails.createRoute(it)) }
-                    )
-                }
-"""
+import re
 
-if "person/{personId}" not in content:
-    content = content.replace("composable(Screen.MovieDetails.route) {", person_route + "\n                composable(Screen.MovieDetails.route) {")
-
+# replace search icon
 content = content.replace(
-    "MovieDetailsScreen(\n                        movieId = movieId, \n                        onBack = { navController.popBackStack() },\n                        onPlay = { url ->",
-    "MovieDetailsScreen(\n                        movieId = movieId, \n                        onBack = { navController.popBackStack() },\n                        onPersonClick = { personId -> navController.navigate(\"person/$personId\") },\n                        onPlay = { url ->"
+    """Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.White, modifier = Modifier.size(24.dp).clickable { isSearchExpanded = !isSearchExpanded })""",
+    """Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.White, modifier = Modifier.size(24.dp).clickable { navController.navigate(Screen.Search.route) { launchSingleTop = true; restoreState = true } })"""
 )
 
-content = content.replace(
-    "SeriesDetailsScreen(\n                        seriesId = seriesId, \n                        onBack = { navController.popBackStack() },\n                        onPlay = { url ->",
-    "SeriesDetailsScreen(\n                        seriesId = seriesId, \n                        onBack = { navController.popBackStack() },\n                        onPersonClick = { personId -> navController.navigate(\"person/$personId\") },\n                        onPlay = { url ->"
-)
+# remove AnimatedVisibility
+start_idx = content.find("androidx.compose.animation.AnimatedVisibility(visible = isSearchExpanded)")
+if start_idx != -1:
+    end_idx = content.find("                    }", start_idx) 
+    # we need to find the matching closing brace.
+    brace_count = 0
+    in_block = False
+    for i in range(start_idx, len(content)):
+        if content[i] == '{':
+            brace_count += 1
+            in_block = True
+        elif content[i] == '}':
+            brace_count -= 1
+        
+        if in_block and brace_count == 0:
+            end_idx = i + 1
+            break
+            
+    content = content[:start_idx] + content[end_idx:]
 
 with open("app/src/main/java/com/example/navigation/AppNavigation.kt", "w") as f:
     f.write(content)
+

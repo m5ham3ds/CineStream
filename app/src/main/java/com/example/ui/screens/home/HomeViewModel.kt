@@ -31,7 +31,7 @@ class HomeViewModel(
         loadData()
     }
 
-    private fun loadData() {
+    fun loadData() {
         _uiState.update { it.copy(isLoading = true, error = null) }
         viewModelScope.launch {
             repository.getTrendingMovies()

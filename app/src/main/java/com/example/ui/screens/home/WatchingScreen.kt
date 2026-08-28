@@ -1,7 +1,6 @@
 package com.example.ui.screens.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -85,99 +84,87 @@ data class DetailedWatchingItem(
 
 @Composable
 fun DetailedContinueWatchingCard(item: DetailedWatchingItem) {
-    Box(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
+            .height(100.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(Color(0xFF161618))
-            .clickable { /* Resume */ }
+            .clickable { /* Handle click */ },
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth().height(140.dp)
+        Box(
+            modifier = Modifier
+                .width(140.dp)
+                .fillMaxHeight()
         ) {
-            // Image Section
-            Box(modifier = Modifier.weight(1.2f).fillMaxHeight()) {
-                AsyncImage(
-                    model = item.imageUrl,
-                    contentDescription = item.title,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
-                )
-                
-                // Dark overlay
-                Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.3f)))
-                
-                // Play Button
+            AsyncImage(
+                model = item.imageUrl,
+                contentDescription = item.title,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+            
+            // Progress Bar
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(4.dp)
+                    .align(Alignment.BottomStart)
+                    .background(Color.White.copy(alpha = 0.3f))
+            ) {
                 Box(
                     modifier = Modifier
-                        .align(Alignment.Center)
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .background(Color.Black.copy(alpha = 0.6f))
-                        .border(1.dp, Color.White.copy(alpha = 0.3f), CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = Color.White, modifier = Modifier.size(20.dp))
-                }
-                
-                // Progress Bar at bottom of image
-                Box(modifier = Modifier.align(Alignment.BottomStart).fillMaxWidth().height(4.dp).background(Color(0xFF2A2A2E))) {
-                    Box(modifier = Modifier.fillMaxWidth(item.progress).height(4.dp).background(Color(0xFFE50914)))
+                        .fillMaxWidth(item.progress)
+                        .fillMaxHeight()
+                        .background(Color(0xFFE50914))
+                )
+            }
+        }
+        
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column {
+                Text(
+                    text = item.title,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                    maxLines = 1
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(item.type, color = Color.Gray, fontSize = 12.sp)
+                    if (item.episodeInfo.isNotEmpty()) {
+                        Text(" • ", color = Color.Gray, fontSize = 12.sp)
+                        Text(item.episodeInfo, color = Color.Gray, fontSize = 12.sp)
+                    }
                 }
             }
             
-            // Details Section
-            Column(
-                modifier = Modifier
-                    .weight(1.5f)
-                    .fillMaxHeight()
-                    .padding(12.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                // Type Badge
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(Color(0xFFE50914).copy(alpha = 0.15f))
-                        .padding(horizontal = 6.dp, vertical = 2.dp)
-                ) {
-                    Text(item.type, color = Color(0xFFE50914), fontSize = 10.sp, fontWeight = FontWeight.Medium)
-                }
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                Text(item.title, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                
-                if (item.episodeInfo.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(item.episodeInfo, color = Color.Gray, fontSize = 12.sp)
-                }
-                
-                Spacer(modifier = Modifier.height(12.dp))
-                
                 Text(
                     text = buildAnnotatedString {
-                        withStyle(style = SpanStyle(color = Color(0xFFE50914), fontWeight = FontWeight.Bold)) {
+                        withStyle(style = SpanStyle(color = Color.White, fontWeight = FontWeight.Bold)) {
                             append(item.timeLeft)
                         }
+                        append(" ")
                         withStyle(style = SpanStyle(color = Color.Gray)) {
-                            append(" ${item.totalTime}")
+                            append(item.totalTime)
                         }
                     },
-                    fontSize = 12.sp
+                    fontSize = 11.sp
                 )
                 
-                Spacer(modifier = Modifier.height(6.dp))
-                
-                // Progress Bar in text section
-                Box(modifier = Modifier.fillMaxWidth().height(2.dp).background(Color(0xFF2A2A2E))) {
-                    Box(modifier = Modifier.fillMaxWidth(item.progress).height(2.dp).background(Color(0xFFE50914)))
-                }
-                
-                Spacer(modifier = Modifier.weight(1f))
-                
-                // Bottom actions
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {

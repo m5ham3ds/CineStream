@@ -25,7 +25,7 @@ class SeriesViewModel(private val repository: MediaRepository) : ViewModel() {
         loadSeries()
     }
 
-    private fun loadSeries() {
+    fun loadSeries() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             repository.getSeries()

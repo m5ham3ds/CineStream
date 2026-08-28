@@ -25,7 +25,7 @@ class MoviesViewModel(private val repository: MediaRepository) : ViewModel() {
         loadMovies()
     }
 
-    private fun loadMovies() {
+    fun loadMovies() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             repository.getMovies()

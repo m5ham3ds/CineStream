@@ -18,6 +18,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
+
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,6 +46,7 @@ import com.example.ui.components.MediaActionBottomSheet
 import com.example.ui.components.MediaCard
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     onMovieClick: (String) -> Unit,
@@ -80,6 +86,15 @@ fun HomeScreen(
 
     var selectedCategory by remember { mutableStateOf("Home") }
     val categories = listOf("Home", "Movies", "Series", "Anime", "Documentaries")
+    val ptrState = rememberPullToRefreshState()
+    
+    PullToRefreshBox(
+        isRefreshing = uiState.isLoading,
+        onRefresh = { viewModel.loadData() },
+        state = ptrState,
+        modifier = Modifier.fillMaxSize()
+    ) {
+
 
     Column(
         modifier = Modifier
@@ -185,6 +200,7 @@ fun HomeScreen(
             }
         }
 
+    }
         if (showBottomSheet) {
             MediaActionBottomSheet(
                 isMovie = bottomSheetIsMovie,

@@ -193,7 +193,12 @@ fun AppNavigation() {
                     shape = RoundedCornerShape(16.dp),
                     onClick = {
                         scope.launch { drawerState.close() }
-                        navController.navigate(Screen.Home.route)
+                        if (currentRoute == Screen.Home.route) {
+                            navController.popBackStack(Screen.Home.route, inclusive = true)
+                            navController.navigate(Screen.Home.route)
+                        } else {
+                            navController.navigate(Screen.Home.route)
+                        }
                     },
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
@@ -205,7 +210,12 @@ fun AppNavigation() {
                     colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
                     onClick = {
                         scope.launch { drawerState.close() }
-                        navController.navigate(Screen.Downloads.route)
+                        if (currentRoute == Screen.Downloads.route) {
+                            navController.popBackStack(Screen.Downloads.route, inclusive = true)
+                            navController.navigate(Screen.Downloads.route)
+                        } else {
+                            navController.navigate(Screen.Downloads.route)
+                        }
                     },
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
@@ -217,7 +227,12 @@ fun AppNavigation() {
                     colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
                     onClick = {
                         scope.launch { drawerState.close() }
-                        navController.navigate(Screen.Library.route)
+                        if (currentRoute == Screen.Library.route) {
+                            navController.popBackStack(Screen.Library.route, inclusive = true)
+                            navController.navigate(Screen.Library.route)
+                        } else {
+                            navController.navigate(Screen.Library.route)
+                        }
                     },
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
@@ -229,7 +244,12 @@ fun AppNavigation() {
                     colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
                     onClick = {
                         scope.launch { drawerState.close() }
-                        navController.navigate(Screen.Settings.route)
+                        if (currentRoute == Screen.Settings.route) {
+                            navController.popBackStack(Screen.Settings.route, inclusive = true)
+                            navController.navigate(Screen.Settings.route)
+                        } else {
+                            navController.navigate(Screen.Settings.route)
+                        }
                     },
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
@@ -243,7 +263,12 @@ fun AppNavigation() {
                     colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
                     onClick = {
                         scope.launch { drawerState.close() }
-                        navController.navigate(Screen.About.route)
+                        if (currentRoute == Screen.About.route) {
+                            navController.popBackStack(Screen.About.route, inclusive = true)
+                            navController.navigate(Screen.About.route)
+                        } else {
+                            navController.navigate(Screen.About.route)
+                        }
                     },
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
@@ -360,7 +385,7 @@ fun AppNavigation() {
                             Spacer(modifier = Modifier.weight(1f))
                             
                             // Right Icons
-                            Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.White, modifier = Modifier.size(24.dp).clickable { isSearchExpanded = !isSearchExpanded })
+                            Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.White, modifier = Modifier.size(24.dp).clickable { navController.navigate(Screen.Search.route) { launchSingleTop = true; restoreState = true } })
                             Spacer(modifier = Modifier.width(16.dp))
                             BadgedBox(
                                 badge = {
@@ -379,54 +404,7 @@ fun AppNavigation() {
                             Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color.White, modifier = Modifier.size(24.dp).clickable { scope.launch { drawerState.open() } })
                         }
                         
-                        androidx.compose.animation.AnimatedVisibility(visible = isSearchExpanded) {
-                            Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
-                                TextField(
-                                    value = searchQuery,
-                                    onValueChange = { searchQuery = it },
-                                    placeholder = { Text("Search movies or series...") },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    colors = TextFieldDefaults.colors(
-                                        focusedContainerColor = Color(0xFF1E1E20),
-                                        unfocusedContainerColor = Color(0xFF1E1E20),
-                                        focusedTextColor = Color.White,
-                                        unfocusedTextColor = Color.White,
-                                        focusedIndicatorColor = Color.Transparent,
-                                        unfocusedIndicatorColor = Color.Transparent
-                                    ),
-                                    shape = RoundedCornerShape(16.dp),
-                                    singleLine = true
-                                )
-                                if (searchQuery.isNotEmpty()) {
-                                    val dummyMovies = listOf("Avatar", "Avengers: Endgame", "Assassin's Creed", "Batman Begins", "Interstellar", "Inception", "Iron Man", "Spider-Man", "Superman")
-                                    val searchResults = dummyMovies.filter { it.contains(searchQuery, ignoreCase = true) }
-                                    if (searchResults.isNotEmpty()) {
-                                        Spacer(modifier = Modifier.height(8.dp))
-                                        Card(
-                                            colors = CardDefaults.cardColors(containerColor = Color(0xFF2A2A2E)),
-                                            modifier = Modifier.fillMaxWidth(),
-                                            shape = RoundedCornerShape(16.dp)
-                                        ) {
-                                            Column(modifier = Modifier.padding(8.dp)) {
-                                                searchResults.forEach { result ->
-                                                    Text(
-                                                        text = result,
-                                                        color = Color.White,
-                                                        modifier = Modifier
-                                                            .fillMaxWidth()
-                                                            .clickable { 
-                                                                searchQuery = result
-                                                                isSearchExpanded = false
-                                                            }
-                                                            .padding(12.dp)
-                                                    )
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        
                     }
                 }
             },
