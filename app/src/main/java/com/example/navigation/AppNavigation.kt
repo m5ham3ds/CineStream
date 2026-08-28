@@ -53,6 +53,7 @@ import androidx.navigation.compose.rememberNavController
 import java.net.URLDecoder
 import java.net.URLEncoder
 import com.example.ui.components.BottomNavBar
+import com.example.ui.components.ExpandableSearchBar
 import com.example.ui.screens.details.MovieDetailsScreen
 import com.example.ui.screens.details.SeriesDetailsScreen
 import com.example.ui.screens.home.HomeScreen
@@ -373,36 +374,53 @@ fun AppNavigation() {
                             ) {
                                 Icon(Icons.Default.Person, contentDescription = "Avatar", tint = Color.LightGray)
                             }
-                            Spacer(modifier = Modifier.weight(1f))
                             
-                            // Center App Name
-                            Text(
-                                "CineStream",
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFFE50914), // Red
-                                fontSize = 22.sp
-                            )
-                            
-                            Spacer(modifier = Modifier.weight(1f))
-                            
-                            // Right Icons
-                            Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.White, modifier = Modifier.size(24.dp).clickable { navController.navigate(Screen.Search.route) { launchSingleTop = true; restoreState = true } })
-                            Spacer(modifier = Modifier.width(16.dp))
-                            BadgedBox(
-                                badge = {
-                                    Badge(
-                                        containerColor = Color(0xFFE50914), // Red badge
-                                        contentColor = Color.White,
-                                        modifier = Modifier.offset(x = (-4).dp, y = 4.dp)
-                                    ) {
-                                        Text("1")
-                                    }
-                                }
-                            ) {
-                                Icon(Icons.Outlined.Notifications, contentDescription = "Notifications", tint = Color.White, modifier = Modifier.size(24.dp))
+                            if (!isSearchExpanded) {
+                                Spacer(modifier = Modifier.weight(1f))
+                                                            
+                                                            // Center App Name
+                                                            Text(
+                                                                "CineStream",
+                                                                fontWeight = FontWeight.Bold,
+                                                                color = Color(0xFFE50914), // Red
+                                                                fontSize = 22.sp
+                                                            )
+                                                            
+                                                            Spacer(modifier = Modifier.weight(1f))
+                            } else {
+                                Spacer(modifier = Modifier.width(16.dp))
                             }
-                            Spacer(modifier = Modifier.width(16.dp))
-                            Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color.White, modifier = Modifier.size(24.dp).clickable { scope.launch { drawerState.open() } })
+    
+                            
+                            
+                            if (isSearchExpanded) {
+                                ExpandableSearchBar(
+                                    isExpanded = isSearchExpanded,
+                                    onExpandedChange = { isSearchExpanded = it },
+                                    onMovieClick = { id -> navController.navigate(Screen.MovieDetails.createRoute(id)) },
+                                    onSeriesClick = { id -> navController.navigate(Screen.SeriesDetails.createRoute(id)) }
+                                )
+                            } else {
+                                // Right Icons
+                                Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.White, modifier = Modifier.size(24.dp).clickable { isSearchExpanded = true })
+                                Spacer(modifier = Modifier.width(16.dp))
+                                BadgedBox(
+                                    badge = {
+                                        Badge(
+                                            containerColor = Color(0xFFE50914), // Red badge
+                                            contentColor = Color.White,
+                                            modifier = Modifier.offset(x = (-4).dp, y = 4.dp)
+                                        ) {
+                                            Text("1")
+                                        }
+                                    }
+                                ) {
+                                    Icon(Icons.Outlined.Notifications, contentDescription = "Notifications", tint = Color.White, modifier = Modifier.size(24.dp))
+                                }
+                                Spacer(modifier = Modifier.width(16.dp))
+                                Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color.White, modifier = Modifier.size(24.dp).clickable { scope.launch { drawerState.open() } })
+                            }
+
                         }
                         
                         
