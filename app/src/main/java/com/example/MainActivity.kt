@@ -12,6 +12,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.core.os.LocaleListCompat
@@ -38,12 +39,14 @@ class MainActivity : AppCompatActivity() {
       val appLanguage by userPreferences.appLanguage.collectAsState(initial = "system")
       
       // Update app language
-      val currentLocales = AppCompatDelegate.getApplicationLocales()
-      val desiredLanguage = if (appLanguage == "system") "" else appLanguage
-      if (desiredLanguage.isNotEmpty() && currentLocales.toLanguageTags() != desiredLanguage) {
-          AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(desiredLanguage))
-      } else if (desiredLanguage.isEmpty() && !currentLocales.isEmpty) {
-          AppCompatDelegate.setApplicationLocales(LocaleListCompat.getEmptyLocaleList())
+      LaunchedEffect(appLanguage) {
+          val currentLocales = AppCompatDelegate.getApplicationLocales()
+          val desiredLanguage = if (appLanguage == "system") "" else appLanguage
+          if (desiredLanguage.isNotEmpty() && !currentLocales.toLanguageTags().contains(desiredLanguage)) {
+              AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(desiredLanguage))
+          } else if (desiredLanguage.isEmpty() && !currentLocales.isEmpty) {
+              AppCompatDelegate.setApplicationLocales(LocaleListCompat.getEmptyLocaleList())
+          }
       }
 
       MyApplicationTheme(

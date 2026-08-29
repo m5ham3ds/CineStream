@@ -8,6 +8,7 @@ import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import kotlinx.coroutines.delay
@@ -42,13 +43,12 @@ fun BackgroundWebView(
 
     if (currentUrl != null) {
         AndroidView(
-            modifier = Modifier.size(0.dp), // Invisible
+            modifier = Modifier.alpha(0f).size(1.dp), // Invisible
             factory = { context ->
                 WebView(context).apply {
                     settings.apply {
                         javaScriptEnabled = true
                         domStorageEnabled = true
-                        databaseEnabled = true
                         // Use a modern desktop or mobile user agent
                         userAgentString = "Mozilla/5.0 (Linux; Android 13; Pixel 7 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Mobile Safari/537.36"
                         mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
