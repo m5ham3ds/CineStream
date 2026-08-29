@@ -53,7 +53,7 @@ fun AuthScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         // Top Background Image with gradient
         AsyncImage(
@@ -70,7 +70,7 @@ fun AuthScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(300.dp)
-                .background(Brush.verticalGradient(listOf(Color.Transparent, Color.Black)))
+                .background(Brush.verticalGradient(listOf(Color.Transparent, MaterialTheme.colorScheme.background)))
                 .align(Alignment.TopCenter)
         )
 
@@ -89,7 +89,7 @@ fun AuthScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(200.dp)
-                .background(Brush.verticalGradient(listOf(Color.Black, Color.Transparent)))
+                .background(Brush.verticalGradient(listOf(MaterialTheme.colorScheme.background, Color.Transparent)))
                 .align(Alignment.BottomCenter)
         )
 
@@ -128,14 +128,14 @@ fun AuthScreen(
             
             Text(
                 text = if (isSignUp) "Create Account" else "Welcome Back!",
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = if (isSignUp) "Sign up to start your cinematic journey" else "Sign in to continue your cinematic journey",
-                color = Color.LightGray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 14.sp
             )
 
@@ -146,25 +146,25 @@ fun AuthScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFF161618))
-                    .border(1.dp, Color(0xFF2A2A2E), RoundedCornerShape(16.dp))
+                    .background(MaterialTheme.colorScheme.surface)
+                    .border(1.dp, MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(16.dp))
                     .padding(20.dp)
             ) {
                 Column {
                     OutlinedTextField(
                         value = email,
                         onValueChange = { email = it },
-                        placeholder = { Text("Email (Gmail)", color = Color.Gray) },
+                        placeholder = { Text("Email (Gmail)", color = MaterialTheme.colorScheme.onSurfaceVariant) },
                         leadingIcon = { Icon(Icons.Outlined.Mail, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color(0xFF2A2A2E),
-                            unfocusedBorderColor = Color(0xFF2A2A2E),
+                            focusedBorderColor = MaterialTheme.colorScheme.surfaceVariant,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.surfaceVariant,
                             focusedContainerColor = Color.Transparent,
                             unfocusedContainerColor = Color.Transparent,
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White
+                            focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onBackground
                         ),
                         shape = RoundedCornerShape(8.dp)
                     )
@@ -172,14 +172,14 @@ fun AuthScreen(
                     OutlinedTextField(
                         value = password,
                         onValueChange = { password = it },
-                        placeholder = { Text("Password", color = Color.Gray) },
+                        placeholder = { Text("Password", color = MaterialTheme.colorScheme.onSurfaceVariant) },
                         leadingIcon = { Icon(Icons.Outlined.Lock, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
                         trailingIcon = {
                             IconButton(onClick = { passwordVisible = !passwordVisible }) {
                                 Icon(
                                     imageVector = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                                     contentDescription = if (passwordVisible) "Hide password" else "Show password",
-                                    tint = Color.Gray
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         },
@@ -187,12 +187,12 @@ fun AuthScreen(
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color(0xFF2A2A2E),
-                            unfocusedBorderColor = Color(0xFF2A2A2E),
+                            focusedBorderColor = MaterialTheme.colorScheme.surfaceVariant,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.surfaceVariant,
                             focusedContainerColor = Color.Transparent,
                             unfocusedContainerColor = Color.Transparent,
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White
+                            focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onBackground
                         ),
                         shape = RoundedCornerShape(8.dp)
                     )
@@ -209,11 +209,11 @@ fun AuthScreen(
                                 onCheckedChange = { rememberMe = it },
                                 colors = CheckboxDefaults.colors(
                                     checkedColor = MaterialTheme.colorScheme.primary,
-                                    uncheckedColor = Color.Gray,
-                                    checkmarkColor = Color.White
+                                    uncheckedColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    checkmarkColor = MaterialTheme.colorScheme.onBackground
                                 )
                             )
-                            Text("Remember me", color = Color.LightGray, fontSize = 14.sp)
+                            Text("Remember me", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
                         }
                         if (!isSignUp) {
                             Text(
@@ -245,7 +245,7 @@ fun AuthScreen(
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        Text(if (isSignUp) "Sign Up" else "Sign In", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                        Text(if (isSignUp) "Sign Up" else "Sign In", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
                     }
                 }
             }
@@ -253,9 +253,9 @@ fun AuthScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                Box(modifier = Modifier.weight(1f).height(1.dp).background(Color(0xFF2A2A2E)))
-                Text("Or continue with", color = Color.Gray, fontSize = 14.sp, modifier = Modifier.padding(horizontal = 16.dp))
-                Box(modifier = Modifier.weight(1f).height(1.dp).background(Color(0xFF2A2A2E)))
+                Box(modifier = Modifier.weight(1f).height(1.dp).background(MaterialTheme.colorScheme.surfaceVariant))
+                Text("Or continue with", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp, modifier = Modifier.padding(horizontal = 16.dp))
+                Box(modifier = Modifier.weight(1f).height(1.dp).background(MaterialTheme.colorScheme.surfaceVariant))
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -272,19 +272,19 @@ fun AuthScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onBackground),
                 shape = RoundedCornerShape(8.dp)
             ) {
                 // Placeholder for Google Icon
-                Text("G", color = Color.Black, fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(end = 8.dp))
-                Text("Sign in with Google", color = Color.Black, fontWeight = FontWeight.Medium, fontSize = 16.sp)
+                Text("G", color = MaterialTheme.colorScheme.background, fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(end = 8.dp))
+                Text("Sign in with Google", color = MaterialTheme.colorScheme.background, fontWeight = FontWeight.Medium, fontSize = 16.sp)
             }
 
             Spacer(modifier = Modifier.height(24.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = if (isSignUp) "Already have an account? " else "Don't have an account? ",
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 14.sp
                 )
                 Text(

@@ -127,7 +127,7 @@ fun AppNavigation() {
         gesturesEnabled = drawerState.isOpen,
         drawerContent = {
             ModalDrawerSheet(
-                drawerContainerColor = Color(0xFF161618),
+                drawerContainerColor = MaterialTheme.colorScheme.surface,
                 modifier = Modifier.width(300.dp)
             ) {
                 // Top Header Section with Gradient
@@ -137,7 +137,7 @@ fun AppNavigation() {
                         .height(200.dp)
                         .background(
                             brush = Brush.verticalGradient(
-                                colors = listOf(Color(0xFF2B2B2B), Color(0xFF161618))
+                                colors = listOf(MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.surface)
                             )
                         )
                         .padding(16.dp)
@@ -173,7 +173,7 @@ fun AppNavigation() {
                                     text = if (isGuest) "Guest User" else "E. Laurent",
                                     fontSize = 24.sp,
                                     fontFamily = FontFamily.SansSerif,
-                                    color = Color.White
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     if (!isGuest) {
@@ -183,7 +183,7 @@ fun AppNavigation() {
                                     Text(
                                         text = if (isGuest) "Free Account" else "Premium User",
                                         fontSize = 14.sp,
-                                        color = Color.LightGray
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                             }
@@ -192,11 +192,11 @@ fun AppNavigation() {
                                 modifier = Modifier
                                     .size(70.dp)
                                     .clip(CircleShape)
-                                    .background(Color.Gray)
+                                    .background(MaterialTheme.colorScheme.onSurfaceVariant)
                                     .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Icon(Icons.Default.Person, contentDescription = "Avatar", tint = Color.White, modifier = Modifier.size(40.dp))
+                                Icon(Icons.Default.Person, contentDescription = "Avatar", tint = MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(40.dp))
                             }
                         }
                     }
@@ -205,8 +205,8 @@ fun AppNavigation() {
                 Spacer(modifier = Modifier.height(16.dp))
                 
                 NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.Home, contentDescription = null, tint = if (currentRoute == Screen.Home.route) MaterialTheme.colorScheme.primary else Color.White) },
-                    label = { Text(stringResource(R.string.home), color = Color.White, fontSize = 16.sp) },
+                    icon = { Icon(Icons.Default.Home, contentDescription = null, tint = if (currentRoute == Screen.Home.route) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground) },
+                    label = { Text(stringResource(R.string.home), color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp) },
                     selected = currentRoute == Screen.Home.route,
                     colors = NavigationDrawerItemDefaults.colors(
                         selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
@@ -226,8 +226,8 @@ fun AppNavigation() {
                 )
 
                 NavigationDrawerItem(
-                    icon = { Icon(Icons.Outlined.Download, contentDescription = null, tint = Color.White) },
-                    label = { Text(stringResource(R.string.downloads), color = Color.White, fontSize = 16.sp) },
+                    icon = { Icon(Icons.Outlined.Download, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface) },
+                    label = { Text(stringResource(R.string.downloads), color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp) },
                     selected = currentRoute == Screen.Downloads.route,
                     colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
                     onClick = {
@@ -243,8 +243,8 @@ fun AppNavigation() {
                 )
                 
                 NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.Favorite, contentDescription = null, tint = Color.White) },
-                    label = { Text(stringResource(R.string.library), color = Color.White, fontSize = 16.sp) },
+                    icon = { Icon(Icons.Default.Favorite, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface) },
+                    label = { Text(stringResource(R.string.library), color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp) },
                     selected = currentRoute == Screen.Library.route,
                     colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
                     onClick = {
@@ -260,8 +260,8 @@ fun AppNavigation() {
                 )
 
                 NavigationDrawerItem(
-                    icon = { Icon(Icons.Outlined.Settings, contentDescription = null, tint = Color.White) },
-                    label = { Text(stringResource(R.string.settings), color = Color.White, fontSize = 16.sp) },
+                    icon = { Icon(Icons.Outlined.Settings, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface) },
+                    label = { Text(stringResource(R.string.settings), color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp) },
                     selected = currentRoute == Screen.Settings.route,
                     colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
                     onClick = {
@@ -276,11 +276,11 @@ fun AppNavigation() {
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
                 
-                HorizontalDivider(color = Color(0xFF2A2A2E), modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp))
+                HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant, modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp))
                 
                 NavigationDrawerItem(
-                    icon = { Icon(Icons.Outlined.Info, contentDescription = null, tint = Color.White) },
-                    label = { Text(stringResource(R.string.about_app), color = Color.White, fontSize = 16.sp) },
+                    icon = { Icon(Icons.Outlined.Info, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface) },
+                    label = { Text(stringResource(R.string.about_app), color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp) },
                     selected = currentRoute == Screen.About.route,
                     colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
                     onClick = {
@@ -296,8 +296,8 @@ fun AppNavigation() {
                 )
                 
                 NavigationDrawerItem(
-                    icon = { Icon(Icons.AutoMirrored.Filled.Help, contentDescription = null, tint = Color.White) },
-                    label = { Text(stringResource(R.string.help_support), color = Color.White, fontSize = 16.sp) },
+                    icon = { Icon(Icons.AutoMirrored.Filled.Help, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface) },
+                    label = { Text(stringResource(R.string.help_support), color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp) },
                     selected = false,
                     colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
                     onClick = { scope.launch { drawerState.close() } },
@@ -306,7 +306,7 @@ fun AppNavigation() {
                 
                 Spacer(modifier = Modifier.weight(1f))
                 
-                HorizontalDivider(color = Color(0xFF2A2A2E), modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp))
+                HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant, modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp))
 
                 // Bottom Area (Logout)
                 Box(
@@ -318,8 +318,8 @@ fun AppNavigation() {
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(12.dp))
-                            .border(1.dp, Color(0xFF2A2A2E), RoundedCornerShape(12.dp))
-                            .background(Color(0xFF161618))
+                            .border(1.dp, MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(12.dp))
+                            .background(MaterialTheme.colorScheme.surface)
                             .clickable { 
                                 if (isGuest) {
                                     scope.launch { drawerState.close() }
@@ -333,7 +333,7 @@ fun AppNavigation() {
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(if (isGuest) stringResource(R.string.login) else stringResource(R.string.logout), color = Color.White, fontSize = 16.sp)
+                        Text(if (isGuest) stringResource(R.string.login) else stringResource(R.string.logout), color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp)
                         Spacer(modifier = Modifier.width(12.dp))
                         Icon(if (isGuest) Icons.Default.Person else Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Log", tint = MaterialTheme.colorScheme.primary)
                     }
@@ -355,11 +355,11 @@ fun AppNavigation() {
                     }) { Text(stringResource(R.string.yes), color = Color.Red) }
                 },
                 dismissButton = {
-                    TextButton(onClick = { showLogoutDialog = false }) { Text(stringResource(R.string.no), color = Color.White) }
+                    TextButton(onClick = { showLogoutDialog = false }) { Text(stringResource(R.string.no), color = MaterialTheme.colorScheme.onSurface) }
                 },
-                containerColor = Color(0xFF1E1E20),
-                titleContentColor = Color.White,
-                textContentColor = Color.LightGray
+                containerColor = MaterialTheme.colorScheme.surface,
+                titleContentColor = MaterialTheme.colorScheme.onSurface,
+                textContentColor = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
         if (isUpdatingData && currentRoute != Screen.Splash.route && currentRoute != Screen.Auth.route && currentRoute != Screen.Onboarding.route && !updateFinishedShowGreen) {
@@ -375,7 +375,7 @@ fun AppNavigation() {
             )
         }
         Scaffold(
-            containerColor = Color.Black,
+            containerColor = MaterialTheme.colorScheme.background,
             topBar = {
                 Column {
 
@@ -406,7 +406,7 @@ fun AppNavigation() {
                                     },
                                 contentAlignment = Alignment.Center
                             ) {
-                                Icon(Icons.Default.Person, contentDescription = "Avatar", tint = Color.LightGray)
+                                Icon(Icons.Default.Person, contentDescription = "Avatar", tint = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                             
                             if (!isSearchExpanded) {
@@ -436,23 +436,23 @@ fun AppNavigation() {
                                 )
                             } else {
                                 // Right Icons
-                                Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.White, modifier = Modifier.size(24.dp).clickable { isSearchExpanded = true })
+                                Icon(Icons.Default.Search, contentDescription = "Search", tint = MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(24.dp).clickable { isSearchExpanded = true })
                                 Spacer(modifier = Modifier.width(16.dp))
                                 BadgedBox(
                                     badge = {
                                         Badge(
                                             containerColor = MaterialTheme.colorScheme.primary, // Red badge
-                                            contentColor = Color.White,
+                                            contentColor = MaterialTheme.colorScheme.onPrimary,
                                             modifier = Modifier.offset(x = (-4).dp, y = 4.dp)
                                         ) {
                                             Text("1")
                                         }
                                     }
                                 ) {
-                                    Icon(Icons.Outlined.Notifications, contentDescription = "Notifications", tint = Color.White, modifier = Modifier.size(24.dp))
+                                    Icon(Icons.Outlined.Notifications, contentDescription = "Notifications", tint = MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(24.dp))
                                 }
                                 Spacer(modifier = Modifier.width(16.dp))
-                                Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color.White, modifier = Modifier.size(24.dp).clickable { scope.launch { drawerState.open() } })
+                                Icon(Icons.Default.Menu, contentDescription = "Menu", tint = MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(24.dp).clickable { scope.launch { drawerState.open() } })
                             }
 
                         }
@@ -470,7 +470,7 @@ fun AppNavigation() {
                         ) {
                             Text(
                                 text = if (updateFinishedShowGreen) "تم التحقق من جميع المواقع بنجاح" else stringResource(R.string.updating_data),
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.onBackground,
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold
                             )

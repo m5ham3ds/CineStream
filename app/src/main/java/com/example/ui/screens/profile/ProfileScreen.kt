@@ -47,8 +47,8 @@ fun ProfileScreen() {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
             Box(modifier = Modifier.size(80.dp)) {
                 // Avatar placeholder
-                Box(modifier = Modifier.fillMaxSize().clip(CircleShape).background(Color(0xFF2A2A2E)), contentAlignment = Alignment.Center) {
-                    Icon(Icons.Outlined.Person, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(40.dp))
+                Box(modifier = Modifier.fillMaxSize().clip(CircleShape).background(MaterialTheme.colorScheme.surfaceVariant), contentAlignment = Alignment.Center) {
+                    Icon(Icons.Outlined.Person, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(40.dp))
                 }
                 // Edit Icon
                 Box(
@@ -56,26 +56,26 @@ fun ProfileScreen() {
                         .align(Alignment.BottomEnd)
                         .size(24.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFF161618))
-                        .border(1.dp, Color(0xFF2A2A2E), CircleShape)
+                        .background(MaterialTheme.colorScheme.surface)
+                        .border(1.dp, MaterialTheme.colorScheme.surfaceVariant, CircleShape)
                         .clickable { },
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Default.Edit, contentDescription = "Edit Profile", tint = Color.LightGray, modifier = Modifier.size(14.dp))
+                    Icon(Icons.Default.Edit, contentDescription = "Edit Profile", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(14.dp))
                 }
             }
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text("Mohamed Salah", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                Text("Mohamed Salah", color = MaterialTheme.colorScheme.onBackground, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.height(4.dp))
-                Text("mohamed.salah@example.com", color = Color.Gray, fontSize = 14.sp)
+                Text("mohamed.salah@example.com", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     // Premium Badge
                     Row(
                         modifier = Modifier
                             .clip(RoundedCornerShape(4.dp))
-                            .background(Color(0xFF4A1010))
+                            .background(MaterialTheme.colorScheme.primaryContainer)
                             .padding(horizontal = 6.dp, vertical = 2.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -87,7 +87,7 @@ fun ProfileScreen() {
                     Text("Member since May 2024", color = Color.DarkGray, fontSize = 10.sp)
                 }
             }
-            Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.Gray)
+            Icon(Icons.Default.ChevronRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -97,17 +97,17 @@ fun ProfileScreen() {
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
-                .background(Color(0xFF161618))
-                .border(1.dp, Color(0xFF2A2A2E), RoundedCornerShape(12.dp))
+                .background(MaterialTheme.colorScheme.surface)
+                .border(1.dp, MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(12.dp))
                 .padding(vertical = 16.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             StatItem(icon = Icons.Outlined.LocalMovies, count = "24", label = "Movies")
-            HorizontalDivider(color = Color(0xFF2A2A2E), modifier = Modifier.height(40.dp).width(1.dp))
+            HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant, modifier = Modifier.height(40.dp).width(1.dp))
             StatItem(icon = Icons.Outlined.LiveTv, count = "12", label = "Series")
-            HorizontalDivider(color = Color(0xFF2A2A2E), modifier = Modifier.height(40.dp).width(1.dp))
+            HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant, modifier = Modifier.height(40.dp).width(1.dp))
             StatItem(icon = Icons.Outlined.FavoriteBorder, count = "18", label = "Watchlist")
-            HorizontalDivider(color = Color(0xFF2A2A2E), modifier = Modifier.height(40.dp).width(1.dp))
+            HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant, modifier = Modifier.height(40.dp).width(1.dp))
             StatItem(icon = Icons.Outlined.Download, count = "7", label = "Downloads")
         }
 
@@ -118,7 +118,7 @@ fun ProfileScreen() {
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color(0xFF161618))
+                .background(MaterialTheme.colorScheme.surface)
                 .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f), RoundedCornerShape(16.dp))
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -127,7 +127,7 @@ fun ProfileScreen() {
                 modifier = Modifier
                     .size(48.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFF2A1010)),
+                    .background(MaterialTheme.colorScheme.secondaryContainer),
                 contentAlignment = Alignment.Center
             ) {
                 Text("👑", fontSize = 24.sp)
@@ -135,12 +135,12 @@ fun ProfileScreen() {
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("You're Premium!", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    Text("You're Premium!", color = MaterialTheme.colorScheme.onBackground, fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.width(4.dp))
                     Text("✨", fontSize = 14.sp)
                 }
                 Spacer(modifier = Modifier.height(4.dp))
-                Text("Enjoy ad-free streaming and exclusive content.", color = Color.Gray, fontSize = 12.sp, lineHeight = 16.sp)
+                Text("Enjoy ad-free streaming and exclusive content.", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp, lineHeight = 16.sp)
             }
             Spacer(modifier = Modifier.width(16.dp))
             Button(
@@ -150,21 +150,21 @@ fun ProfileScreen() {
                 modifier = Modifier.height(36.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp)
             ) {
-                Text("Manage Plan", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                Text("Manage Plan", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
             }
         }
 
         Spacer(modifier = Modifier.height(32.dp))
 
         // Account Section
-        Text("Account", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        Text("Account", color = MaterialTheme.colorScheme.onBackground, fontSize = 18.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(12.dp))
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color(0xFF161618))
-                .border(1.dp, Color(0xFF2A2A2E), RoundedCornerShape(16.dp))
+                .background(MaterialTheme.colorScheme.surface)
+                .border(1.dp, MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(16.dp))
         ) {
             ProfileListItem(icon = Icons.Outlined.Person, title = "Account Information", subtitle = "Update your personal details", isLast = false)
             ProfileListItem(icon = Icons.Outlined.Security, title = "Security", subtitle = "Password, device management", isLast = false)
@@ -174,14 +174,14 @@ fun ProfileScreen() {
         Spacer(modifier = Modifier.height(24.dp))
 
         // Preferences Section
-        Text("Preferences", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        Text("Preferences", color = MaterialTheme.colorScheme.onBackground, fontSize = 18.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(12.dp))
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color(0xFF161618))
-                .border(1.dp, Color(0xFF2A2A2E), RoundedCornerShape(16.dp))
+                .background(MaterialTheme.colorScheme.surface)
+                .border(1.dp, MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(16.dp))
         ) {
             ProfileListItem(icon = Icons.Outlined.Settings, title = "App Settings", subtitle = "Customize your experience", isLast = false)
             ProfileListItem(icon = Icons.Outlined.PlayCircleOutline, title = "Playback", subtitle = "Quality, subtitles, autoplay", isLast = false)
@@ -197,9 +197,9 @@ fun StatItem(icon: androidx.compose.ui.graphics.vector.ImageVector, count: Strin
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
         Spacer(modifier = Modifier.height(4.dp))
-        Text(count, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        Text(count, color = MaterialTheme.colorScheme.onBackground, fontSize = 16.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(2.dp))
-        Text(label, color = Color.Gray, fontSize = 10.sp)
+        Text(label, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 10.sp)
     }
 }
 
@@ -217,20 +217,20 @@ fun ProfileListItem(icon: androidx.compose.ui.graphics.vector.ImageVector, title
             modifier = Modifier
                 .size(40.dp)
                 .clip(CircleShape)
-                .background(Color(0xFF2A2A2E).copy(alpha = 0.5f)),
+                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
             contentAlignment = Alignment.Center
         ) {
             Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
         }
         Spacer(modifier = Modifier.width(16.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text(title, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+            Text(title, color = MaterialTheme.colorScheme.onBackground, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
             Spacer(modifier = Modifier.height(2.dp))
-            Text(subtitle, color = Color.Gray, fontSize = 12.sp)
+            Text(subtitle, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
         }
-        Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.Gray)
+        Icon(Icons.Default.ChevronRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
     }
     if (!isLast) {
-        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(Color(0xFF2A2A2E)))
+        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(MaterialTheme.colorScheme.surfaceVariant))
     }
 }

@@ -98,7 +98,7 @@ fun PlayerScreen(videoUrl: String, onBack: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(MaterialTheme.colorScheme.background)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null
@@ -135,7 +135,7 @@ fun PlayerScreen(videoUrl: String, onBack: () -> Unit) {
                             .align(Alignment.CenterStart)
                             .padding(32.dp)
                     ) {
-                        Icon(Icons.Default.Lock, contentDescription = "Unlock", tint = Color.White, modifier = Modifier.size(32.dp))
+                        Icon(Icons.Default.Lock, contentDescription = "Unlock", tint = MaterialTheme.colorScheme.onBackground, modifier = Modifier.size(32.dp))
                     }
                 } else {
                     // Full Controls
@@ -148,12 +148,12 @@ fun PlayerScreen(videoUrl: String, onBack: () -> Unit) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         IconButton(onClick = onBack) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onBackground)
                         }
                         Spacer(modifier = Modifier.weight(1f))
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("Now Playing", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                            Text("Episode 1", color = Color.LightGray, fontSize = 14.sp)
+                            Text("Now Playing", color = MaterialTheme.colorScheme.onBackground, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                            Text("Episode 1", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
                         }
                         Spacer(modifier = Modifier.weight(1f))
                         Spacer(modifier = Modifier.width(48.dp)) // Balance the back button
@@ -180,8 +180,8 @@ fun PlayerScreen(videoUrl: String, onBack: () -> Unit) {
                             modifier = Modifier.size(56.dp)
                         ) {
                             Box(contentAlignment = Alignment.Center) {
-                                Icon(Icons.Default.Refresh, contentDescription = "Rewind", tint = Color.White, modifier = Modifier.size(48.dp).graphicsLayer { scaleX = -1f })
-                                Text("5", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                Icon(Icons.Default.Refresh, contentDescription = "Rewind", tint = MaterialTheme.colorScheme.onBackground, modifier = Modifier.size(48.dp).graphicsLayer { scaleX = -1f })
+                                Text("5", color = MaterialTheme.colorScheme.onBackground, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                             }
                         }
 
@@ -194,7 +194,7 @@ fun PlayerScreen(videoUrl: String, onBack: () -> Unit) {
                             Icon(
                                 if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
                                 contentDescription = "Play/Pause",
-                                tint = Color.White,
+                                tint = MaterialTheme.colorScheme.onBackground,
                                 modifier = Modifier.size(64.dp)
                             )
                         }
@@ -204,8 +204,8 @@ fun PlayerScreen(videoUrl: String, onBack: () -> Unit) {
                             modifier = Modifier.size(56.dp)
                         ) {
                             Box(contentAlignment = Alignment.Center) {
-                                Icon(Icons.Default.Refresh, contentDescription = "Forward", tint = Color.White, modifier = Modifier.size(48.dp))
-                                Text("5", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                Icon(Icons.Default.Refresh, contentDescription = "Forward", tint = MaterialTheme.colorScheme.onBackground, modifier = Modifier.size(48.dp))
+                                Text("5", color = MaterialTheme.colorScheme.onBackground, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                             }
                         }
                     }
@@ -222,7 +222,7 @@ fun PlayerScreen(videoUrl: String, onBack: () -> Unit) {
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text(formatTime(currentTime), color = Color.White, fontSize = 14.sp)
+                            Text(formatTime(currentTime), color = MaterialTheme.colorScheme.onBackground, fontSize = 14.sp)
                             Spacer(modifier = Modifier.width(12.dp))
                             Slider(
                                 value = if (totalDuration > 0) (currentTime.toFloat() / totalDuration.toFloat()) else 0f,
@@ -235,11 +235,11 @@ fun PlayerScreen(videoUrl: String, onBack: () -> Unit) {
                                 colors = SliderDefaults.colors(
                                     thumbColor = Color(0xFF00A8FF),
                                     activeTrackColor = Color(0xFF00A8FF),
-                                    inactiveTrackColor = Color.Gray.copy(alpha = 0.5f)
+                                    inactiveTrackColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                                 )
                             )
                             Spacer(modifier = Modifier.width(12.dp))
-                            Text(formatTime(totalDuration), color = Color.White, fontSize = 14.sp)
+                            Text(formatTime(totalDuration), color = MaterialTheme.colorScheme.onBackground, fontSize = 14.sp)
                         }
 
                         Spacer(modifier = Modifier.height(8.dp))
@@ -281,7 +281,7 @@ fun PlayerScreen(videoUrl: String, onBack: () -> Unit) {
 @Composable
 fun VerticalSlider(value: Float, onValueChange: (Float) -> Unit, icon: ImageVector) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Icon(icon, contentDescription = null, tint = Color.White)
+        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onBackground)
         Spacer(modifier = Modifier.height(16.dp))
         Box(
             modifier = Modifier
@@ -299,9 +299,9 @@ fun VerticalSlider(value: Float, onValueChange: (Float) -> Unit, icon: ImageVect
                         transformOrigin = TransformOrigin(0.5f, 0.5f)
                     },
                 colors = SliderDefaults.colors(
-                    thumbColor = Color.White,
-                    activeTrackColor = Color.White,
-                    inactiveTrackColor = Color.Gray.copy(alpha = 0.5f)
+                    thumbColor = MaterialTheme.colorScheme.onBackground,
+                    activeTrackColor = MaterialTheme.colorScheme.onBackground,
+                    inactiveTrackColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                 )
             )
         }
@@ -315,10 +315,10 @@ fun BottomAction(icon: ImageVector?, text: String, onClick: () -> Unit) {
         modifier = Modifier.clickable(onClick = onClick).padding(8.dp)
     ) {
         if (icon != null) {
-            Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(20.dp))
+            Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onBackground, modifier = Modifier.size(20.dp))
             Spacer(modifier = Modifier.width(6.dp))
         }
-        Text(text, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+        Text(text, color = MaterialTheme.colorScheme.onBackground, fontSize = 14.sp, fontWeight = FontWeight.Medium)
     }
 }
 

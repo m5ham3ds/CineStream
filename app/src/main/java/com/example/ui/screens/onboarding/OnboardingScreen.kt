@@ -57,7 +57,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black),
+            .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
         // Background Image changes based on page
@@ -78,7 +78,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
                             Color.Black.copy(alpha = 0.3f),
                             Color.Black.copy(alpha = 0.7f),
                             Color.Black.copy(alpha = 0.9f),
-                            Color.Black
+                            MaterialTheme.colorScheme.background
                         )
                     )
                 )
@@ -94,7 +94,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
             
             Text(
                 text = "Welcome to",
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -110,7 +110,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
             Text(
                 text = "Your ultimate destination for\nmovies and series. Enjoy endless\nentertainment, anytime, anywhere.",
                 style = MaterialTheme.typography.bodyLarge,
-                color = Color.LightGray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
                 lineHeight = 24.sp
             )
@@ -127,7 +127,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
                 ) {
                     Text(
                         text = pages[page].title,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center
@@ -135,7 +135,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = pages[page].description,
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 16.sp,
                         textAlign = TextAlign.Center,
                         lineHeight = 22.sp
@@ -182,7 +182,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
                     text = if (pagerState.currentPage < pages.size - 1) "Next" else "Get Started", 
                     fontSize = 16.sp, 
                     fontWeight = FontWeight.Bold, 
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
             
@@ -190,7 +190,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
             
             Text(
                 text = buildAnnotatedString {
-                    withStyle(style = SpanStyle(color = Color.LightGray)) {
+                    withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onSurfaceVariant)) {
                         append("Already have an account? ")
                     }
                     withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {

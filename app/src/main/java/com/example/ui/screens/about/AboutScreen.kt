@@ -48,14 +48,14 @@ fun AboutScreen(onBack: () -> Unit = {}) {
             Column(modifier = Modifier.weight(0.6f)) {
                 Text(
                     text = "About CineStream",
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = "CineStream is your premium cinematic experience. Stream your favorite movies and series in high quality, anytime, anywhere.",
-                    color = Color.LightGray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 14.sp,
                     lineHeight = 20.sp
                 )
@@ -67,17 +67,17 @@ fun AboutScreen(onBack: () -> Unit = {}) {
                 Row(
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
-                        .background(Color(0xFF161618))
-                        .border(1.dp, Color(0xFF2A2A2E), RoundedCornerShape(8.dp))
+                        .background(MaterialTheme.colorScheme.surface)
+                        .border(1.dp, MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp))
                         .padding(horizontal = 12.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(Icons.Outlined.Verified, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Version 1.0.0", color = Color.LightGray, fontSize = 12.sp)
+                    Text("Version 1.0.0", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                Text("Last updated: May 25, 2024", color = Color.Gray, fontSize = 12.sp)
+                Text("Last updated: May 25, 2024", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
             }
 
             // Logo Image placeholder
@@ -88,7 +88,7 @@ fun AboutScreen(onBack: () -> Unit = {}) {
                     modifier = Modifier
                         .size(120.dp)
                         .clip(RoundedCornerShape(24.dp))
-                        .border(1.dp, Color(0xFF2A2A2E), RoundedCornerShape(24.dp)),
+                        .border(1.dp, MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(24.dp)),
                     contentScale = ContentScale.Crop,
                     alpha = 0.8f
                 )
@@ -104,8 +104,8 @@ fun AboutScreen(onBack: () -> Unit = {}) {
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color(0xFF161618))
-                .border(1.dp, Color(0xFF2A2A2E), RoundedCornerShape(16.dp))
+                .background(MaterialTheme.colorScheme.surface)
+                .border(1.dp, MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(16.dp))
                 .padding(20.dp)
         ) {
             Row(horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
@@ -114,12 +114,12 @@ fun AboutScreen(onBack: () -> Unit = {}) {
                         // Target icon placeholder
                         Icon(Icons.Outlined.Verified, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Our Mission", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                        Text("Our Mission", color = MaterialTheme.colorScheme.onBackground, fontSize = 18.sp, fontWeight = FontWeight.Bold)
                     }
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
                         "To deliver the best entertainment experience with a simple, fast and beautiful streaming platform.",
-                        color = Color.LightGray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 14.sp,
                         lineHeight = 20.sp
                     )
@@ -155,8 +155,8 @@ fun AboutScreen(onBack: () -> Unit = {}) {
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color(0xFF161618))
-                .border(1.dp, Color(0xFF2A2A2E), RoundedCornerShape(16.dp))
+                .background(MaterialTheme.colorScheme.surface)
+                .border(1.dp, MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(16.dp))
         ) {
             AboutLinkItem(icon = Icons.Outlined.Groups, title = "Meet the Team", isLast = false)
             AboutLinkItem(icon = Icons.Outlined.Policy, title = "Terms of Service", isLast = false)
@@ -172,7 +172,7 @@ fun AboutScreen(onBack: () -> Unit = {}) {
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
             shape = RoundedCornerShape(12.dp)
         ) {
-            Text("Check for Updates", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
+            Text("Check for Updates", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
         }
         Spacer(modifier = Modifier.height(32.dp))
     }
@@ -183,16 +183,16 @@ fun FeatureCard(modifier: Modifier = Modifier, icon: androidx.compose.ui.graphic
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(16.dp))
-            .background(Color(0xFF161618))
-            .border(1.dp, Color(0xFF2A2A2E), RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.surface)
+            .border(1.dp, MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(16.dp))
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
         Spacer(modifier = Modifier.height(12.dp))
-        Text(title, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+        Text(title, color = MaterialTheme.colorScheme.onBackground, fontSize = 16.sp, fontWeight = FontWeight.Bold, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
         Spacer(modifier = Modifier.height(8.dp))
-        Text(subtitle, color = Color.Gray, fontSize = 12.sp, textAlign = androidx.compose.ui.text.style.TextAlign.Center, lineHeight = 16.sp)
+        Text(subtitle, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp, textAlign = androidx.compose.ui.text.style.TextAlign.Center, lineHeight = 16.sp)
     }
 }
 
@@ -205,12 +205,12 @@ fun AboutLinkItem(icon: androidx.compose.ui.graphics.vector.ImageVector, title: 
             .padding(horizontal = 16.dp, vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(icon, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(20.dp))
+        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
         Spacer(modifier = Modifier.width(16.dp))
-        Text(title, color = Color.White, fontSize = 16.sp, modifier = Modifier.weight(1f))
-        Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.Gray)
+        Text(title, color = MaterialTheme.colorScheme.onBackground, fontSize = 16.sp, modifier = Modifier.weight(1f))
+        Icon(Icons.Default.ChevronRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
     }
     if (!isLast) {
-        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(Color(0xFF2A2A2E)))
+        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(MaterialTheme.colorScheme.surfaceVariant))
     }
 }

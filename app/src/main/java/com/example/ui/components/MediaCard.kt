@@ -68,8 +68,8 @@ fun MediaCard(
     if (showRemoveDialog) {
         AlertDialog(
             onDismissRequest = { showRemoveDialog = false },
-            title = { Text("إزالة من المفضلة", color = Color.White) },
-            text = { Text("هل أنت متأكد أنك تريد إزالة هذا العمل من المفضلة؟", color = Color.LightGray) },
+            title = { Text("إزالة من المفضلة", color = MaterialTheme.colorScheme.onSurface) },
+            text = { Text("هل أنت متأكد أنك تريد إزالة هذا العمل من المفضلة؟", color = MaterialTheme.colorScheme.onSurfaceVariant) },
             confirmButton = {
                 val scope = rememberCoroutineScope()
                 TextButton(onClick = {
@@ -85,10 +85,10 @@ fun MediaCard(
             },
             dismissButton = {
                 TextButton(onClick = { showRemoveDialog = false }) {
-                    Text("إلغاء", color = Color.White)
+                    Text("إلغاء", color = MaterialTheme.colorScheme.onSurface)
                 }
             },
-            containerColor = Color(0xFF1E1E20)
+            containerColor = MaterialTheme.colorScheme.surface
         )
     }
 

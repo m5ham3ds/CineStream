@@ -154,7 +154,7 @@ fun ContinueWatchingCardShared(item: HistoryItem, onClick: () -> Unit) {
         modifier = Modifier
             .width(260.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFF1E1E20))
+            .background(MaterialTheme.colorScheme.surface)
             .clickable { onClick() }
     ) {
         Row(
@@ -178,7 +178,7 @@ fun ContinueWatchingCardShared(item: HistoryItem, onClick: () -> Unit) {
                     .weight(1f)
                     .padding(horizontal = 12.dp)
             ) {
-                Text(item.title, color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, maxLines = 1)
+                Text(item.title, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, maxLines = 1)
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(if (item.isMovie) "فيلم" else "مسلسل", color = Color.Gray, fontSize = 12.sp)
             }

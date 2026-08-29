@@ -1,6 +1,7 @@
 package com.example.ui.components
 
 import android.app.Activity
+import androidx.compose.material3.MaterialTheme
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.pm.ActivityInfo
@@ -105,7 +106,7 @@ fun InlineYouTubePlayer(
                 decorFitsSystemWindows = false
             )
         ) {
-            Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
+            Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
                 AndroidView(
                     modifier = Modifier.fillMaxSize(),
                     factory = { ctx ->

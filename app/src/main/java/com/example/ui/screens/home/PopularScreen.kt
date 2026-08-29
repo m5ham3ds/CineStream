@@ -41,14 +41,14 @@ fun PopularScreen(
         else -> (uiState.trendingMovies.map { it to true } + uiState.trendingSeries.map { it to false } + uiState.animeSeries.map { it to false })
     }
     
-    Column(modifier = Modifier.fillMaxSize().background(Color.Black)) {
+    Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         CustomTopBar(
             titleFirst = "Popular", titleSecond = "Picks", subtitle = "Most watched this week", onBack = onBack, showFilter = true
         )
         
         Row(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
-                .border(1.dp, Color(0xFF2A2A2E), RoundedCornerShape(12.dp)).clip(RoundedCornerShape(12.dp)),
+                .border(1.dp, MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(12.dp)).clip(RoundedCornerShape(12.dp)),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             val tabs = listOf("All", "Movies", "Series", "Anime")
@@ -56,12 +56,12 @@ fun PopularScreen(
                 val isSelected = selectedTab == tab
                 Box(
                     modifier = Modifier.weight(1f).clickable { selectedTab = tab }
-                        .background(if (isSelected) Color(0xFF2A2A2E) else Color.Transparent)
+                        .background(if (isSelected) MaterialTheme.colorScheme.surfaceVariant else Color.Transparent)
                         .border(if (isSelected) 1.dp else 0.dp, if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent, RoundedCornerShape(12.dp))
                         .padding(vertical = 12.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(tab, color = if (isSelected) Color.White else Color.Gray, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal, fontSize = 14.sp)
+                    Text(tab, color = if (isSelected) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal, fontSize = 14.sp)
                 }
             }
         }

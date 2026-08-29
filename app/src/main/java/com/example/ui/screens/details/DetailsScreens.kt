@@ -74,7 +74,7 @@ fun MovieDetailsScreen(
     }
 
     Scaffold(
-        containerColor = Color.Black
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         if (uiState.isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
@@ -102,8 +102,8 @@ fun MovieDetailsScreen(
                 if (showDeleteConfirm) {
                     AlertDialog(
                         onDismissRequest = { showDeleteConfirm = false },
-                        title = { Text("حذف التنزيل", color = Color.White) },
-                        text = { Text("هل أنت متأكد أنك تريد حذف هذا العنصر من التنزيلات؟", color = Color.LightGray) },
+                        title = { Text("حذف التنزيل", color = MaterialTheme.colorScheme.onBackground) },
+                        text = { Text("هل أنت متأكد أنك تريد حذف هذا العنصر من التنزيلات؟", color = MaterialTheme.colorScheme.onSurfaceVariant) },
                         confirmButton = {
                             TextButton(onClick = {
                                 downloadItem?.let {
@@ -113,9 +113,9 @@ fun MovieDetailsScreen(
                             }) { Text("نعم، احذف", color = Color.Red) }
                         },
                         dismissButton = {
-                            TextButton(onClick = { showDeleteConfirm = false }) { Text("إلغاء", color = Color.White) }
+                            TextButton(onClick = { showDeleteConfirm = false }) { Text("إلغاء", color = MaterialTheme.colorScheme.onBackground) }
                         },
-                        containerColor = Color(0xFF161618)
+                        containerColor = MaterialTheme.colorScheme.surface
                     )
                 }
                 
@@ -130,11 +130,11 @@ fun MovieDetailsScreen(
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                        Text(text = movie.title, style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold, color = Color.White)
+                        Text(text = movie.title, style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
                         Spacer(modifier = Modifier.height(8.dp))
                         
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text("${movie.year} • ${movie.genres.take(3).joinToString(" • ")}", color = Color.LightGray, style = MaterialTheme.typography.bodyMedium)
+                            Text("${movie.year} • ${movie.genres.take(3).joinToString(" • ")}", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium)
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                         
@@ -142,9 +142,9 @@ fun MovieDetailsScreen(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(Icons.Default.Star, contentDescription = "Rating", tint = Color(0xFFFFC107), modifier = Modifier.size(18.dp))
                                 Spacer(modifier = Modifier.width(4.dp))
-                                Text(String.format("%.1f", movie.rating), color = Color.White, fontWeight = FontWeight.Bold)
+                                Text(String.format("%.1f", movie.rating), color = MaterialTheme.colorScheme.onBackground, fontWeight = FontWeight.Bold)
                             }
-                            Badge(containerColor = Color.DarkGray) { Text("18+", color = Color.White) }
+                            Badge(containerColor = Color.DarkGray) { Text("18+", color = MaterialTheme.colorScheme.onBackground) }
                         }
                     }
                 } else {
@@ -157,18 +157,18 @@ fun MovieDetailsScreen(
                         )
                         Box(modifier = Modifier.fillMaxSize().background(
                             Brush.verticalGradient(
-                                colors = listOf(Color.Transparent, Color.Black.copy(alpha=0.6f), Color.Black),
+                                colors = listOf(Color.Transparent, Color.Black.copy(alpha=0.6f), MaterialTheme.colorScheme.background),
                                 startY = 0f
                             )
                         ))
                         Column(
                             modifier = Modifier.align(Alignment.BottomStart).padding(16.dp)
                         ) {
-                            Text(text = movie.title, style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold, color = Color.White)
+                            Text(text = movie.title, style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
                             Spacer(modifier = Modifier.height(8.dp))
                             
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text("${movie.year} • ${movie.genres.take(3).joinToString(" • ")}", color = Color.LightGray, style = MaterialTheme.typography.bodyMedium)
+                                Text("${movie.year} • ${movie.genres.take(3).joinToString(" • ")}", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium)
                             }
                             Spacer(modifier = Modifier.height(8.dp))
                             
@@ -176,9 +176,9 @@ fun MovieDetailsScreen(
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(Icons.Default.Star, contentDescription = "Rating", tint = Color(0xFFFFC107), modifier = Modifier.size(18.dp))
                                     Spacer(modifier = Modifier.width(4.dp))
-                                    Text(String.format("%.1f", movie.rating), color = Color.White, fontWeight = FontWeight.Bold)
+                                    Text(String.format("%.1f", movie.rating), color = MaterialTheme.colorScheme.onBackground, fontWeight = FontWeight.Bold)
                                 }
-                                Badge(containerColor = Color.DarkGray) { Text("18+", color = Color.White) } // Placeholder for age rating
+                                Badge(containerColor = Color.DarkGray) { Text("18+", color = MaterialTheme.colorScheme.onBackground) } // Placeholder for age rating
                             }
                         }
                     }
@@ -197,9 +197,9 @@ fun MovieDetailsScreen(
                         modifier = Modifier.weight(1f).height(50.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) {
-                        Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = Color.White)
+                        Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = MaterialTheme.colorScheme.onBackground)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(if (downloadItem?.isCompleted == true) "Resume Offline" else "Resume", color = Color.White, fontWeight = FontWeight.Bold)
+                        Text(if (downloadItem?.isCompleted == true) "Resume Offline" else "Resume", color = MaterialTheme.colorScheme.onBackground, fontWeight = FontWeight.Bold)
                     }
                     IconButton(
                         onClick = { 
@@ -217,7 +217,7 @@ fun MovieDetailsScreen(
                         } else if (downloadItem != null) {
                             CircularProgressIndicator(progress = { downloadItem.progress }, color = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
                         } else {
-                            Icon(Icons.Default.Download, contentDescription = "Download", tint = Color.White)
+                            Icon(Icons.Default.Download, contentDescription = "Download", tint = MaterialTheme.colorScheme.onBackground)
                         }
                     }
                     IconButton(
@@ -230,7 +230,7 @@ fun MovieDetailsScreen(
                         },
                         modifier = Modifier.size(50.dp).background(Color.DarkGray, CircleShape)
                     ) {
-                        Icon(if (isFavorite) Icons.Default.Bookmark else Icons.Default.BookmarkBorder, contentDescription = "Favorite", tint = Color.White)
+                        Icon(if (isFavorite) Icons.Default.Bookmark else Icons.Default.BookmarkBorder, contentDescription = "Favorite", tint = MaterialTheme.colorScheme.onBackground)
                     }
                 }
                 
@@ -238,7 +238,7 @@ fun MovieDetailsScreen(
                 
                 // Trailers
                 if (movie.trailers.isNotEmpty()) {
-                    Text("Trailers", color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
+                    Text("Trailers", color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
                     Spacer(modifier = Modifier.height(8.dp))
                     LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         items(movie.trailers) { trailer ->
@@ -251,15 +251,15 @@ fun MovieDetailsScreen(
                 }
                 
                 // Overview
-                Text("Overview", color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
+                Text("Overview", color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(movie.overview, color = Color.LightGray, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(horizontal = 16.dp))
+                Text(movie.overview, color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(horizontal = 16.dp))
                 
                 Spacer(modifier = Modifier.height(24.dp))
                 
                 // Cast
                 if (movie.cast.isNotEmpty()) {
-                    Text("Cast", color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
+                    Text("Cast", color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
                     Spacer(modifier = Modifier.height(8.dp))
                     LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                         items(movie.cast) { CastMemberCard(it) { onPersonClick(it.id) } }
@@ -306,7 +306,7 @@ fun MovieDetailsScreen(
                     .padding(top = padding.calculateTopPadding() + 8.dp, start = 16.dp)
                     .background(Color.Black.copy(alpha=0.3f), CircleShape)
             ) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onBackground)
             }
 
         }
@@ -339,7 +339,7 @@ fun SeriesDetailsScreen(
     }
 
     Scaffold(
-        containerColor = Color.Black
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         if (uiState.isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
@@ -367,8 +367,8 @@ fun SeriesDetailsScreen(
                 if (showDeleteConfirm) {
                     AlertDialog(
                         onDismissRequest = { showDeleteConfirm = false },
-                        title = { Text("حذف التنزيل", color = Color.White) },
-                        text = { Text("هل أنت متأكد أنك تريد حذف هذا العنصر من التنزيلات؟", color = Color.LightGray) },
+                        title = { Text("حذف التنزيل", color = MaterialTheme.colorScheme.onBackground) },
+                        text = { Text("هل أنت متأكد أنك تريد حذف هذا العنصر من التنزيلات؟", color = MaterialTheme.colorScheme.onSurfaceVariant) },
                         confirmButton = {
                             TextButton(onClick = {
                                 downloadItem?.let {
@@ -378,9 +378,9 @@ fun SeriesDetailsScreen(
                             }) { Text("نعم، احذف", color = Color.Red) }
                         },
                         dismissButton = {
-                            TextButton(onClick = { showDeleteConfirm = false }) { Text("إلغاء", color = Color.White) }
+                            TextButton(onClick = { showDeleteConfirm = false }) { Text("إلغاء", color = MaterialTheme.colorScheme.onBackground) }
                         },
-                        containerColor = Color(0xFF161618)
+                        containerColor = MaterialTheme.colorScheme.surface
                     )
                 }
                 
@@ -395,11 +395,11 @@ fun SeriesDetailsScreen(
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                        Text(text = series.title, style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold, color = Color.White)
+                        Text(text = series.title, style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
                         Spacer(modifier = Modifier.height(8.dp))
                         
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text("${series.year} • ${series.genres.take(3).joinToString(" • ")}", color = Color.LightGray, style = MaterialTheme.typography.bodyMedium)
+                            Text("${series.year} • ${series.genres.take(3).joinToString(" • ")}", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium)
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                         
@@ -407,9 +407,9 @@ fun SeriesDetailsScreen(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(Icons.Default.Star, contentDescription = "Rating", tint = Color(0xFFFFC107), modifier = Modifier.size(18.dp))
                                 Spacer(modifier = Modifier.width(4.dp))
-                                Text(String.format("%.1f", series.rating), color = Color.White, fontWeight = FontWeight.Bold)
+                                Text(String.format("%.1f", series.rating), color = MaterialTheme.colorScheme.onBackground, fontWeight = FontWeight.Bold)
                             }
-                            Badge(containerColor = Color.DarkGray) { Text("18+", color = Color.White) }
+                            Badge(containerColor = Color.DarkGray) { Text("18+", color = MaterialTheme.colorScheme.onBackground) }
                         }
                     }
                 } else {
@@ -422,18 +422,18 @@ fun SeriesDetailsScreen(
                         )
                         Box(modifier = Modifier.fillMaxSize().background(
                             Brush.verticalGradient(
-                                colors = listOf(Color.Transparent, Color.Black.copy(alpha=0.6f), Color.Black),
+                                colors = listOf(Color.Transparent, Color.Black.copy(alpha=0.6f), MaterialTheme.colorScheme.background),
                                 startY = 0f
                             )
                         ))
                         Column(
                             modifier = Modifier.align(Alignment.BottomStart).padding(16.dp)
                         ) {
-                            Text(text = series.title, style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold, color = Color.White)
+                            Text(text = series.title, style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
                             Spacer(modifier = Modifier.height(8.dp))
                             
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text("${series.year} • ${series.genres.take(3).joinToString(" • ")}", color = Color.LightGray, style = MaterialTheme.typography.bodyMedium)
+                                Text("${series.year} • ${series.genres.take(3).joinToString(" • ")}", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium)
                             }
                             Spacer(modifier = Modifier.height(8.dp))
                             
@@ -441,9 +441,9 @@ fun SeriesDetailsScreen(
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(Icons.Default.Star, contentDescription = "Rating", tint = Color(0xFFFFC107), modifier = Modifier.size(18.dp))
                                     Spacer(modifier = Modifier.width(4.dp))
-                                    Text(String.format("%.1f", series.rating), color = Color.White, fontWeight = FontWeight.Bold)
+                                    Text(String.format("%.1f", series.rating), color = MaterialTheme.colorScheme.onBackground, fontWeight = FontWeight.Bold)
                                 }
-                                Badge(containerColor = Color.DarkGray) { Text("18+", color = Color.White) } 
+                                Badge(containerColor = Color.DarkGray) { Text("18+", color = MaterialTheme.colorScheme.onBackground) } 
                             }
                         }
                     }
@@ -462,9 +462,9 @@ fun SeriesDetailsScreen(
                         modifier = Modifier.weight(1f).height(50.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) {
-                        Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = Color.White)
+                        Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = MaterialTheme.colorScheme.onBackground)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(if (downloadItem?.isCompleted == true) "Resume Offline" else "Resume", color = Color.White, fontWeight = FontWeight.Bold)
+                        Text(if (downloadItem?.isCompleted == true) "Resume Offline" else "Resume", color = MaterialTheme.colorScheme.onBackground, fontWeight = FontWeight.Bold)
                     }
                     IconButton(
                         onClick = { 
@@ -482,7 +482,7 @@ fun SeriesDetailsScreen(
                         } else if (downloadItem != null) {
                             CircularProgressIndicator(progress = { downloadItem.progress }, color = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
                         } else {
-                            Icon(Icons.Default.Download, contentDescription = "Download", tint = Color.White)
+                            Icon(Icons.Default.Download, contentDescription = "Download", tint = MaterialTheme.colorScheme.onBackground)
                         }
                     }
                     IconButton(
@@ -495,7 +495,7 @@ fun SeriesDetailsScreen(
                         },
                         modifier = Modifier.size(50.dp).background(Color.DarkGray, CircleShape)
                     ) {
-                        Icon(if (isFavorite) Icons.Default.Bookmark else Icons.Default.BookmarkBorder, contentDescription = "Favorite", tint = Color.White)
+                        Icon(if (isFavorite) Icons.Default.Bookmark else Icons.Default.BookmarkBorder, contentDescription = "Favorite", tint = MaterialTheme.colorScheme.onBackground)
                     }
                 }
                 
@@ -503,7 +503,7 @@ fun SeriesDetailsScreen(
                 
                 // Trailers
                 if (series.trailers.isNotEmpty()) {
-                    Text("Trailers", color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
+                    Text("Trailers", color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
                     Spacer(modifier = Modifier.height(8.dp))
                     LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         items(series.trailers) { trailer ->
@@ -516,15 +516,15 @@ fun SeriesDetailsScreen(
                 }
                 
                 // Overview
-                Text("Overview", color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
+                Text("Overview", color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(series.overview, color = Color.LightGray, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(horizontal = 16.dp))
+                Text(series.overview, color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(horizontal = 16.dp))
                 
                 Spacer(modifier = Modifier.height(24.dp))
                 
                 // Cast
                 if (series.cast.isNotEmpty()) {
-                    Text("Cast", color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
+                    Text("Cast", color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
                     Spacer(modifier = Modifier.height(8.dp))
                     LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                         items(series.cast) { CastMemberCard(it) { onPersonClick(it.id) } }
@@ -534,7 +534,7 @@ fun SeriesDetailsScreen(
 
                 // Seasons & Episodes
                 if (series.seasons.isNotEmpty()) {
-                    Text("Seasons and Episodes", color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
+                    Text("Seasons and Episodes", color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
                     Spacer(modifier = Modifier.height(8.dp))
                     
                     // Season Tabs
@@ -547,7 +547,7 @@ fun SeriesDetailsScreen(
                                 label = { Text("Season ${season.seasonNumber}") },
                                 colors = FilterChipDefaults.filterChipColors(
                                     selectedContainerColor = MaterialTheme.colorScheme.primary,
-                                    selectedLabelColor = Color.White
+                                    selectedLabelColor = MaterialTheme.colorScheme.onBackground
                                 )
                             )
                         }
@@ -607,7 +607,7 @@ fun SeriesDetailsScreen(
                     .padding(top = padding.calculateTopPadding() + 8.dp, start = 16.dp)
                     .background(Color.Black.copy(alpha=0.3f), CircleShape)
             ) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onBackground)
             }
 
         }
@@ -630,11 +630,11 @@ fun TrailerCard(trailer: VideoTrailer, onClick: () -> Unit) {
             modifier = Modifier.fillMaxSize()
         )
         Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha=0.3f)), contentAlignment = Alignment.Center) {
-            Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = Color.White, modifier = Modifier.size(48.dp))
+            Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = MaterialTheme.colorScheme.onBackground, modifier = Modifier.size(48.dp))
         }
         Text(
             text = trailer.name,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onBackground,
             style = MaterialTheme.typography.labelSmall,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -653,8 +653,8 @@ fun CastMemberCard(cast: CastMember, onClick: () -> Unit) {
             modifier = Modifier.size(72.dp).clip(CircleShape).background(Color.DarkGray)
         )
         Spacer(modifier = Modifier.height(8.dp))
-        Text(cast.name, color = Color.White, style = MaterialTheme.typography.labelMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
-        Text(cast.character, color = Color.Gray, style = MaterialTheme.typography.labelSmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Text(cast.name, color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.labelMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Text(cast.character, color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.labelSmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
 }
 
@@ -676,24 +676,24 @@ fun EpisodeCard(episode: Episode, onClick: () -> Unit) {
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize().background(Color.DarkGray)
             )
-            Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = Color.White, modifier = Modifier.align(Alignment.Center))
+            Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = MaterialTheme.colorScheme.onBackground, modifier = Modifier.align(Alignment.Center))
         }
         Spacer(modifier = Modifier.width(16.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text("${episode.episodeNumber}. ${episode.title}", color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text("${episode.episodeNumber}. ${episode.title}", color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Spacer(modifier = Modifier.height(4.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Default.Star, contentDescription = "Rating", tint = Color(0xFFFFC107), modifier = Modifier.size(12.dp))
                 Spacer(modifier = Modifier.width(4.dp))
-                Text(String.format("%.1f", episode.rating), color = Color.Gray, style = MaterialTheme.typography.labelSmall)
+                Text(String.format("%.1f", episode.rating), color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.labelSmall)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("${episode.duration}m", color = Color.Gray, style = MaterialTheme.typography.labelSmall)
+                Text("${episode.duration}m", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.labelSmall)
             }
             Spacer(modifier = Modifier.height(4.dp))
-            Text(episode.overview, color = Color.LightGray, style = MaterialTheme.typography.bodySmall, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            Text(episode.overview, color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall, maxLines = 2, overflow = TextOverflow.Ellipsis)
         }
         IconButton(onClick = onClick) {
-            Icon(Icons.Default.Download, contentDescription = "Download", tint = Color.White)
+            Icon(Icons.Default.Download, contentDescription = "Download", tint = MaterialTheme.colorScheme.onBackground)
         }
     }
 }

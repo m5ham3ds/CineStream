@@ -80,7 +80,7 @@ fun AnimeScreen(
 
     if (uiState.error != null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(text = uiState.error ?: "Unknown error", color = Color.White)
+            Text(text = uiState.error ?: "Unknown error", color = MaterialTheme.colorScheme.onBackground)
         }
         return
     }
@@ -131,7 +131,7 @@ fun AnimeScreen(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
-                        .background(if (selectedCategory == category.name) MaterialTheme.colorScheme.primary else Color(0xFF1E1E20))
+                        .background(if (selectedCategory == category.name) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface)
                         .clickable {
                             if (selectedCategory == category.name) {
                                 selectedCategory = "Anime"
@@ -146,13 +146,13 @@ fun AnimeScreen(
                         Icon(
                             imageVector = category.icon, 
                             contentDescription = category.name, 
-                            tint = if (selectedCategory == category.name) Color.White else Color.Gray,
+                            tint = if (selectedCategory == category.name) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = category.name,
-                            color = if (selectedCategory == category.name) Color.White else Color.Gray,
+                            color = if (selectedCategory == category.name) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 14.sp,
                             fontWeight = if (selectedCategory == category.name) FontWeight.SemiBold else FontWeight.Normal
                         )

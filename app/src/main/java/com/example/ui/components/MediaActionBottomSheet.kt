@@ -47,7 +47,7 @@ fun MediaActionBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
-        containerColor = Color(0xFF1E1E20),
+        containerColor = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
     ) {
         Column(
@@ -57,7 +57,7 @@ fun MediaActionBottomSheet(
         ) {
             when (step) {
                 0 -> {
-                    Text("Select Episode", color = Color.White, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                    Text("Select Episode", color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(16.dp))
                     (1..5).forEach { ep ->
                         Row(
@@ -68,14 +68,14 @@ fun MediaActionBottomSheet(
                                 .padding(vertical = 14.dp, horizontal = 12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.Default.PlayArrow, contentDescription = null, tint = Color.LightGray)
+                            Icon(Icons.Default.PlayArrow, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
                             Spacer(modifier = Modifier.width(16.dp))
-                            Text(text = "Episode $ep", color = Color.White, fontSize = 16.sp)
+                            Text(text = "Episode $ep", color = MaterialTheme.colorScheme.onBackground, fontSize = 16.sp)
                         }
                     }
                 }
                 1, 2 -> {
-                    Text("Select Source & Quality", color = Color.White, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                    Text("Select Source & Quality", color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(16.dp))
                     
                     availableStreams.forEach { stream ->
@@ -94,14 +94,14 @@ fun MediaActionBottomSheet(
                                 .padding(vertical = 14.dp, horizontal = 12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.Default.Dns, contentDescription = null, tint = Color(0xFFA51B1B))
+                            Icon(Icons.Default.Dns, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                             Spacer(modifier = Modifier.width(16.dp))
                             Column {
-                                Text(text = stream.quality.displayName, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-                                Text(text = stream.serverName, color = Color.LightGray, fontSize = 12.sp)
+                                Text(text = stream.quality.displayName, color = MaterialTheme.colorScheme.onBackground, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                                Text(text = stream.serverName, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
                             }
                             Spacer(modifier = Modifier.weight(1f))
-                            Icon(Icons.Default.Download, contentDescription = "Download", tint = Color.Gray)
+                            Icon(Icons.Default.Download, contentDescription = "Download", tint = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                 }
@@ -125,9 +125,9 @@ fun MediaActionBottomSheet(
                         .padding(vertical = 14.dp, horizontal = 12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(Icons.Default.Favorite, contentDescription = null, tint = Color(0xFFA51B1B))
+                    Icon(Icons.Default.Favorite, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                     Spacer(modifier = Modifier.width(16.dp))
-                    Text(text = "Add to Library / Favorites", color = Color.White, fontSize = 16.sp)
+                    Text(text = "Add to Library / Favorites", color = MaterialTheme.colorScheme.onBackground, fontSize = 16.sp)
                 }
             }
             

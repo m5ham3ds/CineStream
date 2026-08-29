@@ -57,14 +57,14 @@ fun PersonDetailsScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Black,
-                    titleContentColor = Color.White,
-                    navigationIconContentColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground
                 ),
                 windowInsets = WindowInsets(0.dp)
             )
         },
-        containerColor = Color.Black
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         if (uiState.isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
@@ -89,16 +89,16 @@ fun PersonDetailsScreen(
                     )
                     Spacer(modifier = Modifier.width(16.dp))
                     Column {
-                        Text(person.name, style = MaterialTheme.typography.headlineMedium, color = Color.White, fontWeight = FontWeight.Bold)
+                        Text(person.name, style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onBackground, fontWeight = FontWeight.Bold)
                         Spacer(modifier = Modifier.height(8.dp))
                         if (!person.knownFor.isNullOrBlank()) {
-                            Text("Known For: ${person.knownFor}", color = Color.Gray, style = MaterialTheme.typography.bodyMedium)
+                            Text("Known For: ${person.knownFor}", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium)
                         }
                         if (!person.birthday.isNullOrBlank()) {
-                            Text("Born: ${person.birthday}", color = Color.Gray, style = MaterialTheme.typography.bodyMedium)
+                            Text("Born: ${person.birthday}", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium)
                         }
                         if (!person.placeOfBirth.isNullOrBlank()) {
-                            Text("Birthplace: ${person.placeOfBirth}", color = Color.Gray, style = MaterialTheme.typography.bodyMedium)
+                            Text("Birthplace: ${person.placeOfBirth}", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium)
                         }
                     }
                 }
@@ -106,15 +106,15 @@ fun PersonDetailsScreen(
                 // Biography
                 if (person.biography.isNotBlank()) {
                     Spacer(modifier = Modifier.height(16.dp))
-                    Text("Biography", color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
+                    Text("Biography", color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(person.biography, color = Color.LightGray, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(horizontal = 16.dp))
+                    Text(person.biography, color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(horizontal = 16.dp))
                 }
 
                 // Movies
                 if (person.movies.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(24.dp))
-                    Text("Top Movies", color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
+                    Text("Top Movies", color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
                     Spacer(modifier = Modifier.height(8.dp))
                     LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         items(person.movies) { movie ->
@@ -126,7 +126,7 @@ fun PersonDetailsScreen(
                 // Series
                 if (person.series.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(24.dp))
-                    Text("Top TV Shows", color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
+                    Text("Top TV Shows", color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
                     Spacer(modifier = Modifier.height(8.dp))
                     LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         items(person.series) { series ->
@@ -154,7 +154,7 @@ fun MediaCreditCard(title: String, posterUrl: String, onClick: () -> Unit) {
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = title,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onBackground,
             style = MaterialTheme.typography.labelMedium,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis

@@ -84,7 +84,7 @@ fun HomeScreen(
 
     if (uiState.error != null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(text = uiState.error ?: "Unknown error", color = Color.White)
+            Text(text = uiState.error ?: "Unknown error", color = MaterialTheme.colorScheme.onBackground)
         }
         return
     }
@@ -130,7 +130,7 @@ fun HomeScreen(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
-                        .background(if (selectedCategory == category) MaterialTheme.colorScheme.primary else Color(0xFF1E1E20))
+                        .background(if (selectedCategory == category) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface)
                         .border(
                             width = 1.dp,
                             color = if (selectedCategory == category) Color.Transparent else Color.DarkGray,
@@ -148,7 +148,7 @@ fun HomeScreen(
                 ) {
                     Text(
                         text = category,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontSize = 14.sp,
                         fontWeight = if (selectedCategory == category) FontWeight.SemiBold else FontWeight.Normal
                     )
@@ -426,7 +426,7 @@ fun SectionTitle(title: String, onSeeAllClick: (() -> Unit)? = null) {
             text = title,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color = Color.White
+            color = MaterialTheme.colorScheme.onBackground
         )
         if (onSeeAllClick != null) {
             Text(

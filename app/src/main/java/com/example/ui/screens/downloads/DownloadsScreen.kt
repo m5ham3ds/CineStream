@@ -77,7 +77,7 @@ fun DownloadsScreen(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(MaterialTheme.colorScheme.background)
             .padding(horizontal = 16.dp),
         contentPadding = PaddingValues(top = 48.dp, bottom = 100.dp)
     ) {
@@ -90,7 +90,7 @@ fun DownloadsScreen(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Outlined.Download, contentDescription = "Downloads", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(28.dp))
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Downloads", color = Color.White, fontSize = 28.sp, fontWeight = FontWeight.Bold)
+                    Text("Downloads", color = MaterialTheme.colorScheme.onBackground, fontSize = 28.sp, fontWeight = FontWeight.Bold)
                 }
                 Box(
                     modifier = Modifier
@@ -100,15 +100,15 @@ fun DownloadsScreen(
                         .padding(horizontal = 16.dp, vertical = 6.dp)
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Edit, contentDescription = null, tint = Color.White, modifier = Modifier.size(14.dp))
+                        Icon(Icons.Default.Edit, contentDescription = null, tint = MaterialTheme.colorScheme.onBackground, modifier = Modifier.size(14.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("Edit", color = Color.White, fontSize = 14.sp)
+                        Text("Edit", color = MaterialTheme.colorScheme.onBackground, fontSize = 14.sp)
                     }
                 }
             }
             
             Spacer(modifier = Modifier.height(8.dp))
-            Text("Watch your content offline anytime, anywhere.", color = Color.LightGray, fontSize = 14.sp)
+            Text("Watch your content offline anytime, anywhere.", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
             
             Spacer(modifier = Modifier.height(24.dp))
             
@@ -117,16 +117,16 @@ fun DownloadsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFF161618))
-                    .border(1.dp, Color(0xFF2A2A2E), RoundedCornerShape(16.dp))
+                    .background(MaterialTheme.colorScheme.surface)
+                    .border(1.dp, MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(16.dp))
                     .padding(vertical = 16.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 DownloadStat(icon = Icons.Outlined.Folder, value = downloads.size.toString(), label = "Downloaded", isPrimary = true)
-                Box(modifier = Modifier.width(1.dp).height(32.dp).background(Color(0xFF2A2A2E)))
+                Box(modifier = Modifier.width(1.dp).height(32.dp).background(MaterialTheme.colorScheme.surfaceVariant))
                 DownloadStat(icon = Icons.Outlined.Timer, value = totalInProgress.toString(), label = "In Progress")
-                Box(modifier = Modifier.width(1.dp).height(32.dp).background(Color(0xFF2A2A2E)))
+                Box(modifier = Modifier.width(1.dp).height(32.dp).background(MaterialTheme.colorScheme.surfaceVariant))
                 DownloadStat(icon = Icons.Outlined.CheckCircle, value = totalDownloaded.toString(), label = "Completed")
             }
             
@@ -139,11 +139,11 @@ fun DownloadsScreen(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(percent = 50))
-                            .background(if (isSelected) MaterialTheme.colorScheme.primary else Color(0xFF2A2A2E))
+                            .background(if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant)
                             .clickable { selectedTab = tab }
                             .padding(horizontal = 16.dp, vertical = 8.dp)
                     ) {
-                        Text(tab, color = if (isSelected) Color.White else Color.LightGray, fontSize = 14.sp, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
+                        Text(tab, color = if (isSelected) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
                     }
                 }
             }
@@ -162,9 +162,9 @@ fun DownloadsScreen(
                 ) {
                     Icon(Icons.Outlined.Download, contentDescription = null, tint = Color.DarkGray, modifier = Modifier.size(64.dp))
                     Spacer(modifier = Modifier.height(16.dp))
-                    Text("لم تقم بتنزيل أي عمل بعد", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    Text("لم تقم بتنزيل أي عمل بعد", color = MaterialTheme.colorScheme.onBackground, fontSize = 18.sp, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text("الأفلام والمسلسلات التي تنزلها ستظهر هنا", color = Color.Gray, fontSize = 14.sp)
+                    Text("الأفلام والمسلسلات التي تنزلها ستظهر هنا", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
                 }
                 Spacer(modifier = Modifier.height(24.dp))
             }
@@ -197,8 +197,8 @@ fun DownloadsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFF161618))
-                    .border(1.dp, Color(0xFF2A2A2E), RoundedCornerShape(16.dp))
+                    .background(MaterialTheme.colorScheme.surface)
+                    .border(1.dp, MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(16.dp))
                     .padding(20.dp)
             ) {
                 Column {
@@ -206,22 +206,22 @@ fun DownloadsScreen(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Outlined.Storage, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("Storage", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                            Text("Storage", color = MaterialTheme.colorScheme.onBackground, fontSize = 16.sp, fontWeight = FontWeight.Bold)
                         }
-                        Text("$usedStr / $totalStr used", color = Color.LightGray, fontSize = 14.sp)
+                        Text("$usedStr / $totalStr used", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
                     }
                     
                     Spacer(modifier = Modifier.height(16.dp))
                     
                     // Progress Bar
-                    Box(modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(percent = 50)).background(Color(0xFF2A2A2E))) {
+                    Box(modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(percent = 50)).background(MaterialTheme.colorScheme.surfaceVariant)) {
                         Box(modifier = Modifier.fillMaxWidth(usedPercentage).height(6.dp).clip(RoundedCornerShape(percent = 50)).background(MaterialTheme.colorScheme.primary))
                     }
                     
                     Spacer(modifier = Modifier.height(12.dp))
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text("$usedPercentageInt% used", color = Color.Gray, fontSize = 12.sp)
-                        Text("$availableStr free", color = Color.Gray, fontSize = 12.sp)
+                        Text("$usedPercentageInt% used", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
+                        Text("$availableStr free", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
                     }
                 }
             }
@@ -233,8 +233,8 @@ fun DownloadsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFF161618))
-                    .border(1.dp, Color(0xFF2A2A2E), RoundedCornerShape(16.dp))
+                    .background(MaterialTheme.colorScheme.surface)
+                    .border(1.dp, MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(16.dp))
                     .padding(20.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -246,24 +246,24 @@ fun DownloadsScreen(
                             contentScale = ContentScale.Crop,
                             alpha = 0.5f
                         )
-                        Box(modifier = Modifier.size(32.dp).clip(RoundedCornerShape(8.dp)).background(Color(0xFF2A2A2E)), contentAlignment = Alignment.Center) {
+                        Box(modifier = Modifier.size(32.dp).clip(RoundedCornerShape(8.dp)).background(MaterialTheme.colorScheme.surfaceVariant), contentAlignment = Alignment.Center) {
                             Icon(Icons.Outlined.Download, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
                         }
                     }
                     Spacer(modifier = Modifier.width(16.dp))
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("Download more content", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        Text("Download more content", color = MaterialTheme.colorScheme.onBackground, fontSize = 16.sp, fontWeight = FontWeight.Bold)
                         Spacer(modifier = Modifier.height(4.dp))
-                        Text("Find movies and series to download and watch offline.", color = Color.Gray, fontSize = 12.sp, lineHeight = 16.sp)
+                        Text("Find movies and series to download and watch offline.", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp, lineHeight = 16.sp)
                         Spacer(modifier = Modifier.height(12.dp))
                         Button(
                             onClick = onNavigateToHome,
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4A1010)),
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
                             shape = RoundedCornerShape(percent = 50),
                             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp),
                             modifier = Modifier.height(36.dp)
                         ) {
-                            Text("Browse Content", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                            Text("Browse Content", color = MaterialTheme.colorScheme.onBackground, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
                         }
                     }
                 }
@@ -278,7 +278,7 @@ fun DownloadItemRow(item: DownloadItem, onClick: () -> Unit, onPauseResume: () -
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFF161618))
+            .background(MaterialTheme.colorScheme.surface)
             .clickable { onClick() }
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -294,18 +294,18 @@ fun DownloadItemRow(item: DownloadItem, onClick: () -> Unit, onPauseResume: () -
         )
         Spacer(modifier = Modifier.width(16.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text(item.title, color = Color.White, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(item.title, color = MaterialTheme.colorScheme.onBackground, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Spacer(modifier = Modifier.height(4.dp))
             Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-                Text(if (item.isMovie) "Movie" else "Series", color = Color.Gray, fontSize = 12.sp)
-                Text("${(item.progress * 100).toInt()}%", color = Color.Gray, fontSize = 12.sp)
+                Text(if (item.isMovie) "Movie" else "Series", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
+                Text("${(item.progress * 100).toInt()}%", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
             }
             Spacer(modifier = Modifier.height(8.dp))
             LinearProgressIndicator(
                 progress = { item.progress },
                 modifier = Modifier.fillMaxWidth().height(4.dp).clip(RoundedCornerShape(2.dp)),
                 color = if (item.isCompleted) Color.Green else MaterialTheme.colorScheme.primary,
-                trackColor = Color(0xFF2A2A2E)
+                trackColor = MaterialTheme.colorScheme.surfaceVariant
             )
             Spacer(modifier = Modifier.height(8.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -315,11 +315,11 @@ fun DownloadItemRow(item: DownloadItem, onClick: () -> Unit, onPauseResume: () -
         Spacer(modifier = Modifier.width(8.dp))
         if (!item.isCompleted) {
             IconButton(onClick = onPauseResume) {
-                Icon(if (item.isPaused) Icons.Default.PlayArrow else Icons.Default.Pause, contentDescription = "Pause/Resume", tint = Color.White)
+                Icon(if (item.isPaused) Icons.Default.PlayArrow else Icons.Default.Pause, contentDescription = "Pause/Resume", tint = MaterialTheme.colorScheme.onBackground)
             }
         }
         IconButton(onClick = onDelete) {
-            Icon(Icons.Default.Close, contentDescription = "Delete", tint = Color.Gray)
+            Icon(Icons.Default.Close, contentDescription = "Delete", tint = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }
@@ -335,11 +335,11 @@ fun DownloadStat(icon: androidx.compose.ui.graphics.vector.ImageVector, value: S
                 .border(1.dp, if (isPrimary) MaterialTheme.colorScheme.primary else Color.DarkGray, RoundedCornerShape(8.dp)),
             contentAlignment = Alignment.Center
         ) {
-            Icon(icon, contentDescription = null, tint = if (isPrimary) MaterialTheme.colorScheme.primary else Color.Gray, modifier = Modifier.size(18.dp))
+            Icon(icon, contentDescription = null, tint = if (isPrimary) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
         }
         Spacer(modifier = Modifier.height(6.dp))
-        Text(value, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold, maxLines = 1)
-        Text(label, color = Color.Gray, fontSize = 11.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Text(value, color = MaterialTheme.colorScheme.onBackground, fontSize = 16.sp, fontWeight = FontWeight.Bold, maxLines = 1)
+        Text(label, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
 }
 

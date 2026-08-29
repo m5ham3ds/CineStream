@@ -59,7 +59,7 @@ fun ExpandableSearchBar(
             Icon(
                 Icons.Default.Search, 
                 contentDescription = "Search", 
-                tint = Color.White, 
+                tint = MaterialTheme.colorScheme.onBackground, 
                 modifier = Modifier
                     .size(24.dp)
                     .clickable { onExpandedChange(true) }
@@ -68,7 +68,7 @@ fun ExpandableSearchBar(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color(0xFF2A2A2E), RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(12.dp))
                     .padding(8.dp)
             ) {
                 // Search Input Field
@@ -76,19 +76,19 @@ fun ExpandableSearchBar(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.Gray, modifier = Modifier.size(20.dp))
+                    Icon(Icons.Default.Search, contentDescription = "Search", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
                     Spacer(modifier = Modifier.width(8.dp))
                     BasicTextField(
                         value = uiState.query,
                         onValueChange = { viewModel.onQueryChange(it) },
                         modifier = Modifier.weight(1f).focusRequester(focusRequester),
-                        textStyle = TextStyle(color = Color.White, fontSize = 16.sp),
+                        textStyle = TextStyle(color = MaterialTheme.colorScheme.onBackground, fontSize = 16.sp),
                         cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                         decorationBox = { innerTextField ->
                             if (uiState.query.isEmpty()) {
-                                Text("البحث...", color = Color.Gray, fontSize = 16.sp)
+                                Text("البحث...", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 16.sp)
                             }
                             innerTextField()
                         }
@@ -103,7 +103,7 @@ fun ExpandableSearchBar(
                         }, 
                         modifier = Modifier.size(24.dp)
                     ) {
-                        Icon(Icons.Default.Close, contentDescription = "Close", tint = Color.Gray)
+                        Icon(Icons.Default.Close, contentDescription = "Close", tint = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
 
@@ -118,7 +118,7 @@ fun ExpandableSearchBar(
                         }
                     } else if (uiState.movieResults.isEmpty() && uiState.seriesResults.isEmpty()) {
                         Box(modifier = Modifier.fillMaxWidth().padding(16.dp), contentAlignment = Alignment.Center) {
-                            Text("لا توجد نتائج", color = Color.Gray, fontSize = 14.sp)
+                            Text("لا توجد نتائج", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
                         }
                     } else {
                         LazyColumn(
@@ -157,8 +157,8 @@ fun ExpandableSearchBar(
                                     )
                                     Spacer(modifier = Modifier.width(12.dp))
                                     Column {
-                                        Text(title, color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, maxLines = 1)
-                                        Text("$year • ${if(isMovie) "فيلم" else "مسلسل"}", color = Color.Gray, fontSize = 12.sp)
+                                        Text(title, color = MaterialTheme.colorScheme.onBackground, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, maxLines = 1)
+                                        Text("$year • ${if(isMovie) "فيلم" else "مسلسل"}", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
                                     }
                                 }
                             }

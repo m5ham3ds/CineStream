@@ -69,7 +69,7 @@ fun SplashScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black),
+            .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
         AsyncImage(
@@ -103,12 +103,12 @@ fun SplashScreen(
                     .clip(CircleShape)
                     .background(
                         Brush.radialGradient(
-                            colors = listOf(Color(0xFF4A1010), MaterialTheme.colorScheme.primary)
+                            colors = listOf(MaterialTheme.colorScheme.primaryContainer, MaterialTheme.colorScheme.primary)
                         )
                     )
                     .padding(8.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFF161618)),
+                    .background(MaterialTheme.colorScheme.surface),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -126,7 +126,7 @@ fun SplashScreen(
                     withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
                         append("Cine")
                     }
-                    withStyle(style = SpanStyle(color = Color.White)) {
+                    withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onBackground)) {
                         append("Stream")
                     }
                 },
@@ -138,7 +138,7 @@ fun SplashScreen(
             
             Text(
                 text = "Your Cinematic World, Anytime, Anywhere.",
-                color = Color.LightGray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 14.sp
             )
         }
@@ -157,7 +157,7 @@ fun SplashScreen(
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = "Loading...",
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 14.sp
             )
         }

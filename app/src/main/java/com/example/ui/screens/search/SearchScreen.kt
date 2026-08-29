@@ -68,7 +68,7 @@ fun SearchScreen(
                 .padding(horizontal = 16.dp, vertical = 16.dp)
                 .clip(RoundedCornerShape(percent = 50))
                 .border(1.dp, Color.DarkGray, RoundedCornerShape(percent = 50))
-                .background(Color(0xFF161618))
+                .background(MaterialTheme.colorScheme.surface)
                 .padding(horizontal = 16.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -77,13 +77,13 @@ fun SearchScreen(
             TextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it; viewModel.onQueryChange(it) },
-                placeholder = { Text("Search movies & series", color = Color.Gray, fontSize = 16.sp) },
+                placeholder = { Text("Search movies & series", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 16.sp) },
                 modifier = Modifier.weight(1f),
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
+                    focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     cursorColor = MaterialTheme.colorScheme.primary
@@ -111,7 +111,7 @@ fun SearchScreen(
                 ) {
                     Icon(Icons.AutoMirrored.Filled.TrendingUp, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text, color = Color.LightGray, fontSize = 14.sp)
+                    Text(text, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
                 }
             }
 
@@ -136,7 +136,7 @@ fun SearchScreen(
                 text = "Browse by Category",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
             )
             
@@ -157,7 +157,7 @@ fun SearchScreen(
                         modifier = Modifier
                             .size(80.dp)
                             .clip(RoundedCornerShape(12.dp))
-                            .background(Color(0xFF1E1E20))
+                            .background(MaterialTheme.colorScheme.surface)
                             .border(1.dp, Color.DarkGray, RoundedCornerShape(12.dp))
                             .clickable { /* Select category */ },
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -165,7 +165,7 @@ fun SearchScreen(
                     ) {
                         Icon(cat.second, contentDescription = cat.first, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(32.dp))
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text(cat.first, color = Color.LightGray, fontSize = 11.sp)
+                        Text(cat.first, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp)
                     }
                 }
             }
@@ -218,11 +218,11 @@ fun SearchScreen(
                         )
                         Spacer(modifier = Modifier.width(16.dp))
                         Column(modifier = Modifier.weight(1f)) {
-                            Text(recent.first, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                            Text(recent.first, color = MaterialTheme.colorScheme.onBackground, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                             Spacer(modifier = Modifier.height(2.dp))
-                            Text(recent.second, color = Color.Gray, fontSize = 12.sp)
+                            Text(recent.second, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
                         }
-                        Icon(Icons.Default.Close, contentDescription = "Remove", tint = Color.Gray, modifier = Modifier.size(20.dp).clickable { /* Remove */ })
+                        Icon(Icons.Default.Close, contentDescription = "Remove", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp).clickable { /* Remove */ })
                     }
                 }
             }
@@ -235,18 +235,18 @@ fun SearchScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
                     .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFF1E1E20))
+                    .background(MaterialTheme.colorScheme.surface)
                     .padding(16.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(modifier = Modifier.size(80.dp).background(Color.DarkGray, RoundedCornerShape(12.dp)), contentAlignment = Alignment.Center) {
-                         Icon(Icons.Default.Search, contentDescription = null, tint = Color.LightGray, modifier = Modifier.size(40.dp))
+                         Icon(Icons.Default.Search, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(40.dp))
                     }
                     Spacer(modifier = Modifier.width(16.dp))
                     Column {
-                        Text("Can't find what you're looking for?", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                        Text("Can't find what you're looking for?", color = MaterialTheme.colorScheme.onBackground, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                         Spacer(modifier = Modifier.height(4.dp))
-                        Text("Try searching with a different keyword", color = Color.Gray, fontSize = 12.sp)
+                        Text("Try searching with a different keyword", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
                         Spacer(modifier = Modifier.height(12.dp))
                         Box(
                             modifier = Modifier
@@ -270,7 +270,7 @@ fun SearchScreen(
                     text = "Results for \"$searchQuery\"",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
                 )
                 
@@ -288,9 +288,9 @@ fun SearchScreen(
                             )
                             Spacer(modifier = Modifier.width(16.dp))
                             Column(modifier = Modifier.weight(1f)) {
-                                Text(media.title, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                                Text(media.title, color = MaterialTheme.colorScheme.onBackground, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                                 Spacer(modifier = Modifier.height(4.dp))
-                                Text(if (media.isMovie) "Movie" else "Series", color = Color.Gray, fontSize = 12.sp)
+                                Text(if (media.isMovie) "Movie" else "Series", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
                             }
                         }
                     }
@@ -311,7 +311,7 @@ fun SectionTitleSharedWithAction(title: String, actionText: String) {
             text = title,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color = Color.White
+            color = MaterialTheme.colorScheme.onBackground
         )
         Text(
             text = actionText,

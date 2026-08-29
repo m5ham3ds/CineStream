@@ -1,6 +1,7 @@
 package com.example.ui.screens.player
 
 import android.content.Context
+import androidx.compose.material3.MaterialTheme
 import android.net.Uri
 import android.webkit.WebChromeClient
 import android.webkit.WebView
@@ -26,10 +27,10 @@ import java.io.File
 
 @Composable
 fun TrailerScreen(trailerId: String, onBack: () -> Unit) {
-    Column(modifier = Modifier.fillMaxSize().background(Color.Black)) {
+    Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         Row(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
             IconButton(onClick = onBack) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onBackground)
             }
         }
         
@@ -41,7 +42,7 @@ fun TrailerScreen(trailerId: String, onBack: () -> Unit) {
                 ExoPlayerView(url = Uri.fromFile(file).toString())
             } else {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
-                    androidx.compose.material3.Text("File not found on disk.", color = Color.White)
+                    androidx.compose.material3.Text("File not found on disk.", color = MaterialTheme.colorScheme.onBackground)
                 }
             }
         } else if (trailerId.startsWith("http://") || trailerId.startsWith("https://") && trailerId.contains(".mp4") || trailerId.contains(".m3u8")) {

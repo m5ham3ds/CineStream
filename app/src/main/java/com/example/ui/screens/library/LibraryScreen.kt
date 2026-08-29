@@ -57,7 +57,7 @@ fun LibraryScreen(
             text = "Library",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         )
 
@@ -84,13 +84,13 @@ fun LibraryScreen(
                         Icon(
                             imageVector = tab.icon, 
                             contentDescription = tab.name, 
-                            tint = if (selectedTab == tab.name) Color.White else Color.Gray,
+                            tint = if (selectedTab == tab.name) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = tab.name,
-                            color = if (selectedTab == tab.name) Color.White else Color.Gray,
+                            color = if (selectedTab == tab.name) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 14.sp,
                             fontWeight = if (selectedTab == tab.name) FontWeight.SemiBold else FontWeight.Normal
                         )
@@ -129,7 +129,7 @@ fun LibraryScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = "Your ${selectedTab.lowercase()} is empty",
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 16.sp
                     )
                 }

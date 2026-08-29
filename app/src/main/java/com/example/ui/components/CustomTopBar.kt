@@ -42,13 +42,13 @@ fun CustomTopBar(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(RoundedCornerShape(percent = 50))
-                    .background(Color(0xFF161618)),
+                    .background(MaterialTheme.colorScheme.surface),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back",
-                    tint = Color.White,
+                    tint = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -59,7 +59,7 @@ fun CustomTopBar(
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
                 text = buildAnnotatedString {
-                    withStyle(style = SpanStyle(color = Color.White)) {
+                    withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onBackground)) {
                         append("$titleFirst ")
                     }
                     withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
@@ -69,7 +69,7 @@ fun CustomTopBar(
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp
             )
-            Text(subtitle, color = Color.Gray, fontSize = 12.sp)
+            Text(subtitle, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
         }
         
         Spacer(modifier = Modifier.weight(1f))
@@ -80,13 +80,13 @@ fun CustomTopBar(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(RoundedCornerShape(percent = 50))
-                        .background(Color(0xFF161618)),
+                        .background(MaterialTheme.colorScheme.surface),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         Icons.Default.FilterAlt,
                         contentDescription = "Filter",
-                        tint = Color.White,
+                        tint = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier.size(20.dp)
                     )
                 }

@@ -47,7 +47,7 @@ fun WatchingScreen(
         else -> historyItems
     }
 
-    Column(modifier = Modifier.fillMaxSize().background(Color.Black)) {
+    Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         CustomTopBar(
             titleFirst = "Continue",
             titleSecond = "Watching",
@@ -70,13 +70,13 @@ fun WatchingScreen(
                     modifier = Modifier
                         .clickable { selectedTab = tab }
                         .clip(RoundedCornerShape(16.dp))
-                        .background(if (isSelected) MaterialTheme.colorScheme.primary else Color(0xFF161618))
+                        .background(if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface)
                         .padding(horizontal = 16.dp, vertical = 8.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = tab,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                         fontSize = 14.sp
                     )
@@ -86,7 +86,7 @@ fun WatchingScreen(
 
         if (historyItems.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("لا توجد عناصر للمتابعة", color = Color.Gray, fontSize = 16.sp)
+                Text("لا توجد عناصر للمتابعة", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 16.sp)
             }
         } else {
             LazyColumn(
@@ -109,8 +109,8 @@ fun DetailedContinueWatchingCard(item: HistoryItem, onClick: () -> Unit) {
             .fillMaxWidth()
             .height(110.dp)
             .clip(RoundedCornerShape(12.dp))
-            .border(1.dp, Color(0xFF2A2A2E), RoundedCornerShape(12.dp))
-            .background(Color(0xFF0A0A0C))
+            .border(1.dp, MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.background)
             .clickable { onClick() },
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -133,7 +133,7 @@ fun DetailedContinueWatchingCard(item: HistoryItem, onClick: () -> Unit) {
                     .background(Color.Black.copy(alpha = 0.3f)),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = Color.White, modifier = Modifier.size(32.dp))
+                Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = MaterialTheme.colorScheme.onBackground, modifier = Modifier.size(32.dp))
             }
             // Tag (Bottom Left)
             Box(
@@ -146,7 +146,7 @@ fun DetailedContinueWatchingCard(item: HistoryItem, onClick: () -> Unit) {
             ) {
                 Text(
                     text = if (item.isMovie) "Movie" else "S1 • E3", // Hardcoded episode for now
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontSize = 10.sp
                 )
             }
@@ -171,7 +171,7 @@ fun DetailedContinueWatchingCard(item: HistoryItem, onClick: () -> Unit) {
                 // Title
                 Text(
                     text = item.title,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
                     maxLines = 1
@@ -181,12 +181,12 @@ fun DetailedContinueWatchingCard(item: HistoryItem, onClick: () -> Unit) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(painter = painterResource(id = android.R.drawable.btn_star_big_on), contentDescription = "Rating", tint = Color(0xFFFFC107), modifier = Modifier.size(12.dp))
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("8.1", color = Color.White, fontSize = 12.sp)
+                    Text("8.1", color = MaterialTheme.colorScheme.onBackground, fontSize = 12.sp)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("2024", color = Color.Gray, fontSize = 12.sp)
+                    Text("2024", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Box(modifier = Modifier.border(1.dp, Color.Gray, RoundedCornerShape(4.dp)).padding(horizontal = 4.dp, vertical = 1.dp)) {
-                        Text("16+", color = Color.Gray, fontSize = 10.sp)
+                    Box(modifier = Modifier.border(1.dp, MaterialTheme.colorScheme.onSurfaceVariant, RoundedCornerShape(4.dp)).padding(horizontal = 4.dp, vertical = 1.dp)) {
+                        Text("16+", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 10.sp)
                     }
                 }
             }
@@ -196,13 +196,13 @@ fun DetailedContinueWatchingCard(item: HistoryItem, onClick: () -> Unit) {
             // Progress Bar area
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text("24m left of 48m", color = Color.Gray, fontSize = 10.sp)
+                    Text("24m left of 48m", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 10.sp)
                     Spacer(modifier = Modifier.height(4.dp))
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(2.dp)
-                            .background(Color(0xFF2A2A2E))
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
                     ) {
                         Box(
                             modifier = Modifier
@@ -225,7 +225,7 @@ fun DetailedContinueWatchingCard(item: HistoryItem, onClick: () -> Unit) {
                         Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
                     }
                     Spacer(modifier = Modifier.height(8.dp))
-                    Icon(Icons.Default.MoreVert, contentDescription = "More", tint = Color.Gray, modifier = Modifier.size(16.dp))
+                    Icon(Icons.Default.MoreVert, contentDescription = "More", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(16.dp))
                 }
             }
         }
