@@ -57,10 +57,6 @@ fun SettingsScreen() {
     // Bottom Sheets State
     var showLanguageSheet by remember { mutableStateOf(false) }
     var showStartScreenSheet by remember { mutableStateOf(false) }
-    
-    var pendingThemeMode by remember { mutableStateOf<Int?>(null) }
-    var pendingPrimaryColor by remember { mutableStateOf<Int?>(null) }
-    var pendingLanguage by remember { mutableStateOf<String?>(null) }
 
     val currentThemeName = when(themeMode) {
         1 -> stringResource(R.string.light)
@@ -132,15 +128,15 @@ fun SettingsScreen() {
                         .padding(4.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Box(modifier = Modifier.clip(CircleShape).background(if(themeMode == 0) MaterialTheme.colorScheme.primary else Color.Transparent).clickable { pendingThemeMode = 0 }.padding(8.dp)) {
+                    Box(modifier = Modifier.clip(CircleShape).background(if(themeMode == 0) MaterialTheme.colorScheme.primary else Color.Transparent).clickable { coroutineScope.launch { userPrefs.saveThemeMode(0) } }.padding(8.dp)) {
                         Icon(Icons.Outlined.Settings, contentDescription = "System", tint = if(themeMode == 0) Color.White else MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(16.dp))
                     }
                     Spacer(modifier = Modifier.width(4.dp))
-                    Box(modifier = Modifier.clip(CircleShape).background(if(themeMode == 1) MaterialTheme.colorScheme.primary else Color.Transparent).clickable { pendingThemeMode = 1 }.padding(8.dp)) {
+                    Box(modifier = Modifier.clip(CircleShape).background(if(themeMode == 1) MaterialTheme.colorScheme.primary else Color.Transparent).clickable { coroutineScope.launch { userPrefs.saveThemeMode(1) } }.padding(8.dp)) {
                         Icon(Icons.Outlined.LightMode, contentDescription = "Light", tint = if(themeMode == 1) Color.White else MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(16.dp))
                     }
                     Spacer(modifier = Modifier.width(4.dp))
-                    Box(modifier = Modifier.clip(CircleShape).background(if(themeMode == 2) MaterialTheme.colorScheme.primary else Color.Transparent).clickable { pendingThemeMode = 2 }.padding(8.dp)) {
+                    Box(modifier = Modifier.clip(CircleShape).background(if(themeMode == 2) MaterialTheme.colorScheme.primary else Color.Transparent).clickable { coroutineScope.launch { userPrefs.saveThemeMode(2) } }.padding(8.dp)) {
                         Icon(Icons.Outlined.DarkMode, contentDescription = "Dark", tint = if(themeMode == 2) Color.White else MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(16.dp))
                     }
                 }
@@ -167,11 +163,11 @@ fun SettingsScreen() {
                 
                 // Color selector
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    ColorCircle(color = PrimaryRed, isSelected = primaryColor == 0, onClick = { pendingPrimaryColor = 0 })
-                    ColorCircle(color = PrimaryBlue, isSelected = primaryColor == 1, onClick = { pendingPrimaryColor = 1 })
-                    ColorCircle(color = PrimaryGreen, isSelected = primaryColor == 2, onClick = { pendingPrimaryColor = 2 })
-                    ColorCircle(color = PrimaryPurple, isSelected = primaryColor == 3, onClick = { pendingPrimaryColor = 3 })
-                    ColorCircle(color = PrimaryYellow, isSelected = primaryColor == 4, onClick = { pendingPrimaryColor = 4 })
+                    ColorCircle(color = PrimaryRed, isSelected = primaryColor == 0, onClick = { coroutineScope.launch { userPrefs.savePrimaryColor(0) } })
+                    ColorCircle(color = PrimaryBlue, isSelected = primaryColor == 1, onClick = { coroutineScope.launch { userPrefs.savePrimaryColor(1) } })
+                    ColorCircle(color = PrimaryGreen, isSelected = primaryColor == 2, onClick = { coroutineScope.launch { userPrefs.savePrimaryColor(2) } })
+                    ColorCircle(color = PrimaryPurple, isSelected = primaryColor == 3, onClick = { coroutineScope.launch { userPrefs.savePrimaryColor(3) } })
+                    ColorCircle(color = PrimaryYellow, isSelected = primaryColor == 4, onClick = { coroutineScope.launch { userPrefs.savePrimaryColor(4) } })
                 }
             }
         }
@@ -214,82 +210,21 @@ fun SettingsScreen() {
                 
                 ListItem(
                     headlineContent = { Text(stringResource(R.string.system)) },
-                    modifier = Modifier.clickable { pendingLanguage = "system"; showLanguageSheet = false }
+                    modifier = Modifier.clickable { coroutineScope.launch { userPrefs.saveAppLanguage("system"); showLanguageSheet = false } }
                 )
                 ListItem(
                     headlineContent = { Text(stringResource(R.string.english)) },
-                    modifier = Modifier.clickable { pendingLanguage = "en"; showLanguageSheet = false }
+                    modifier = Modifier.clickable { coroutineScope.launch { userPrefs.saveAppLanguage("en"); showLanguageSheet = false } }
                 )
                 ListItem(
                     headlineContent = { Text(stringResource(R.string.arabic)) },
-                    modifier = Modifier.clickable { pendingLanguage = "ar"; showLanguageSheet = false }
+                    modifier = Modifier.clickable { coroutineScope.launch { userPrefs.saveAppLanguage("ar"); showLanguageSheet = false } }
                 )
                 Spacer(modifier = Modifier.height(32.dp))
             }
         }
     }
 
-
-    // Confirmation Dialogs
-    if (pendingThemeMode != null) {
-        AlertDialog(
-            onDismissRequest = { pendingThemeMode = null },
-            title = { Text(stringResource(R.string.confirm_change)) },
-            text = { Text(stringResource(R.string.confirm_theme_change)) },
-            confirmButton = {
-                TextButton(onClick = {
-                    coroutineScope.launch { userPrefs.saveThemeMode(pendingThemeMode!!) }
-                    pendingThemeMode = null
-                }) { Text(stringResource(R.string.yes), color = MaterialTheme.colorScheme.primary) }
-            },
-            dismissButton = {
-                TextButton(onClick = { pendingThemeMode = null }) { Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.onSurface) }
-            },
-            containerColor = MaterialTheme.colorScheme.surface,
-            titleContentColor = MaterialTheme.colorScheme.onSurface,
-            textContentColor = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    }
-
-    if (pendingPrimaryColor != null) {
-        AlertDialog(
-            onDismissRequest = { pendingPrimaryColor = null },
-            title = { Text(stringResource(R.string.confirm_change)) },
-            text = { Text(stringResource(R.string.confirm_color_change)) },
-            confirmButton = {
-                TextButton(onClick = {
-                    coroutineScope.launch { userPrefs.savePrimaryColor(pendingPrimaryColor!!) }
-                    pendingPrimaryColor = null
-                }) { Text(stringResource(R.string.yes), color = MaterialTheme.colorScheme.primary) }
-            },
-            dismissButton = {
-                TextButton(onClick = { pendingPrimaryColor = null }) { Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.onSurface) }
-            },
-            containerColor = MaterialTheme.colorScheme.surface,
-            titleContentColor = MaterialTheme.colorScheme.onSurface,
-            textContentColor = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    }
-
-    if (pendingLanguage != null) {
-        AlertDialog(
-            onDismissRequest = { pendingLanguage = null },
-            title = { Text(stringResource(R.string.confirm_change)) },
-            text = { Text(stringResource(R.string.confirm_language_change)) },
-            confirmButton = {
-                TextButton(onClick = {
-                    coroutineScope.launch { userPrefs.saveAppLanguage(pendingLanguage!!) }
-                    pendingLanguage = null
-                }) { Text(stringResource(R.string.yes), color = MaterialTheme.colorScheme.primary) }
-            },
-            dismissButton = {
-                TextButton(onClick = { pendingLanguage = null }) { Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.onSurface) }
-            },
-            containerColor = MaterialTheme.colorScheme.surface,
-            titleContentColor = MaterialTheme.colorScheme.onSurface,
-            textContentColor = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    }
     // Start Screen Selection Sheet
     if (showStartScreenSheet) {
         ModalBottomSheet(onDismissRequest = { showStartScreenSheet = false }) {
@@ -319,7 +254,6 @@ fun SettingsScreen() {
 }
 
 @Composable
-
 fun SettingsSectionHeader(icon: androidx.compose.ui.graphics.vector.ImageVector, title: String) {
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(bottom = 12.dp)) {
         Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))

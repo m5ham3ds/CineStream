@@ -41,6 +41,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import com.example.ui.components.BackgroundWebView
 import androidx.compose.ui.res.stringResource
 import com.example.R
 import androidx.compose.ui.text.style.TextAlign
@@ -96,6 +97,8 @@ fun AppNavigation() {
     var searchQuery by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf("") }
     var showLogoutDialog by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
 
+    var isUpdatingData by remember { mutableStateOf(true) }
+    val extensionUrls = remember { listOf("https://google.com", "https://bing.com") }
     val bottomBarRoutes = listOf(
         Screen.Home.route,
         Screen.Movies.route,
@@ -346,10 +349,33 @@ fun AppNavigation() {
                 textContentColor = Color.LightGray
             )
         }
+        if (isUpdatingData && currentRoute != Screen.Splash.route && currentRoute != Screen.Auth.route && currentRoute != Screen.Onboarding.route) {
+            BackgroundWebView(
+                urls = extensionUrls,
+                onProgress = { },
+                onComplete = { isUpdatingData = false }
+            )
+        }
         Scaffold(
             containerColor = Color.Black,
             topBar = {
-                if (bottomBarRoutes.contains(currentRoute) || currentRoute in listOf(Screen.Profile.route, Screen.Downloads.route, Screen.Settings.route, Screen.About.route)) {
+                Column {
+                    if (isUpdatingData && currentRoute != Screen.Splash.route && currentRoute != Screen.Auth.route && currentRoute != Screen.Onboarding.route) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(Color(0xFF2C2C2E))
+                                .padding(vertical = 4.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = stringResource(R.string.updating_data),
+                                color = Color.White,
+                                fontSize = 12.sp
+                            )
+                        }
+                    }
+                    if (bottomBarRoutes.contains(currentRoute) || currentRoute in listOf(Screen.Profile.route, Screen.Downloads.route, Screen.Settings.route, Screen.About.route)) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -430,13 +456,17 @@ fun AppNavigation() {
                         
                     }
                 }
+                }
             },
             bottomBar = {
                 if (bottomBarRoutes.contains(currentRoute)) {
                     BottomNavBar(navController = navController)
                 }
-            }
+    
+        }
+        
         ) { innerPadding ->
+
             NavHost(
                 navController = navController,
                 startDestination = Screen.Splash.route,
