@@ -1,6 +1,8 @@
 package com.example.ui.screens.home
 
 import androidx.compose.foundation.background
+import androidx.compose.ui.res.stringResource
+import com.example.R
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -25,7 +27,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.R
 import com.example.data.model.HistoryItem
 import com.example.data.repository.HistoryRepository
 import com.example.ui.components.CustomTopBar
@@ -86,7 +87,7 @@ fun WatchingScreen(
 
         if (historyItems.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("لا توجد عناصر للمتابعة", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 16.sp)
+                Text(stringResource(R.string.no_watching_items), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 16.sp)
             }
         } else {
             LazyColumn(
@@ -196,7 +197,7 @@ fun DetailedContinueWatchingCard(item: HistoryItem, onClick: () -> Unit) {
             // Progress Bar area
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text("24m left of 48m", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 10.sp)
+                    Text(stringResource(R.string.time_left), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 10.sp)
                     Spacer(modifier = Modifier.height(4.dp))
                     Box(
                         modifier = Modifier

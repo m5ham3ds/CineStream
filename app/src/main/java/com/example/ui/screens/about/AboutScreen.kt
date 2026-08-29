@@ -1,6 +1,8 @@
 package com.example.ui.screens.about
 
 import androidx.compose.foundation.background
+import androidx.compose.ui.res.stringResource
+import com.example.R
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -74,10 +76,10 @@ fun AboutScreen(onBack: () -> Unit = {}) {
                 ) {
                     Icon(Icons.Outlined.Verified, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Version 1.0.0", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
+                    Text(stringResource(R.string.version_label), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                Text("Last updated: May 25, 2024", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
+                Text(stringResource(R.string.last_updated), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
             }
 
             // Logo Image placeholder
@@ -114,7 +116,7 @@ fun AboutScreen(onBack: () -> Unit = {}) {
                         // Target icon placeholder
                         Icon(Icons.Outlined.Verified, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Our Mission", color = MaterialTheme.colorScheme.onBackground, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.our_mission), color = MaterialTheme.colorScheme.onBackground, fontSize = 18.sp, fontWeight = FontWeight.Bold)
                     }
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
@@ -172,7 +174,7 @@ fun AboutScreen(onBack: () -> Unit = {}) {
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
             shape = RoundedCornerShape(12.dp)
         ) {
-            Text("Check for Updates", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
+            Text(stringResource(R.string.check_for_updates), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
         }
         Spacer(modifier = Modifier.height(32.dp))
     }

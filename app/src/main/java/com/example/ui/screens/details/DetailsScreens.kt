@@ -1,5 +1,7 @@
 package com.example.ui.screens.details
 import com.example.utils.SiteVerificationManager
+import androidx.compose.ui.res.stringResource
+import com.example.R
 
 import android.content.Intent
 import android.net.Uri
@@ -102,18 +104,18 @@ fun MovieDetailsScreen(
                 if (showDeleteConfirm) {
                     AlertDialog(
                         onDismissRequest = { showDeleteConfirm = false },
-                        title = { Text("حذف التنزيل", color = MaterialTheme.colorScheme.onBackground) },
-                        text = { Text("هل أنت متأكد أنك تريد حذف هذا العنصر من التنزيلات؟", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                        title = { Text(stringResource(R.string.delete_download), color = MaterialTheme.colorScheme.onBackground) },
+                        text = { Text(stringResource(R.string.delete_download_confirm), color = MaterialTheme.colorScheme.onSurfaceVariant) },
                         confirmButton = {
                             TextButton(onClick = {
                                 downloadItem?.let {
                                     scope.launch { downloadRepository.removeFromDownloads(it) }
                                 }
                                 showDeleteConfirm = false
-                            }) { Text("نعم، احذف", color = Color.Red) }
+                            }) { Text(stringResource(R.string.yes_delete), color = Color.Red) }
                         },
                         dismissButton = {
-                            TextButton(onClick = { showDeleteConfirm = false }) { Text("إلغاء", color = MaterialTheme.colorScheme.onBackground) }
+                            TextButton(onClick = { showDeleteConfirm = false }) { Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.onBackground) }
                         },
                         containerColor = MaterialTheme.colorScheme.surface
                     )
@@ -238,7 +240,7 @@ fun MovieDetailsScreen(
                 
                 // Trailers
                 if (movie.trailers.isNotEmpty()) {
-                    Text("Trailers", color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
+                    Text(stringResource(R.string.trailers), color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
                     Spacer(modifier = Modifier.height(8.dp))
                     LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         items(movie.trailers) { trailer ->
@@ -251,7 +253,7 @@ fun MovieDetailsScreen(
                 }
                 
                 // Overview
-                Text("Overview", color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
+                Text(stringResource(R.string.overview), color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(movie.overview, color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(horizontal = 16.dp))
                 
@@ -259,7 +261,7 @@ fun MovieDetailsScreen(
                 
                 // Cast
                 if (movie.cast.isNotEmpty()) {
-                    Text("Cast", color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
+                    Text(stringResource(R.string.cast), color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
                     Spacer(modifier = Modifier.height(8.dp))
                     LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                         items(movie.cast) { CastMemberCard(it) { onPersonClick(it.id) } }
@@ -367,18 +369,18 @@ fun SeriesDetailsScreen(
                 if (showDeleteConfirm) {
                     AlertDialog(
                         onDismissRequest = { showDeleteConfirm = false },
-                        title = { Text("حذف التنزيل", color = MaterialTheme.colorScheme.onBackground) },
-                        text = { Text("هل أنت متأكد أنك تريد حذف هذا العنصر من التنزيلات؟", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                        title = { Text(stringResource(R.string.delete_download), color = MaterialTheme.colorScheme.onBackground) },
+                        text = { Text(stringResource(R.string.delete_download_confirm), color = MaterialTheme.colorScheme.onSurfaceVariant) },
                         confirmButton = {
                             TextButton(onClick = {
                                 downloadItem?.let {
                                     scope.launch { downloadRepository.removeFromDownloads(it) }
                                 }
                                 showDeleteConfirm = false
-                            }) { Text("نعم، احذف", color = Color.Red) }
+                            }) { Text(stringResource(R.string.yes_delete), color = Color.Red) }
                         },
                         dismissButton = {
-                            TextButton(onClick = { showDeleteConfirm = false }) { Text("إلغاء", color = MaterialTheme.colorScheme.onBackground) }
+                            TextButton(onClick = { showDeleteConfirm = false }) { Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.onBackground) }
                         },
                         containerColor = MaterialTheme.colorScheme.surface
                     )
@@ -503,7 +505,7 @@ fun SeriesDetailsScreen(
                 
                 // Trailers
                 if (series.trailers.isNotEmpty()) {
-                    Text("Trailers", color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
+                    Text(stringResource(R.string.trailers), color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
                     Spacer(modifier = Modifier.height(8.dp))
                     LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         items(series.trailers) { trailer ->
@@ -516,7 +518,7 @@ fun SeriesDetailsScreen(
                 }
                 
                 // Overview
-                Text("Overview", color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
+                Text(stringResource(R.string.overview), color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(series.overview, color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(horizontal = 16.dp))
                 
@@ -524,7 +526,7 @@ fun SeriesDetailsScreen(
                 
                 // Cast
                 if (series.cast.isNotEmpty()) {
-                    Text("Cast", color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
+                    Text(stringResource(R.string.cast), color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
                     Spacer(modifier = Modifier.height(8.dp))
                     LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                         items(series.cast) { CastMemberCard(it) { onPersonClick(it.id) } }
@@ -534,7 +536,7 @@ fun SeriesDetailsScreen(
 
                 // Seasons & Episodes
                 if (series.seasons.isNotEmpty()) {
-                    Text("Seasons and Episodes", color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
+                    Text(stringResource(R.string.seasons_and_episodes), color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
                     Spacer(modifier = Modifier.height(8.dp))
                     
                     // Season Tabs
@@ -544,7 +546,7 @@ fun SeriesDetailsScreen(
                             FilterChip(
                                 selected = isSelected,
                                 onClick = { viewModel.selectSeason(season) },
-                                label = { Text("Season ${season.seasonNumber}") },
+                                label = { Text(stringResource(R.string.season_number, season.seasonNumber)) },
                                 colors = FilterChipDefaults.filterChipColors(
                                     selectedContainerColor = MaterialTheme.colorScheme.primary,
                                     selectedLabelColor = MaterialTheme.colorScheme.onBackground

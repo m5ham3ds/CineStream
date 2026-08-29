@@ -1,6 +1,8 @@
 package com.example.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.ui.res.stringResource
+import com.example.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -88,7 +90,7 @@ fun ExpandableSearchBar(
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                         decorationBox = { innerTextField ->
                             if (uiState.query.isEmpty()) {
-                                Text("البحث...", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 16.sp)
+                                Text(stringResource(R.string.search_dots), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 16.sp)
                             }
                             innerTextField()
                         }
@@ -118,7 +120,7 @@ fun ExpandableSearchBar(
                         }
                     } else if (uiState.movieResults.isEmpty() && uiState.seriesResults.isEmpty()) {
                         Box(modifier = Modifier.fillMaxWidth().padding(16.dp), contentAlignment = Alignment.Center) {
-                            Text("لا توجد نتائج", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
+                            Text(stringResource(R.string.no_results), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
                         }
                     } else {
                         LazyColumn(
@@ -158,7 +160,7 @@ fun ExpandableSearchBar(
                                     Spacer(modifier = Modifier.width(12.dp))
                                     Column {
                                         Text(title, color = MaterialTheme.colorScheme.onBackground, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, maxLines = 1)
-                                        Text("$year • ${if(isMovie) "فيلم" else "مسلسل"}", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
+                                        Text("$year • ${if(isMovie) stringResource(R.string.movie_singular) else stringResource(R.string.series_singular)}", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
                                     }
                                 }
                             }

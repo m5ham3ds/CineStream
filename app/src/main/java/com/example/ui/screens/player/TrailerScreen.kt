@@ -1,6 +1,8 @@
 package com.example.ui.screens.player
 
 import android.content.Context
+import androidx.compose.ui.res.stringResource
+import com.example.R
 import androidx.compose.material3.MaterialTheme
 import android.net.Uri
 import android.webkit.WebChromeClient
@@ -42,7 +44,7 @@ fun TrailerScreen(trailerId: String, onBack: () -> Unit) {
                 ExoPlayerView(url = Uri.fromFile(file).toString())
             } else {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
-                    androidx.compose.material3.Text("File not found on disk.", color = MaterialTheme.colorScheme.onBackground)
+                    androidx.compose.material3.Text(stringResource(R.string.file_not_found), color = MaterialTheme.colorScheme.onBackground)
                 }
             }
         } else if (trailerId.startsWith("http://") || trailerId.startsWith("https://") && trailerId.contains(".mp4") || trailerId.contains(".m3u8")) {

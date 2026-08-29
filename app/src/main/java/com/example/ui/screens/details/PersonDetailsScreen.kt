@@ -1,6 +1,8 @@
 package com.example.ui.screens.details
 
 import androidx.compose.foundation.background
+import androidx.compose.ui.res.stringResource
+import com.example.R
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -106,7 +108,7 @@ fun PersonDetailsScreen(
                 // Biography
                 if (person.biography.isNotBlank()) {
                     Spacer(modifier = Modifier.height(16.dp))
-                    Text("Biography", color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
+                    Text(stringResource(R.string.biography), color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(person.biography, color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(horizontal = 16.dp))
                 }
@@ -114,7 +116,7 @@ fun PersonDetailsScreen(
                 // Movies
                 if (person.movies.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(24.dp))
-                    Text("Top Movies", color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
+                    Text(stringResource(R.string.top_movies), color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
                     Spacer(modifier = Modifier.height(8.dp))
                     LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         items(person.movies) { movie ->
@@ -126,7 +128,7 @@ fun PersonDetailsScreen(
                 // Series
                 if (person.series.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(24.dp))
-                    Text("Top TV Shows", color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
+                    Text(stringResource(R.string.top_tv_shows), color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
                     Spacer(modifier = Modifier.height(8.dp))
                     LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         items(person.series) { series ->

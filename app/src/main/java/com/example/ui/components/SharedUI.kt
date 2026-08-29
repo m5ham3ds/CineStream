@@ -1,6 +1,8 @@
 package com.example.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.ui.res.stringResource
+import com.example.R
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -92,7 +94,7 @@ fun HeroSectionShared(title: String, backdropUrl: String, desc: String, tag: Str
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = Color.White, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("Play", color = Color.White, fontWeight = FontWeight.SemiBold)
+                        Text(stringResource(R.string.play), color = Color.White, fontWeight = FontWeight.SemiBold)
                     }
                 }
                 Spacer(modifier = Modifier.width(12.dp))

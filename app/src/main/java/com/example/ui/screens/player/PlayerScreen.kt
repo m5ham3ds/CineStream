@@ -1,6 +1,8 @@
 package com.example.ui.screens.player
 
 import android.app.Activity
+import androidx.compose.ui.res.stringResource
+import com.example.R
 import android.content.pm.ActivityInfo
 import androidx.annotation.OptIn
 import androidx.compose.animation.*
@@ -152,8 +154,8 @@ fun PlayerScreen(videoUrl: String, onBack: () -> Unit) {
                         }
                         Spacer(modifier = Modifier.weight(1f))
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("Now Playing", color = MaterialTheme.colorScheme.onBackground, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                            Text("Episode 1", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
+                            Text(stringResource(R.string.now_playing), color = MaterialTheme.colorScheme.onBackground, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                            Text(stringResource(R.string.episode_number, 1), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
                         }
                         Spacer(modifier = Modifier.weight(1f))
                         Spacer(modifier = Modifier.width(48.dp)) // Balance the back button

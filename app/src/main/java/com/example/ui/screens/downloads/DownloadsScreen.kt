@@ -1,6 +1,8 @@
 package com.example.ui.screens.downloads
 
 import android.os.Environment
+import androidx.compose.ui.res.stringResource
+import com.example.R
 import android.os.StatFs
 import android.text.format.Formatter
 import androidx.compose.foundation.background
@@ -90,7 +92,7 @@ fun DownloadsScreen(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Outlined.Download, contentDescription = "Downloads", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(28.dp))
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Downloads", color = MaterialTheme.colorScheme.onBackground, fontSize = 28.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.downloads), color = MaterialTheme.colorScheme.onBackground, fontSize = 28.sp, fontWeight = FontWeight.Bold)
                 }
                 Box(
                     modifier = Modifier
@@ -102,13 +104,13 @@ fun DownloadsScreen(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.Edit, contentDescription = null, tint = MaterialTheme.colorScheme.onBackground, modifier = Modifier.size(14.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("Edit", color = MaterialTheme.colorScheme.onBackground, fontSize = 14.sp)
+                        Text(stringResource(R.string.edit), color = MaterialTheme.colorScheme.onBackground, fontSize = 14.sp)
                     }
                 }
             }
             
             Spacer(modifier = Modifier.height(8.dp))
-            Text("Watch your content offline anytime, anywhere.", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
+            Text(stringResource(R.string.downloads_desc), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
             
             Spacer(modifier = Modifier.height(24.dp))
             
@@ -162,9 +164,9 @@ fun DownloadsScreen(
                 ) {
                     Icon(Icons.Outlined.Download, contentDescription = null, tint = Color.DarkGray, modifier = Modifier.size(64.dp))
                     Spacer(modifier = Modifier.height(16.dp))
-                    Text("لم تقم بتنزيل أي عمل بعد", color = MaterialTheme.colorScheme.onBackground, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.no_downloads_yet), color = MaterialTheme.colorScheme.onBackground, fontSize = 18.sp, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text("الأفلام والمسلسلات التي تنزلها ستظهر هنا", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
+                    Text(stringResource(R.string.downloads_will_appear_here), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
                 }
                 Spacer(modifier = Modifier.height(24.dp))
             }
@@ -206,7 +208,7 @@ fun DownloadsScreen(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Outlined.Storage, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("Storage", color = MaterialTheme.colorScheme.onBackground, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                            Text(stringResource(R.string.storage), color = MaterialTheme.colorScheme.onBackground, fontSize = 16.sp, fontWeight = FontWeight.Bold)
                         }
                         Text("$usedStr / $totalStr used", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
                     }
@@ -252,9 +254,9 @@ fun DownloadsScreen(
                     }
                     Spacer(modifier = Modifier.width(16.dp))
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("Download more content", color = MaterialTheme.colorScheme.onBackground, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.download_more), color = MaterialTheme.colorScheme.onBackground, fontSize = 16.sp, fontWeight = FontWeight.Bold)
                         Spacer(modifier = Modifier.height(4.dp))
-                        Text("Find movies and series to download and watch offline.", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp, lineHeight = 16.sp)
+                        Text(stringResource(R.string.download_more_desc), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp, lineHeight = 16.sp)
                         Spacer(modifier = Modifier.height(12.dp))
                         Button(
                             onClick = onNavigateToHome,
@@ -263,7 +265,7 @@ fun DownloadsScreen(
                             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp),
                             modifier = Modifier.height(36.dp)
                         ) {
-                            Text("Browse Content", color = MaterialTheme.colorScheme.onBackground, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                            Text(stringResource(R.string.browse_content), color = MaterialTheme.colorScheme.onBackground, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
                         }
                     }
                 }

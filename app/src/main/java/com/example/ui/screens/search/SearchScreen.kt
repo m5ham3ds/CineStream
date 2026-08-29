@@ -1,6 +1,8 @@
 package com.example.ui.screens.search
 
 import androidx.compose.foundation.background
+import androidx.compose.ui.res.stringResource
+import com.example.R
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.FlowRow
@@ -77,7 +79,7 @@ fun SearchScreen(
             TextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it; viewModel.onQueryChange(it) },
-                placeholder = { Text("Search movies & series", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 16.sp) },
+                placeholder = { Text(stringResource(R.string.search_hint), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 16.sp) },
                 modifier = Modifier.weight(1f),
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.Transparent,
@@ -244,9 +246,9 @@ fun SearchScreen(
                     }
                     Spacer(modifier = Modifier.width(16.dp))
                     Column {
-                        Text("Can't find what you're looking for?", color = MaterialTheme.colorScheme.onBackground, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                        Text(stringResource(R.string.cant_find), color = MaterialTheme.colorScheme.onBackground, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                         Spacer(modifier = Modifier.height(4.dp))
-                        Text("Try searching with a different keyword", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
+                        Text(stringResource(R.string.try_different_keyword), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
                         Spacer(modifier = Modifier.height(12.dp))
                         Box(
                             modifier = Modifier
@@ -254,7 +256,7 @@ fun SearchScreen(
                                 .padding(horizontal = 16.dp, vertical = 8.dp)
                                 .clickable { /* Explore */ }
                         ) {
-                            Text("Explore All Content", color = MaterialTheme.colorScheme.primary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                            Text(stringResource(R.string.explore_all_content), color = MaterialTheme.colorScheme.primary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 }

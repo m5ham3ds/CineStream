@@ -1,6 +1,8 @@
 package com.example.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.ui.res.stringResource
+import com.example.R
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -57,7 +59,7 @@ fun MediaActionBottomSheet(
         ) {
             when (step) {
                 0 -> {
-                    Text("Select Episode", color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.select_episode), color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(16.dp))
                     (1..5).forEach { ep ->
                         Row(
@@ -70,12 +72,12 @@ fun MediaActionBottomSheet(
                         ) {
                             Icon(Icons.Default.PlayArrow, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
                             Spacer(modifier = Modifier.width(16.dp))
-                            Text(text = "Episode $ep", color = MaterialTheme.colorScheme.onBackground, fontSize = 16.sp)
+                            Text(text = stringResource(R.string.episode_number, ep), color = MaterialTheme.colorScheme.onBackground, fontSize = 16.sp)
                         }
                     }
                 }
                 1, 2 -> {
-                    Text("Select Source & Quality", color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.select_source), color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(16.dp))
                     
                     availableStreams.forEach { stream ->
@@ -127,7 +129,7 @@ fun MediaActionBottomSheet(
                 ) {
                     Icon(Icons.Default.Favorite, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                     Spacer(modifier = Modifier.width(16.dp))
-                    Text(text = "Add to Library / Favorites", color = MaterialTheme.colorScheme.onBackground, fontSize = 16.sp)
+                    Text(text = stringResource(R.string.add_to_library_favorites), color = MaterialTheme.colorScheme.onBackground, fontSize = 16.sp)
                 }
             }
             

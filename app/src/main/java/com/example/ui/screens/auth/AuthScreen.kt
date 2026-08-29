@@ -1,6 +1,8 @@
 package com.example.ui.screens.auth
 
 import android.widget.Toast
+import androidx.compose.ui.res.stringResource
+import com.example.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -154,7 +156,7 @@ fun AuthScreen(
                     OutlinedTextField(
                         value = email,
                         onValueChange = { email = it },
-                        placeholder = { Text("Email (Gmail)", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                        placeholder = { Text(stringResource(R.string.email_hint), color = MaterialTheme.colorScheme.onSurfaceVariant) },
                         leadingIcon = { Icon(Icons.Outlined.Mail, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
@@ -172,7 +174,7 @@ fun AuthScreen(
                     OutlinedTextField(
                         value = password,
                         onValueChange = { password = it },
-                        placeholder = { Text("Password", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                        placeholder = { Text(stringResource(R.string.password_hint), color = MaterialTheme.colorScheme.onSurfaceVariant) },
                         leadingIcon = { Icon(Icons.Outlined.Lock, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
                         trailingIcon = {
                             IconButton(onClick = { passwordVisible = !passwordVisible }) {
@@ -213,7 +215,7 @@ fun AuthScreen(
                                     checkmarkColor = MaterialTheme.colorScheme.onBackground
                                 )
                             )
-                            Text("Remember me", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
+                            Text(stringResource(R.string.remember_me), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
                         }
                         if (!isSignUp) {
                             Text(
@@ -245,7 +247,7 @@ fun AuthScreen(
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        Text(if (isSignUp) "Sign Up" else "Sign In", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
+                        Text(if (isSignUp) stringResource(R.string.sign_up) else stringResource(R.string.sign_in), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
                     }
                 }
             }
@@ -254,7 +256,7 @@ fun AuthScreen(
 
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                 Box(modifier = Modifier.weight(1f).height(1.dp).background(MaterialTheme.colorScheme.surfaceVariant))
-                Text("Or continue with", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp, modifier = Modifier.padding(horizontal = 16.dp))
+                Text(stringResource(R.string.or_continue_with), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp, modifier = Modifier.padding(horizontal = 16.dp))
                 Box(modifier = Modifier.weight(1f).height(1.dp).background(MaterialTheme.colorScheme.surfaceVariant))
             }
 
@@ -277,7 +279,7 @@ fun AuthScreen(
             ) {
                 // Placeholder for Google Icon
                 Text("G", color = MaterialTheme.colorScheme.background, fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(end = 8.dp))
-                Text("Sign in with Google", color = MaterialTheme.colorScheme.background, fontWeight = FontWeight.Medium, fontSize = 16.sp)
+                Text(stringResource(R.string.sign_in_with_google), color = MaterialTheme.colorScheme.background, fontWeight = FontWeight.Medium, fontSize = 16.sp)
             }
 
             Spacer(modifier = Modifier.height(24.dp))

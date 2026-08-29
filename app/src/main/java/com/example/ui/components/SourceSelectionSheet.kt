@@ -1,6 +1,8 @@
 package com.example.ui.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.ui.res.stringResource
+import com.example.R
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -53,7 +55,7 @@ fun SourceSelectionSheet(
                     CircularProgressIndicator()
                 }
             } else if (sources.isEmpty()) {
-                Text("No sources found.", modifier = Modifier.padding(16.dp))
+                Text(stringResource(R.string.no_sources), modifier = Modifier.padding(16.dp))
             } else {
                 LazyColumn {
                     items(sources) { source ->

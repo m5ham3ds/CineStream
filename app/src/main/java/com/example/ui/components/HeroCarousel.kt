@@ -1,6 +1,8 @@
 package com.example.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.ui.res.stringResource
+import com.example.R
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -56,8 +58,8 @@ fun HeroCarousel(
         val itemToRemove = showRemoveDialog!!
         AlertDialog(
             onDismissRequest = { showRemoveDialog = null },
-            title = { Text("إزالة من المفضلة", color = MaterialTheme.colorScheme.onSurface) },
-            text = { Text("هل أنت متأكد أنك تريد إزالة هذا العمل من المفضلة؟", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+            title = { Text(stringResource(R.string.remove_from_favorites), color = MaterialTheme.colorScheme.onSurface) },
+            text = { Text(stringResource(R.string.remove_from_favorites_confirm), color = MaterialTheme.colorScheme.onSurfaceVariant) },
             confirmButton = {
                 TextButton(onClick = {
                     scope.launch {
@@ -65,12 +67,12 @@ fun HeroCarousel(
                     }
                     showRemoveDialog = null
                 }) {
-                    Text("إزالة", color = MaterialTheme.colorScheme.primary)
+                    Text(stringResource(R.string.remove), color = MaterialTheme.colorScheme.primary)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showRemoveDialog = null }) {
-                    Text("إلغاء", color = MaterialTheme.colorScheme.onSurface)
+                    Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.onSurface)
                 }
             },
             containerColor = MaterialTheme.colorScheme.surface
@@ -126,7 +128,7 @@ fun HeroCarousel(
                             .background(Color.White.copy(alpha = 0.2f), RoundedCornerShape(4.dp))
                             .padding(horizontal = 8.dp, vertical = 4.dp)
                     ) {
-                        Text("NEW RELEASE", color = Color.White, fontSize = 8.sp, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.new_release), color = Color.White, fontSize = 8.sp, fontWeight = FontWeight.Bold)
                     }
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
@@ -148,7 +150,7 @@ fun HeroCarousel(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = Color.White, modifier = Modifier.size(16.dp))
                                 Spacer(modifier = Modifier.width(4.dp))
-                                Text("Play", color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 12.sp)
+                                Text(stringResource(R.string.play), color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 12.sp)
                             }
                         }
                         Spacer(modifier = Modifier.width(12.dp))

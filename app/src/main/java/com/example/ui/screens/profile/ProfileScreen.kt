@@ -1,6 +1,8 @@
 package com.example.ui.screens.profile
 
 import androidx.compose.foundation.background
+import androidx.compose.ui.res.stringResource
+import com.example.R
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -81,10 +83,10 @@ fun ProfileScreen() {
                     ) {
                         Text("👑", fontSize = 10.sp)
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("Premium Plan", color = MaterialTheme.colorScheme.primary, fontSize = 10.sp, fontWeight = FontWeight.SemiBold)
+                        Text(stringResource(R.string.premium_plan), color = MaterialTheme.colorScheme.primary, fontSize = 10.sp, fontWeight = FontWeight.SemiBold)
                     }
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Member since May 2024", color = Color.DarkGray, fontSize = 10.sp)
+                    Text(stringResource(R.string.member_since), color = Color.DarkGray, fontSize = 10.sp)
                 }
             }
             Icon(Icons.Default.ChevronRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -135,12 +137,12 @@ fun ProfileScreen() {
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("You're Premium!", color = MaterialTheme.colorScheme.onBackground, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.you_are_premium), color = MaterialTheme.colorScheme.onBackground, fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.width(4.dp))
                     Text("✨", fontSize = 14.sp)
                 }
                 Spacer(modifier = Modifier.height(4.dp))
-                Text("Enjoy ad-free streaming and exclusive content.", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp, lineHeight = 16.sp)
+                Text(stringResource(R.string.premium_desc), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp, lineHeight = 16.sp)
             }
             Spacer(modifier = Modifier.width(16.dp))
             Button(
@@ -150,14 +152,14 @@ fun ProfileScreen() {
                 modifier = Modifier.height(36.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp)
             ) {
-                Text("Manage Plan", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
+                Text(stringResource(R.string.manage_plan), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
             }
         }
 
         Spacer(modifier = Modifier.height(32.dp))
 
         // Account Section
-        Text("Account", color = MaterialTheme.colorScheme.onBackground, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.account), color = MaterialTheme.colorScheme.onBackground, fontSize = 18.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(12.dp))
         Column(
             modifier = Modifier
@@ -174,7 +176,7 @@ fun ProfileScreen() {
         Spacer(modifier = Modifier.height(24.dp))
 
         // Preferences Section
-        Text("Preferences", color = MaterialTheme.colorScheme.onBackground, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.preferences), color = MaterialTheme.colorScheme.onBackground, fontSize = 18.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(12.dp))
         Column(
             modifier = Modifier

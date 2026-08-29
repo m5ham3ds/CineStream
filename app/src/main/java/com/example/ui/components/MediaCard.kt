@@ -1,6 +1,8 @@
 package com.example.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.ui.res.stringResource
+import com.example.R
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
@@ -68,8 +70,8 @@ fun MediaCard(
     if (showRemoveDialog) {
         AlertDialog(
             onDismissRequest = { showRemoveDialog = false },
-            title = { Text("إزالة من المفضلة", color = MaterialTheme.colorScheme.onSurface) },
-            text = { Text("هل أنت متأكد أنك تريد إزالة هذا العمل من المفضلة؟", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+            title = { Text(stringResource(R.string.remove_from_favorites), color = MaterialTheme.colorScheme.onSurface) },
+            text = { Text(stringResource(R.string.remove_from_favorites_confirm), color = MaterialTheme.colorScheme.onSurfaceVariant) },
             confirmButton = {
                 val scope = rememberCoroutineScope()
                 TextButton(onClick = {
@@ -80,12 +82,12 @@ fun MediaCard(
                     }
                     showRemoveDialog = false
                 }) {
-                    Text("إزالة", color = MaterialTheme.colorScheme.primary)
+                    Text(stringResource(R.string.remove), color = MaterialTheme.colorScheme.primary)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showRemoveDialog = false }) {
-                    Text("إلغاء", color = MaterialTheme.colorScheme.onSurface)
+                    Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.onSurface)
                 }
             },
             containerColor = MaterialTheme.colorScheme.surface
