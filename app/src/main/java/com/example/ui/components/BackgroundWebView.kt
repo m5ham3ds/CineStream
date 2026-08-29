@@ -18,6 +18,7 @@ import kotlinx.coroutines.delay
 fun BackgroundWebView(
     urls: List<String>,
     onProgress: (String) -> Unit,
+    onSiteVerified: (String) -> Unit,
     onComplete: () -> Unit
 ) {
     if (urls.isEmpty()) {
@@ -35,6 +36,7 @@ fun BackgroundWebView(
             onProgress(currentUrl)
             // Wait 8 seconds for the WebView to process Cloudflare/Captcha
             delay(8000)
+            onSiteVerified(currentUrl)
             currentIndex++
         } else {
             onComplete()

@@ -238,7 +238,10 @@ fun SettingsScreen() {
             text = { Text(stringResource(R.string.confirm_theme_change)) },
             confirmButton = {
                 TextButton(onClick = {
-                    coroutineScope.launch { userPrefs.saveThemeMode(pendingThemeMode!!) }
+                    val mode = pendingThemeMode
+                    if (mode != null) {
+                        coroutineScope.launch { userPrefs.saveThemeMode(mode) }
+                    }
                     pendingThemeMode = null
                 }) { Text(stringResource(R.string.yes), color = MaterialTheme.colorScheme.primary) }
             },
@@ -258,7 +261,10 @@ fun SettingsScreen() {
             text = { Text(stringResource(R.string.confirm_color_change)) },
             confirmButton = {
                 TextButton(onClick = {
-                    coroutineScope.launch { userPrefs.savePrimaryColor(pendingPrimaryColor!!) }
+                    val color = pendingPrimaryColor
+                    if (color != null) {
+                        coroutineScope.launch { userPrefs.savePrimaryColor(color) }
+                    }
                     pendingPrimaryColor = null
                 }) { Text(stringResource(R.string.yes), color = MaterialTheme.colorScheme.primary) }
             },
@@ -278,7 +284,10 @@ fun SettingsScreen() {
             text = { Text(stringResource(R.string.confirm_language_change)) },
             confirmButton = {
                 TextButton(onClick = {
-                    coroutineScope.launch { userPrefs.saveAppLanguage(pendingLanguage!!) }
+                    val lang = pendingLanguage
+                    if (lang != null) {
+                        coroutineScope.launch { userPrefs.saveAppLanguage(lang) }
+                    }
                     pendingLanguage = null
                 }) { Text(stringResource(R.string.yes), color = MaterialTheme.colorScheme.primary) }
             },

@@ -1,4 +1,5 @@
 package com.example.navigation
+import com.example.utils.SiteVerificationManager
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -98,6 +99,19 @@ fun AppNavigation() {
     var showLogoutDialog by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
 
     var isUpdatingData by remember { mutableStateOf(true) }
+    var updateFinishedShowGreen by remember { mutableStateOf(false) }
+    
+    androidx.compose.runtime.LaunchedEffect(updateFinishedShowGreen) {
+        if (updateFinishedShowGreen) {
+            kotlinx.coroutines.delay(2000)
+            isUpdatingData = false
+            updateFinishedShowGreen = false
+        }
+    }
+    
+    val primaryColor by userPrefs.primaryColor.collectAsState(initial = 0)
+    val primaryColorVal = Color(if (primaryColor == 0) 0xFFE50914 else primaryColor.toLong())
+
     val extensionUrls = remember { listOf("https://google.com", "https://bing.com") }
     val bottomBarRoutes = listOf(
         Screen.Home.route,
@@ -349,32 +363,23 @@ fun AppNavigation() {
                 textContentColor = Color.LightGray
             )
         }
-        if (isUpdatingData && currentRoute != Screen.Splash.route && currentRoute != Screen.Auth.route && currentRoute != Screen.Onboarding.route) {
+        if (isUpdatingData && currentRoute != Screen.Splash.route && currentRoute != Screen.Auth.route && currentRoute != Screen.Onboarding.route && !updateFinishedShowGreen) {
+            SiteVerificationManager.isVerificationStarted = true
             BackgroundWebView(
                 urls = extensionUrls,
                 onProgress = { },
-                onComplete = { isUpdatingData = false }
+                onSiteVerified = { url -> SiteVerificationManager.markSiteVerified(url) },
+                onComplete = { 
+                    SiteVerificationManager.isVerificationComplete = true
+                    updateFinishedShowGreen = true 
+                }
             )
         }
         Scaffold(
             containerColor = Color.Black,
             topBar = {
                 Column {
-                    if (isUpdatingData && currentRoute != Screen.Splash.route && currentRoute != Screen.Auth.route && currentRoute != Screen.Onboarding.route) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(Color(0xFF2C2C2E))
-                                .padding(vertical = 4.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = stringResource(R.string.updating_data),
-                                color = Color.White,
-                                fontSize = 12.sp
-                            )
-                        }
-                    }
+
                     if (bottomBarRoutes.contains(currentRoute) || currentRoute in listOf(Screen.Profile.route, Screen.Downloads.route, Screen.Settings.route, Screen.About.route)) {
                     Column(
                         modifier = Modifier
@@ -456,6 +461,22 @@ fun AppNavigation() {
                         
                     }
                 }
+                if ((isUpdatingData || updateFinishedShowGreen) && currentRoute != Screen.Splash.route && currentRoute != Screen.Auth.route && currentRoute != Screen.Onboarding.route) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(if (updateFinishedShowGreen) Color(0xFF4CAF50) else primaryColorVal)
+                                .padding(vertical = 4.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = if (updateFinishedShowGreen) "تم التحقق من جميع المواقع بنجاح" else stringResource(R.string.updating_data),
+                                color = Color.White,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
                 }
             },
             bottomBar = {

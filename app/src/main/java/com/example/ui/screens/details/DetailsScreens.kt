@@ -1,4 +1,5 @@
 package com.example.ui.screens.details
+import com.example.utils.SiteVerificationManager
 
 import android.content.Intent
 import android.net.Uri

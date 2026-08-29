@@ -167,7 +167,6 @@ fun SeriesScreen(
                 }
             }
             }
-        }
 
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -275,6 +274,7 @@ if (seriesHistoryItems.isNotEmpty()) {
                 )
             }
         }
+    }
     }
 if (showBottomSheet) {
             MediaActionBottomSheet(
