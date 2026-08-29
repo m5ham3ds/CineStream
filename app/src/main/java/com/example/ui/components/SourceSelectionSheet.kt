@@ -12,8 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.domain.providers.ProviderManager
-import com.example.domain.models.VideoStream
-import kotlinx.coroutines.flow.collectLatest
+import com.example.domain.providers.VideoSource
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -23,26 +22,17 @@ fun SourceSelectionSheet(
     mediaTitle: String = "Unknown",
     isMovie: Boolean,
     onDismiss: () -> Unit,
-    onSourceSelected: (VideoStream) -> Unit
+    onSourceSelected: (VideoSource) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     var isLoading by remember { mutableStateOf(true) }
-    var sources by remember { mutableStateOf<List<VideoStream>>(emptyList()) }
+    var sources by remember { mutableStateOf<List<VideoSource>>(emptyList()) }
 
     LaunchedEffect(mediaId) {
         isLoading = true
-        // Mock params, since we don't pass all full details down here in this exact snippet yet.
-        // But this triggers the aggregator logic correctly.
-        val flow = if (isMovie) {
-            ProviderManager.aggregator.getAggregatedMovieStreams(mediaTitle, mediaTitle, 2024, mediaId)
-        } else {
-            ProviderManager.aggregator.getAggregatedEpisodeStreams(mediaTitle, mediaTitle, 1, 1)
-        }
-        
-        flow.collectLatest { aggregatedStreams ->
-            sources = aggregatedStreams
-            isLoading = false
-        }
+        // Pass dummy episode ID if not a movie
+        sources = ProviderManager.extractVideoLinks(mediaId, isMovie, if (!isMovie) "1" else null)
+        isLoading = false
     }
 
     ModalBottomSheet(onDismissRequest = onDismiss) {
@@ -65,16 +55,16 @@ fun SourceSelectionSheet(
             } else if (sources.isEmpty()) {
                 Text("No sources found.", modifier = Modifier.padding(16.dp))
             } else {
-                if (isLoading) {
-                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp))
-                }
                 LazyColumn {
                     items(sources) { source ->
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 4.dp)
-                                .clickable { onSourceSelected(source) },
+                                .clickable { 
+                                    onSourceSelected(source)
+                                    onDismiss()
+                                },
                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
                         ) {
                             Row(
@@ -83,10 +73,10 @@ fun SourceSelectionSheet(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Column {
-                                    Text(text = source.serverName, fontWeight = FontWeight.Bold)
+                                    Text(text = source.providerName, fontWeight = FontWeight.Bold)
                                 }
                                 Badge(containerColor = MaterialTheme.colorScheme.primary) {
-                                    Text(text = source.quality.displayName, modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp))
+                                    Text(text = source.quality, modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp))
                                 }
                             }
                         }

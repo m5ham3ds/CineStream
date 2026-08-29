@@ -1,77 +1,85 @@
 package com.example.domain.providers
 
-import com.example.domain.provider.ServerAggregator
-import com.example.domain.provider.ContentProvider
-import com.example.domain.models.VideoStream
-import com.example.domain.models.VideoQuality
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.delay
+import com.example.source.AnimeSource
+import com.example.source.ExampleAnimeSource
+import com.example.source.Video
+import com.example.source.Episode
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-// Central point for the UI to get aggregated streams
+data class Provider(
+    val name: String,
+    val type: ProviderType,
+    val language: String,
+    val logoUrl: String? = null
+)
+
+enum class ProviderType {
+    ANIME, MOVIE, SERIES
+}
+
+data class VideoSource(
+    val quality: String,
+    val url: String, // Actual MP4/M3U8 link
+    val providerName: String
+)
+
 object ProviderManager {
-    val aggregator = ServerAggregator().apply {
-        // Here you will register your actual ContentProviders from your SERVER-OF-CONTENT repo
-        registerProvider(MockServerOne())
-        registerProvider(MockServerTwo())
-    }
-}
+    // List of Aniyomi-style extensions (Sources)
+    private val sources: List<AnimeSource> = listOf(
+        ExampleAnimeSource()
+        // Add your parsed HTTP sources here!
+    )
 
-// Sample ContentProvider mimicking the structure of SERVER-OF-CONTENT
-class MockServerOne : ContentProvider {
-    override val name = "VidSrc (Server 1)"
-
-    override suspend fun getMovieStreams(
-        title: String,
-        originalTitle: String,
-        year: Int,
-        tmdbId: String
-    ): Flow<List<VideoStream>> = flow {
-        delay(800) // Simulate network delay
-        emit(listOf(
-            VideoStream(name, VideoQuality.Q_1080, "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"),
-            VideoStream(name, VideoQuality.Q_720, "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8")
-        ))
+    fun getActiveProviders(type: ProviderType): List<Provider> {
+        return sources.map { source ->
+            Provider(
+                name = source.name,
+                type = ProviderType.ANIME, // For demo
+                language = source.lang
+            )
+        }
     }
 
-    override suspend fun getEpisodeStreams(
-        title: String,
-        originalTitle: String,
-        season: Int,
-        episode: Int
-    ): Flow<List<VideoStream>> = flow {
-        delay(800)
-        emit(listOf(
-            VideoStream(name, VideoQuality.Q_1080, "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8")
-        ))
-    }
-}
-
-class MockServerTwo : ContentProvider {
-    override val name = "SuperStream (Server 2)"
-
-    override suspend fun getMovieStreams(
-        title: String,
-        originalTitle: String,
-        year: Int,
-        tmdbId: String
-    ): Flow<List<VideoStream>> = flow {
-        delay(1200)
-        emit(listOf(
-            VideoStream(name, VideoQuality.Q_4K, "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"),
-            VideoStream(name, VideoQuality.Q_480, "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8")
-        ))
-    }
-
-    override suspend fun getEpisodeStreams(
-        title: String,
-        originalTitle: String,
-        season: Int,
-        episode: Int
-    ): Flow<List<VideoStream>> = flow {
-        delay(1200)
-        emit(listOf(
-            VideoStream(name, VideoQuality.Q_720, "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8")
-        ))
+    suspend fun extractVideoLinks(mediaId: String, isMovie: Boolean, episodeId: String? = null): List<VideoSource> = withContext(Dispatchers.IO) {
+        val allVideos = mutableListOf<VideoSource>()
+        
+        // Loop through all sources to find video links
+        for (source in sources) {
+            try {
+                // In a real scenario, you'd pass the actual Episode object that was parsed.
+                // For this structure, we simulate passing an episode to get the video list.
+                val dummyEpisode = Episode(url = "/episode/$episodeId")
+                val videos = source.getVideoList(dummyEpisode)
+                
+                videos.forEach { video ->
+                    if (video.videoUrl != null) {
+                        allVideos.add(
+                            VideoSource(
+                                quality = video.quality,
+                                url = video.videoUrl, // Real direct video URL
+                                providerName = source.name
+                            )
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        
+        // If no sources are implemented yet, we return a real working MP4 for testing
+        // to prove the ExoPlayer and Offline Download systems work.
+        if (allVideos.isEmpty()) {
+            allVideos.add(
+                VideoSource(
+                    quality = "720p (Test Video)",
+                    url = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+                    providerName = "System"
+                )
+            )
+        }
+        
+        return@withContext allVideos
     }
 }
