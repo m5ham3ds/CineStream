@@ -41,6 +41,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
+import com.example.R
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -188,7 +190,7 @@ fun AppNavigation() {
                 
                 NavigationDrawerItem(
                     icon = { Icon(Icons.Default.Home, contentDescription = null, tint = if (currentRoute == Screen.Home.route) Color(0xFFE50914) else Color.White) },
-                    label = { Text("الرئيسية", color = Color.White, fontSize = 16.sp) },
+                    label = { Text(stringResource(R.string.home), color = Color.White, fontSize = 16.sp) },
                     selected = currentRoute == Screen.Home.route,
                     colors = NavigationDrawerItemDefaults.colors(
                         selectedContainerColor = Color(0xFFE50914).copy(alpha = 0.2f),
@@ -209,7 +211,7 @@ fun AppNavigation() {
 
                 NavigationDrawerItem(
                     icon = { Icon(Icons.Outlined.Download, contentDescription = null, tint = Color.White) },
-                    label = { Text("التنزيلات", color = Color.White, fontSize = 16.sp) },
+                    label = { Text(stringResource(R.string.downloads), color = Color.White, fontSize = 16.sp) },
                     selected = currentRoute == Screen.Downloads.route,
                     colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
                     onClick = {
@@ -226,7 +228,7 @@ fun AppNavigation() {
                 
                 NavigationDrawerItem(
                     icon = { Icon(Icons.Default.Favorite, contentDescription = null, tint = Color.White) },
-                    label = { Text("المكتبة", color = Color.White, fontSize = 16.sp) },
+                    label = { Text(stringResource(R.string.library), color = Color.White, fontSize = 16.sp) },
                     selected = currentRoute == Screen.Library.route,
                     colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
                     onClick = {
@@ -243,7 +245,7 @@ fun AppNavigation() {
 
                 NavigationDrawerItem(
                     icon = { Icon(Icons.Outlined.Settings, contentDescription = null, tint = Color.White) },
-                    label = { Text("الإعدادات", color = Color.White, fontSize = 16.sp) },
+                    label = { Text(stringResource(R.string.settings), color = Color.White, fontSize = 16.sp) },
                     selected = currentRoute == Screen.Settings.route,
                     colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
                     onClick = {
@@ -262,7 +264,7 @@ fun AppNavigation() {
                 
                 NavigationDrawerItem(
                     icon = { Icon(Icons.Outlined.Info, contentDescription = null, tint = Color.White) },
-                    label = { Text("حول التطبيق", color = Color.White, fontSize = 16.sp) },
+                    label = { Text(stringResource(R.string.about_app), color = Color.White, fontSize = 16.sp) },
                     selected = currentRoute == Screen.About.route,
                     colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
                     onClick = {
@@ -279,7 +281,7 @@ fun AppNavigation() {
                 
                 NavigationDrawerItem(
                     icon = { Icon(Icons.AutoMirrored.Filled.Help, contentDescription = null, tint = Color.White) },
-                    label = { Text("مساعدة ودعم", color = Color.White, fontSize = 16.sp) },
+                    label = { Text(stringResource(R.string.help_support), color = Color.White, fontSize = 16.sp) },
                     selected = false,
                     colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
                     onClick = { scope.launch { drawerState.close() } },
@@ -315,7 +317,7 @@ fun AppNavigation() {
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(if (isGuest) "تسجيل الدخول" else "تسجيل الخروج", color = Color.White, fontSize = 16.sp)
+                        Text(if (isGuest) stringResource(R.string.login) else stringResource(R.string.logout), color = Color.White, fontSize = 16.sp)
                         Spacer(modifier = Modifier.width(12.dp))
                         Icon(if (isGuest) Icons.Default.Person else Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Log", tint = Color(0xFFE50914))
                     }
@@ -327,17 +329,17 @@ fun AppNavigation() {
         if (showLogoutDialog) {
             AlertDialog(
                 onDismissRequest = { showLogoutDialog = false },
-                title = { Text("Log Out") },
-                text = { Text("Are you sure you want to log out?") },
+                title = { Text(stringResource(R.string.logout)) },
+                text = { Text(stringResource(R.string.logout_confirm)) },
                 confirmButton = {
                     TextButton(onClick = {
                         showLogoutDialog = false
                         scope.launch { userPrefs.saveIsGuest(true) }
                         navController.navigate(Screen.Auth.route) { popUpTo(0) }
-                    }) { Text("Yes", color = Color.Red) }
+                    }) { Text(stringResource(R.string.yes), color = Color.Red) }
                 },
                 dismissButton = {
-                    TextButton(onClick = { showLogoutDialog = false }) { Text("No", color = Color.White) }
+                    TextButton(onClick = { showLogoutDialog = false }) { Text(stringResource(R.string.no), color = Color.White) }
                 },
                 containerColor = Color(0xFF1E1E20),
                 titleContentColor = Color.White,
@@ -456,8 +458,8 @@ fun AppNavigation() {
                                 popUpTo(Screen.Splash.route) { inclusive = true }
                             }
                         },
-                        onNavigateToHome = {
-                            navController.navigate(Screen.Home.route) {
+                        onNavigateToMain = { startRoute ->
+                            navController.navigate(startRoute) {
                                 popUpTo(Screen.Splash.route) { inclusive = true }
                             }
                         }

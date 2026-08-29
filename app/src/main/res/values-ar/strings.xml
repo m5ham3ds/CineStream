@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">CineStream</string>
+    <string name="home">الرئيسية</string>
+    <string name="search">البحث</string>
+    <string name="downloads">التنزيلات</string>
+    <string name="settings">الإعدادات</string>
+    
+    <string name="appearance">المظهر</string>
+    <string name="theme">السمة</string>
+    <string name="system">النظام</string>
+    <string name="light">فاتح</string>
+    <string name="dark">داكن</string>
+    
+    <string name="accent_color">لون التمييز</string>
+    <string name="red">أحمر</string>
+    <string name="blue">أزرق</string>
+    <string name="green">أخضر</string>
+    <string name="yellow">أصفر</string>
+    <string name="purple">بنفسجي</string>
+    
+    <string name="general">عام</string>
+    <string name="language">اللغة</string>
+    <string name="english">الإنجليزية</string>
+    <string name="arabic">العربية</string>
+    
+    <string name="start_screen">شاشة البداية</string>
+</resources>

@@ -1,7 +1,6 @@
 package com.example.ui.screens.splash
 
 import androidx.compose.animation.core.*
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -9,7 +8,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -35,7 +33,7 @@ import kotlinx.coroutines.flow.first
 fun SplashScreen(
     onNavigateToOnboarding: () -> Unit,
     onNavigateToAuth: () -> Unit,
-    onNavigateToHome: () -> Unit
+    onNavigateToMain: (String) -> Unit
 ) {
     val context = LocalContext.current
     val userPrefs = remember { UserPreferencesRepository(context) }
@@ -52,12 +50,13 @@ fun SplashScreen(
         val hasSeenOnboarding = userPrefs.onboardingCompleted.first()
         val isGuest = userPrefs.isGuest.first()
         val isLoggedIn = userPrefs.isLoggedIn.first()
+        val startScreen = userPrefs.startScreen.first()
         
         delay(2000)
         
         if (hasSeenOnboarding) {
             if (isGuest || isLoggedIn) {
-                onNavigateToHome()
+                onNavigateToMain(startScreen)
             } else {
                 onNavigateToAuth()
             }
@@ -72,7 +71,6 @@ fun SplashScreen(
             .background(Color.Black),
         contentAlignment = Alignment.Center
     ) {
-        // Background Image
         AsyncImage(
             model = "https://images.unsplash.com/photo-1595769816263-9b910be24d5f?q=80&w=1000&auto=format&fit=crop",
             contentDescription = null,
@@ -80,7 +78,6 @@ fun SplashScreen(
             modifier = Modifier.fillMaxSize().alpha(0.2f)
         )
         
-        // Red Flare
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -99,7 +96,6 @@ fun SplashScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.alpha(alphaAnim.value)
         ) {
-            // Play Button Logo
             Box(
                 modifier = Modifier
                     .size(100.dp)
@@ -124,7 +120,6 @@ fun SplashScreen(
             
             Spacer(modifier = Modifier.height(24.dp))
             
-            // CineStream Title
             Text(
                 text = buildAnnotatedString {
                     withStyle(style = SpanStyle(color = Color(0xFFE50914))) {
@@ -147,7 +142,6 @@ fun SplashScreen(
             )
         }
         
-        // Loading Indicator
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
