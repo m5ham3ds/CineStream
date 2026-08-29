@@ -236,7 +236,7 @@ fun MovieDetailsScreen(
                         if (isDownloadMode) {
                             scope.launch {
                                 downloadRepository.addToDownloads(DownloadItem(
-                                    id = movie.id, title = movie.title, posterUrl = movie.posterUrl, isMovie = true, quality = source.quality
+                                    id = movie.id, title = movie.title, posterUrl = movie.posterUrl, isMovie = true, quality = source.quality.displayName
                                 ))
                                 Toast.makeText(context, "Download Started", Toast.LENGTH_SHORT).show()
                             }
@@ -495,9 +495,9 @@ fun SeriesDetailsScreen(
                         if (isDownloadMode) {
                             scope.launch {
                                 downloadRepository.addToDownloads(DownloadItem(
-                                    id = series.id, title = series.title, posterUrl = series.posterUrl, isMovie = false, quality = source.quality
+                                    id = series.id, title = series.title, posterUrl = series.posterUrl, isMovie = false, quality = source.quality.displayName
                                 ))
-                                Toast.makeText(context, "Download Started: ${source.name}", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Download Started: ${source.serverName}", Toast.LENGTH_SHORT).show()
                             }
                         } else {
                             scope.launch {

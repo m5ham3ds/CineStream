@@ -12,25 +12,37 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.domain.providers.ProviderManager
-import com.example.domain.providers.VideoSource
+import com.example.domain.models.VideoStream
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SourceSelectionSheet(
     mediaId: String,
+    mediaTitle: String = "Unknown",
     isMovie: Boolean,
     onDismiss: () -> Unit,
-    onSourceSelected: (VideoSource) -> Unit
+    onSourceSelected: (VideoStream) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     var isLoading by remember { mutableStateOf(true) }
-    var sources by remember { mutableStateOf<List<Pair<String, VideoSource>>>(emptyList()) }
+    var sources by remember { mutableStateOf<List<VideoStream>>(emptyList()) }
 
     LaunchedEffect(mediaId) {
         isLoading = true
-        sources = ProviderManager.fetchAllSources(mediaId, isMovie)
-        isLoading = false
+        // Mock params, since we don't pass all full details down here in this exact snippet yet.
+        // But this triggers the aggregator logic correctly.
+        val flow = if (isMovie) {
+            ProviderManager.aggregator.getAggregatedMovieStreams(mediaTitle, mediaTitle, 2024, mediaId)
+        } else {
+            ProviderManager.aggregator.getAggregatedEpisodeStreams(mediaTitle, mediaTitle, 1, 1)
+        }
+        
+        flow.collectLatest { aggregatedStreams ->
+            sources = aggregatedStreams
+            isLoading = false
+        }
     }
 
     ModalBottomSheet(onDismissRequest = onDismiss) {
@@ -46,15 +58,18 @@ fun SourceSelectionSheet(
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
-            if (isLoading) {
+            if (isLoading && sources.isEmpty()) {
                 Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
             } else if (sources.isEmpty()) {
                 Text("No sources found.", modifier = Modifier.padding(16.dp))
             } else {
+                if (isLoading) {
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp))
+                }
                 LazyColumn {
-                    items(sources) { (providerName, source) ->
+                    items(sources) { source ->
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -68,11 +83,10 @@ fun SourceSelectionSheet(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Column {
-                                    Text(text = providerName, fontWeight = FontWeight.Bold)
-                                    Text(text = source.name, style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
+                                    Text(text = source.serverName, fontWeight = FontWeight.Bold)
                                 }
                                 Badge(containerColor = MaterialTheme.colorScheme.primary) {
-                                    Text(text = source.quality, modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp))
+                                    Text(text = source.quality.displayName, modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp))
                                 }
                             }
                         }

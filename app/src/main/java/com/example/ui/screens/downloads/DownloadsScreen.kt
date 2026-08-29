@@ -296,7 +296,17 @@ fun DownloadItemRow(item: DownloadItem, onClick: () -> Unit, onPauseResume: () -
         Column(modifier = Modifier.weight(1f)) {
             Text(item.title, color = Color.White, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Spacer(modifier = Modifier.height(4.dp))
-            Text(if (item.isMovie) "Movie" else "Series", color = Color.Gray, fontSize = 12.sp)
+            Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                Text(if (item.isMovie) "Movie" else "Series", color = Color.Gray, fontSize = 12.sp)
+                Text("${(item.progress * 100).toInt()}%", color = Color.Gray, fontSize = 12.sp)
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            LinearProgressIndicator(
+                progress = { item.progress },
+                modifier = Modifier.fillMaxWidth().height(4.dp).clip(RoundedCornerShape(2.dp)),
+                color = if (item.isCompleted) Color.Green else Color(0xFFE50914),
+                trackColor = Color(0xFF2A2A2E)
+            )
             Spacer(modifier = Modifier.height(8.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(if (item.isCompleted) "Completed" else if (item.isPaused) "Paused" else "Downloading...", color = if (item.isCompleted) Color.Green else if (item.isPaused) Color.Yellow else Color(0xFFE50914), fontSize = 12.sp)
