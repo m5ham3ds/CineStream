@@ -56,6 +56,7 @@ fun BackgroundWebView(
             modifier = Modifier.alpha(0.01f).size(1.dp), 
             factory = { ctx ->
                 WebView(ctx).apply {
+                    setLayerType(android.view.View.LAYER_TYPE_SOFTWARE, null)
                     settings.apply {
                         javaScriptEnabled = true
                         domStorageEnabled = true
