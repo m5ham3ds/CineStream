@@ -7,10 +7,7 @@ import com.example.data.model.LibraryItem
 import kotlinx.coroutines.flow.Flow
 
 class LibraryRepository(context: Context) {
-    private val db = Room.databaseBuilder(
-        context.applicationContext,
-        AppDatabase::class.java, "cinestream-db"
-    ).fallbackToDestructiveMigration().build()
+    private val db = AppDatabase.getDatabase(context)
 
     private val libraryDao = db.libraryDao()
 

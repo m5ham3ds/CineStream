@@ -7,10 +7,7 @@ import com.example.data.model.DownloadItem
 import kotlinx.coroutines.flow.Flow
 
 class DownloadRepository(context: Context) {
-    private val db = Room.databaseBuilder(
-        context.applicationContext,
-        AppDatabase::class.java, "cinestream-db"
-    ).fallbackToDestructiveMigration().build()
+    private val db = AppDatabase.getDatabase(context)
 
     private val downloadDao = db.downloadDao()
 

@@ -7,6 +7,7 @@ import com.example.domain.models.Series
 import com.example.domain.repository.MediaRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import com.example.domain.models.CastMember
@@ -22,84 +23,75 @@ class TmdbMediaRepositoryImpl : MediaRepository {
 
 
     override fun getUpcomingMovies(): Flow<List<Movie>> = flow {
-        try {
-            val response = RetrofitClient.tmdbApi.getUpcomingMovies(apiKey)
+        val response = RetrofitClient.tmdbApi.getUpcomingMovies(apiKey)
             emit(response.results.map { it.toDomain() })
-        } catch (e: Exception) {
-            emit(emptyList())
-        }
+
+    }.catch {
+        emit(emptyList())
     }
 
     override fun getAnimeSeries(): Flow<List<Series>> = flow {
-        try {
-            val response = RetrofitClient.tmdbApi.getAnimeSeries(apiKey)
+        val response = RetrofitClient.tmdbApi.getAnimeSeries(apiKey)
             emit(response.results.map { it.toDomain() })
-        } catch (e: Exception) {
-            emit(emptyList())
-        }
+
+    }.catch {
+        emit(emptyList())
     }
 
     override fun getAnimeMovies(): Flow<List<Movie>> = flow {
-        try {
-            val response = RetrofitClient.tmdbApi.getAnimeMovies(apiKey)
+        val response = RetrofitClient.tmdbApi.getAnimeMovies(apiKey)
             emit(response.results.map { it.toDomain() })
-        } catch (e: Exception) {
-            emit(emptyList())
-        }
+
+    }.catch {
+        emit(emptyList())
     }
 
     override fun getNewReleasesMovies(): Flow<List<Movie>> = flow {
-        try {
-            val response = RetrofitClient.tmdbApi.getNewReleasesMovies(apiKey)
+        val response = RetrofitClient.tmdbApi.getNewReleasesMovies(apiKey)
             emit(response.results.map { it.toDomain() })
-        } catch (e: Exception) {
-            emit(emptyList())
-        }
+
+    }.catch {
+        emit(emptyList())
     }
 
     override fun getNewReleasesSeries(): Flow<List<Series>> = flow {
-        try {
-            val response = RetrofitClient.tmdbApi.getNewReleasesSeries(apiKey)
+        val response = RetrofitClient.tmdbApi.getNewReleasesSeries(apiKey)
             emit(response.results.map { it.toDomain() })
-        } catch (e: Exception) {
-            emit(emptyList())
-        }
+
+    }.catch {
+        emit(emptyList())
     }
 
     override fun getMovies(): Flow<List<Movie>> = flow {
-        try {
-            val response = RetrofitClient.tmdbApi.getPopularMovies(apiKey)
+        val response = RetrofitClient.tmdbApi.getPopularMovies(apiKey)
             emit(response.results.map { it.toDomain() })
-        } catch (e: Exception) {
-            emit(emptyList())
-        }
+
+    }.catch {
+        emit(emptyList())
     }
 
     override fun getSeries(): Flow<List<Series>> = flow {
-        try {
-            val response = RetrofitClient.tmdbApi.getPopularSeries(apiKey)
+        val response = RetrofitClient.tmdbApi.getPopularSeries(apiKey)
             emit(response.results.map { it.toDomain() })
-        } catch (e: Exception) {
-            emit(emptyList())
-        }
+
+    }.catch {
+        emit(emptyList())
     }
 
     override fun getTrendingMovies(): Flow<List<Movie>> = flow {
-        try {
-            val response = RetrofitClient.tmdbApi.getTrendingMovies(apiKey)
+        val response = RetrofitClient.tmdbApi.getTrendingMovies(apiKey)
             emit(response.results.map { it.toDomain() })
-        } catch (e: Exception) {
-            emit(emptyList())
-        }
+
+    }.catch {
+        emit(emptyList())
     }
 
     override fun getTrendingSeries(): Flow<List<Series>> = flow {
-        try {
-            val response = RetrofitClient.tmdbApi.getTrendingSeries(apiKey)
+        val response = RetrofitClient.tmdbApi.getTrendingSeries(apiKey)
             emit(response.results.map { it.toDomain() })
-        } catch (e: Exception) {
-            emit(emptyList())
-        }
+
+    }.catch {
+        emit(emptyList())
     }
 
     override suspend fun getMovieById(id: String): Movie? = withContext(Dispatchers.IO) {

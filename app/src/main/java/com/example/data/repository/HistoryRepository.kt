@@ -6,10 +6,7 @@ import com.example.data.model.HistoryItem
 import kotlinx.coroutines.flow.Flow
 
 class HistoryRepository(context: Context) {
-    private val db = Room.databaseBuilder(
-        context.applicationContext,
-        AppDatabase::class.java, "cinestream-db"
-    ).fallbackToDestructiveMigration().build()
+    private val db = AppDatabase.getDatabase(context)
     private val historyDao = db.historyDao()
 
     fun getHistoryItems(): Flow<List<HistoryItem>> = historyDao.getAllHistory()

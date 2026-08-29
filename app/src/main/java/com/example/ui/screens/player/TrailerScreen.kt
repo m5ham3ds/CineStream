@@ -26,7 +26,13 @@ fun TrailerScreen(trailerId: String, onBack: () -> Unit) {
         AndroidView(
             modifier = Modifier.fillMaxSize(),
             factory = { context ->
+                val wasmDir = java.io.File(context.cacheDir, "WebView/Default/HTTP Cache/Code Cache/wasm")
+                if (!wasmDir.exists()) {
+                    wasmDir.mkdirs()
+                }
+                
                 WebView(context).apply {
+                    setLayerType(android.view.View.LAYER_TYPE_SOFTWARE, null)
                     settings.javaScriptEnabled = true
                     settings.domStorageEnabled = true
                     settings.mediaPlaybackRequiresUserGesture = false

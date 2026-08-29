@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Dns
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,6 +19,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
+import com.example.domain.models.VideoStream
+import com.example.domain.models.VideoQuality
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,6 +34,15 @@ fun MediaActionBottomSheet(
     val scope = rememberCoroutineScope()
     
     var step by remember { mutableStateOf(if (isMovie) 2 else 0) } // 0 = episode select, 1 = episode quality, 2 = movie quality
+
+    // TODO: In a real implementation, you would pass `streams: List<VideoStream>` from your ViewModel 
+    // which gets it from the `ServerAggregator`. This is mock data demonstrating the architecture.
+    val availableStreams = listOf(
+        VideoStream("Server 1 (HighSpeed)", VideoQuality.Q_1080, "url1"),
+        VideoStream("Server 2 (Backup)", VideoQuality.Q_720, "url2"),
+        VideoStream("Server 1 (HighSpeed)", VideoQuality.Q_480, "url3"),
+        VideoStream("Server 3 (External)", VideoQuality.Q_1080, "url4")
+    ).sortedByDescending { it.quality.resolution }
 
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
@@ -63,10 +75,10 @@ fun MediaActionBottomSheet(
                     }
                 }
                 1, 2 -> {
-                    Text("Download Quality", color = Color.White, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                    Text("Select Source & Quality", color = Color.White, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(16.dp))
-                    val qualities = listOf("1080p (FHD)", "720p (HD)", "480p (SD)")
-                    qualities.forEach { quality ->
+                    
+                    availableStreams.forEach { stream ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -74,16 +86,22 @@ fun MediaActionBottomSheet(
                                 .clickable {
                                     scope.launch { sheetState.hide() }.invokeOnCompletion { 
                                         if (!sheetState.isVisible) {
-                                            onDownloadStart(quality)
+                                            // Pass the selected quality/server string for now
+                                            onDownloadStart("${stream.quality.displayName} - ${stream.serverName}")
                                         }
                                     }
                                 }
                                 .padding(vertical = 14.dp, horizontal = 12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.Default.Download, contentDescription = null, tint = Color(0xFFA51B1B))
+                            Icon(Icons.Default.Dns, contentDescription = null, tint = Color(0xFFA51B1B))
                             Spacer(modifier = Modifier.width(16.dp))
-                            Text(text = quality, color = Color.White, fontSize = 16.sp)
+                            Column {
+                                Text(text = stream.quality.displayName, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                                Text(text = stream.serverName, color = Color.LightGray, fontSize = 12.sp)
+                            }
+                            Spacer(modifier = Modifier.weight(1f))
+                            Icon(Icons.Default.Download, contentDescription = "Download", tint = Color.Gray)
                         }
                     }
                 }
