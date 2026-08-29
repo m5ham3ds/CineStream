@@ -1,6 +1,8 @@
 package com.example.ui.screens.series
 
 import android.widget.Toast
+import androidx.compose.ui.res.stringResource
+import com.example.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -97,7 +99,7 @@ fun SeriesScreen(
     val categories = listOf(
         CategoryItem("Series", Icons.Default.LocalMovies),
         CategoryItem("Genres", Icons.Default.Category),
-        CategoryItem("New Releases", Icons.Default.NewReleases),
+        CategoryItem(stringResource(R.string.new_releases), Icons.Default.NewReleases),
         CategoryItem("Top Rated", Icons.Default.Star)
     )
     val ptrState = rememberPullToRefreshState()
@@ -174,7 +176,7 @@ fun SeriesScreen(
         
         if (selectedCategory == "Series") {
 if (seriesHistoryItems.isNotEmpty()) {
-            SectionTitleShared("متابعة المشاهدة", onSeeAllClick = onNavigateToWatching)
+            SectionTitleShared(stringResource(R.string.continue_watching), onSeeAllClick = onNavigateToWatching)
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -190,7 +192,7 @@ if (seriesHistoryItems.isNotEmpty()) {
 
 
         // Popular Series
-        SectionTitleShared("Popular Series", onSeeAllClick = onNavigateToPopular)
+        SectionTitleShared(stringResource(R.string.popular_series), onSeeAllClick = onNavigateToPopular)
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -218,7 +220,7 @@ if (seriesHistoryItems.isNotEmpty()) {
         Spacer(modifier = Modifier.height(24.dp))
 
         // New Releases
-        SectionTitleShared("New Releases", onSeeAllClick = onNavigateToNewReleases)
+        SectionTitleShared(stringResource(R.string.new_releases), onSeeAllClick = onNavigateToNewReleases)
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -245,7 +247,7 @@ if (seriesHistoryItems.isNotEmpty()) {
 
 } else {
             val displayItems = when (selectedCategory) {
-                "New Releases" -> uiState.series.reversed()
+                stringResource(R.string.new_releases) -> uiState.series.reversed()
                 "Top Rated" -> uiState.series.sortedByDescending { it.rating }
                 "Genres" -> uiState.series.shuffled()
                 else -> uiState.series

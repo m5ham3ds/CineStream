@@ -1,6 +1,8 @@
 package com.example.ui.screens.anime
 
 import android.widget.Toast
+import androidx.compose.ui.res.stringResource
+import com.example.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -91,14 +93,15 @@ fun AnimeScreen(
     var selectedMediaTitle by remember { mutableStateOf("") }
     var selectedMediaPoster by remember { mutableStateOf("") }
 
-    var selectedCategory by remember { mutableStateOf("Anime") }
+    val animeStr = stringResource(R.string.anime)
+    var selectedCategory by remember { mutableStateOf(animeStr) }
 
     data class CategoryItem(val name: String, val icon: androidx.compose.ui.graphics.vector.ImageVector)
     val categories = listOf(
-        CategoryItem("Anime", Icons.Default.LocalMovies),
+        CategoryItem(animeStr, Icons.Default.LocalMovies),
         
         CategoryItem("Genres", Icons.Default.Category),
-        CategoryItem("New Releases", Icons.Default.NewReleases),
+        CategoryItem(stringResource(R.string.new_releases), Icons.Default.NewReleases),
         CategoryItem("Top Rated", Icons.Default.Star)
     )
     val ptrState = rememberPullToRefreshState()
@@ -134,7 +137,7 @@ fun AnimeScreen(
                         .background(if (selectedCategory == category.name) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface)
                         .clickable {
                             if (selectedCategory == category.name) {
-                                selectedCategory = "Anime"
+                                selectedCategory = animeStr
                             } else {
                                 selectedCategory = category.name
                             }
@@ -167,9 +170,9 @@ fun AnimeScreen(
         
 
         
-        if (selectedCategory == "Anime") {
+        if (selectedCategory == animeStr) {
 if (animeHistoryItems.isNotEmpty()) {
-            SectionTitleShared("متابعة المشاهدة", onSeeAllClick = onNavigateToWatching)
+            SectionTitleShared(stringResource(R.string.continue_watching), onSeeAllClick = onNavigateToWatching)
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -185,7 +188,7 @@ if (animeHistoryItems.isNotEmpty()) {
 
 
         // Popular Anime
-        SectionTitleShared("Popular Anime", onSeeAllClick = onNavigateToPopular)
+        SectionTitleShared(stringResource(R.string.popular_anime), onSeeAllClick = onNavigateToPopular)
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -212,7 +215,7 @@ if (animeHistoryItems.isNotEmpty()) {
         Spacer(modifier = Modifier.height(24.dp))
 
         // New Releases
-        SectionTitleShared("New Releases", onSeeAllClick = onNavigateToNewReleases)
+        SectionTitleShared(stringResource(R.string.new_releases), onSeeAllClick = onNavigateToNewReleases)
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -238,7 +241,7 @@ if (animeHistoryItems.isNotEmpty()) {
 
 } else {
             val displayItems = when (selectedCategory) {
-                "New Releases" -> uiState.series.reversed()
+                stringResource(R.string.new_releases) -> uiState.series.reversed()
                 "Top Rated" -> uiState.series.sortedByDescending { it.rating }
                 "Genres" -> uiState.series.shuffled() // Placeholder for genres
                 else -> uiState.series

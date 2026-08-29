@@ -44,15 +44,15 @@ fun WatchingScreen(
     val filteredItems = when (selectedTab) {
         "Movies" -> historyItems.filter { it.isMovie }
         "TV Series" -> historyItems.filter { !it.isMovie } // Assume TV Series if not movie
-        "Anime" -> emptyList() // You can adjust this if HistoryItem adds anime type
+        stringResource(R.string.anime) -> emptyList() // You can adjust this if HistoryItem adds anime type
         else -> historyItems
     }
 
     Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         CustomTopBar(
-            titleFirst = "Continue",
-            titleSecond = "Watching",
-            subtitle = "Pick up where you left off",
+            titleFirst = stringResource(R.string.watching_title_first),
+            titleSecond = stringResource(R.string.watching_title_second),
+            subtitle = stringResource(R.string.watching_subtitle),
             onBack = onBack,
             showFilter = false
         )
@@ -64,7 +64,7 @@ fun WatchingScreen(
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            val tabs = listOf("All", "TV Series", "Movies", "Anime")
+            val tabs = listOf("All", "TV Series", "Movies", stringResource(R.string.anime))
             tabs.forEach { tab ->
                 val isSelected = selectedTab == tab
                 Box(

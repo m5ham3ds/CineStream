@@ -99,7 +99,7 @@ fun SearchScreen(
 
         if (searchQuery.isEmpty()) {
             // Popular Searches
-            SectionTitleSharedWithAction("Popular Searches", "Clear All")
+            SectionTitleSharedWithAction(stringResource(R.string.popular_searches), stringResource(R.string.clear_all))
             
             @Composable
             fun SearchChip(text: String) {
@@ -145,7 +145,7 @@ fun SearchScreen(
             val cats = listOf(
                 Pair("Movies", Icons.Outlined.LocalMovies),
                 Pair("Series", Icons.Outlined.LiveTv),
-                Pair("Anime", Icons.Outlined.TheaterComedy),
+                Pair(stringResource(R.string.anime), Icons.Outlined.TheaterComedy),
                 Pair("Documentaries", Icons.Outlined.Description),
                 Pair("Kids", Icons.Outlined.ChildCare)
             )
@@ -175,7 +175,7 @@ fun SearchScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             // Trending Now
-            SectionTitleShared("Trending Now", onSeeAllClick = onNavigateToTrending)
+            SectionTitleShared(stringResource(R.string.trending_now), onSeeAllClick = onNavigateToTrending)
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -197,7 +197,7 @@ fun SearchScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             // Recent Searches
-            SectionTitleSharedWithAction("Recent Searches", "Edit >")
+            SectionTitleSharedWithAction(stringResource(R.string.recent_searches), stringResource(R.string.edit_action))
             
             val recents = listOf(
                 Triple("Interstellar", "Movie • Sci-Fi", "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg"),

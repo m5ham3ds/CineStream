@@ -33,7 +33,7 @@ fun CustomTopBar(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            // Removed statusBarsPadding() because it's handled by Scaffold padding
+            .statusBarsPadding()
             .padding(horizontal = 8.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

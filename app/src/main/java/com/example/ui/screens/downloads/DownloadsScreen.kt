@@ -56,7 +56,7 @@ fun DownloadsScreen(
     val filteredDownloads = when (selectedTab) {
         "Movies" -> downloads.filter { it.isMovie }
         "Series" -> downloads.filter { !it.isMovie }
-        "Anime" -> downloads.filter { !it.isMovie } // Adjust if Anime has specific logic
+        stringResource(R.string.anime) -> downloads.filter { !it.isMovie } // Adjust if Anime has specific logic
         else -> downloads
     }
 
@@ -136,7 +136,7 @@ fun DownloadsScreen(
             
             // Tabs
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                listOf("All", "Movies", "Series", "Anime").forEach { tab ->
+                listOf("All", "Movies", "Series", stringResource(R.string.anime)).forEach { tab ->
                     val isSelected = selectedTab == tab
                     Box(
                         modifier = Modifier

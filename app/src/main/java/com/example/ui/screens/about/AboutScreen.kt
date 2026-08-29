@@ -120,7 +120,7 @@ fun AboutScreen(onBack: () -> Unit = {}) {
                     }
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
-                        "To deliver the best entertainment experience with a simple, fast and beautiful streaming platform.",
+                        stringResource(R.string.about_mission_desc),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 14.sp,
                         lineHeight = 20.sp
@@ -141,13 +141,13 @@ fun AboutScreen(onBack: () -> Unit = {}) {
 
         // Features Grid
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            FeatureCard(modifier = Modifier.weight(1f), icon = Icons.Outlined.Verified, title = "Reliable", subtitle = "Secure and stable streaming experience.")
-            FeatureCard(modifier = Modifier.weight(1f), icon = Icons.Outlined.Verified, title = "Fast", subtitle = "Optimized performance for everyone.")
+            FeatureCard(modifier = Modifier.weight(1f), icon = Icons.Outlined.Verified, title = stringResource(R.string.feature_reliable_title), subtitle = stringResource(R.string.feature_reliable_desc))
+            FeatureCard(modifier = Modifier.weight(1f), icon = Icons.Outlined.Verified, title = stringResource(R.string.feature_fast_title), subtitle = stringResource(R.string.feature_fast_desc))
         }
         Spacer(modifier = Modifier.height(12.dp))
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            FeatureCard(modifier = Modifier.weight(1f), icon = Icons.Outlined.Diamond, title = "Premium", subtitle = "High quality content and features.")
-            FeatureCard(modifier = Modifier.weight(1f), icon = Icons.Outlined.FavoriteBorder, title = "Made for You", subtitle = "Designed to bring you the best.")
+            FeatureCard(modifier = Modifier.weight(1f), icon = Icons.Outlined.Diamond, title = stringResource(R.string.feature_premium_title), subtitle = stringResource(R.string.feature_premium_desc))
+            FeatureCard(modifier = Modifier.weight(1f), icon = Icons.Outlined.FavoriteBorder, title = stringResource(R.string.feature_made_for_you_title), subtitle = stringResource(R.string.feature_made_for_you_desc))
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -160,10 +160,10 @@ fun AboutScreen(onBack: () -> Unit = {}) {
                 .background(MaterialTheme.colorScheme.surface)
                 .border(1.dp, MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(16.dp))
         ) {
-            AboutLinkItem(icon = Icons.Outlined.Groups, title = "Meet the Team", isLast = false)
-            AboutLinkItem(icon = Icons.Outlined.Policy, title = "Terms of Service", isLast = false)
-            AboutLinkItem(icon = Icons.Outlined.Lock, title = "Privacy Policy", isLast = false)
-            AboutLinkItem(icon = Icons.Outlined.ChatBubbleOutline, title = "Contact Us", isLast = true)
+            AboutLinkItem(icon = Icons.Outlined.Groups, title = stringResource(R.string.link_meet_team), isLast = false)
+            AboutLinkItem(icon = Icons.Outlined.Policy, title = stringResource(R.string.link_terms), isLast = false)
+            AboutLinkItem(icon = Icons.Outlined.Lock, title = stringResource(R.string.link_privacy), isLast = false)
+            AboutLinkItem(icon = Icons.Outlined.ChatBubbleOutline, title = stringResource(R.string.link_contact), isLast = true)
         }
 
         Spacer(modifier = Modifier.height(24.dp))

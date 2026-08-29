@@ -1,6 +1,8 @@
 package com.example.ui.screens.home
 
 import android.widget.Toast
+import androidx.compose.ui.res.stringResource
+import com.example.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -97,7 +99,7 @@ fun HomeScreen(
     var selectedMediaPoster by remember { mutableStateOf("") }
 
     var selectedCategory by remember { mutableStateOf("Home") }
-    val categories = listOf("Home", "Movies", "Series", "Anime", "Documentaries")
+    val categories = listOf("Home", "Movies", "Series", stringResource(R.string.anime), "Documentaries")
     val ptrState = rememberPullToRefreshState()
     
     PullToRefreshBox(
@@ -162,7 +164,7 @@ fun HomeScreen(
         
         if (selectedCategory == "Home") {
 // Trending Now
-        SectionTitle("Trending Now", onSeeAllClick = onNavigateToTrending)
+        SectionTitle(stringResource(R.string.trending_now), onSeeAllClick = onNavigateToTrending)
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -191,7 +193,7 @@ fun HomeScreen(
         
         // Continue Watching
         if (historyItems.isNotEmpty()) {
-            SectionTitle("متابعة المشاهدة", onSeeAllClick = onNavigateToWatching)
+            SectionTitle(stringResource(R.string.continue_watching), onSeeAllClick = onNavigateToWatching)
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -206,7 +208,7 @@ fun HomeScreen(
         }
 
         // Trending Series
-        SectionTitle("Trending Series", onSeeAllClick = onNavigateToTrending)
+        SectionTitle(stringResource(R.string.trending_series), onSeeAllClick = onNavigateToTrending)
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -237,7 +239,7 @@ fun HomeScreen(
         
         // Anime
         if (uiState.animeSeries.isNotEmpty()) {
-            SectionTitle("Anime", onSeeAllClick = onNavigateToAnime)
+            SectionTitle(stringResource(R.string.anime), onSeeAllClick = onNavigateToAnime)
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -267,7 +269,7 @@ fun HomeScreen(
 
         // Coming Soon
         if (uiState.upcomingMovies.isNotEmpty()) {
-            SectionTitle("Coming Soon", onSeeAllClick = onNavigateToUpcoming)
+            SectionTitle(stringResource(R.string.coming_soon), onSeeAllClick = onNavigateToUpcoming)
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -296,7 +298,7 @@ fun HomeScreen(
 
         // New Releases
         if (uiState.newReleasesMovies.isNotEmpty()) {
-            SectionTitle("New Releases", onSeeAllClick = onNavigateToNewReleases)
+            SectionTitle(stringResource(R.string.new_releases), onSeeAllClick = onNavigateToNewReleases)
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -329,7 +331,7 @@ fun HomeScreen(
             val displayItems = when (selectedCategory) {
                 "Movies" -> uiState.allMovies
                 "Series" -> uiState.allSeries
-                "Anime" -> uiState.animeSeries
+                stringResource(R.string.anime) -> uiState.animeSeries
                 "Documentaries" -> uiState.allMovies.filter { it.genres.contains("Documentary") }
                 else -> emptyList()
             }
@@ -430,7 +432,7 @@ fun SectionTitle(title: String, onSeeAllClick: (() -> Unit)? = null) {
         )
         if (onSeeAllClick != null) {
             Text(
-                text = "See All",
+                text = stringResource(R.string.see_all),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.clickable { onSeeAllClick() }

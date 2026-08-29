@@ -141,7 +141,7 @@ fun SectionTitleShared(title: String, onSeeAllClick: (() -> Unit)? = null) {
         )
         if (onSeeAllClick != null) {
             Text(
-                text = "See All",
+                text = stringResource(R.string.see_all),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.clickable { onSeeAllClick() }

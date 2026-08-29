@@ -1,6 +1,8 @@
 package com.example.ui.screens.home
 
 import androidx.compose.foundation.background
+import androidx.compose.ui.res.stringResource
+import com.example.R
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -37,13 +39,13 @@ fun NewReleasesScreen(
     val items = when (selectedTab) {
         "Movies" -> uiState.newReleasesMovies.map { it to true }
         "Series" -> uiState.newReleasesSeries.map { it to false }
-        "Anime" -> uiState.animeSeries.map { it to false }
+        stringResource(R.string.anime) -> uiState.animeSeries.map { it to false }
         else -> (uiState.newReleasesMovies.map { it to true } + uiState.newReleasesSeries.map { it to false } + uiState.animeSeries.map { it to false })
     }
     
     Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         CustomTopBar(
-            titleFirst = "New", titleSecond = "Releases", subtitle = "Latest additions", onBack = onBack, showFilter = true
+            titleFirst = stringResource(R.string.new_releases_title_first), titleSecond = stringResource(R.string.new_releases_title_second), subtitle = stringResource(R.string.new_releases_subtitle), onBack = onBack, showFilter = true
         )
         
         Row(
@@ -51,7 +53,7 @@ fun NewReleasesScreen(
                 .border(1.dp, MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(12.dp)).clip(RoundedCornerShape(12.dp)),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            val tabs = listOf("All", "Movies", "Series", "Anime")
+            val tabs = listOf("All", "Movies", "Series", stringResource(R.string.anime))
             tabs.forEach { tab ->
                 val isSelected = selectedTab == tab
                 Box(

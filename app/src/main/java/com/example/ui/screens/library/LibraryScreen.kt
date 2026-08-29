@@ -24,6 +24,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import com.example.R
 import com.example.ui.components.MediaCard
 import com.example.data.repository.LibraryRepository
 import com.example.data.repository.DownloadRepository
@@ -39,13 +41,15 @@ fun LibraryScreen(
     val libraryItems by libraryRepository.getLibraryItems().collectAsState(initial = emptyList())
     val downloadedItems by downloadRepository.getDownloadItems().collectAsState(initial = emptyList())
     
-    var selectedTab by remember { mutableStateOf("Watchlist") }
+    val watchlistStr = stringResource(R.string.watchlist)
+    val downloadsStr = stringResource(R.string.downloads)
+    var selectedTab by remember { mutableStateOf(watchlistStr) }
     
     data class TabItem(val name: String, val icon: androidx.compose.ui.graphics.vector.ImageVector)
     val tabs = listOf(
-        TabItem("Watchlist", Icons.Default.Favorite),
-        TabItem("Downloads", Icons.Default.Download),
-        TabItem("History", Icons.Default.History)
+        TabItem(stringResource(R.string.watchlist), Icons.Default.Favorite),
+        TabItem(stringResource(R.string.downloads), Icons.Default.Download),
+        TabItem(stringResource(R.string.history), Icons.Default.History)
     )
 
     Column(
@@ -54,7 +58,7 @@ fun LibraryScreen(
             
     ) {
         Text(
-            text = "Library",
+            text = stringResource(R.string.library),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground,
@@ -102,9 +106,9 @@ fun LibraryScreen(
         Spacer(modifier = Modifier.height(16.dp))
         
         // Items grid
-        val displayItems = if (selectedTab == "Watchlist") {
+        val displayItems = if (selectedTab == watchlistStr) {
             libraryItems
-        } else if (selectedTab == "Downloads") {
+        } else if (selectedTab == downloadsStr) {
             downloadedItems.map { 
                 com.example.data.model.LibraryItem(
                     id = it.id, 
@@ -121,14 +125,14 @@ fun LibraryScreen(
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Icon(
-                        if (selectedTab == "Watchlist") Icons.Default.Favorite else Icons.Default.Download,
+                        if (selectedTab == watchlistStr) Icons.Default.Favorite else Icons.Default.Download,
                         contentDescription = "Empty",
                         tint = Color.DarkGray,
                         modifier = Modifier.size(64.dp)
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        text = "Your ${selectedTab.lowercase()} is empty",
+                        text = if (selectedTab == watchlistStr) stringResource(R.string.empty_watchlist) else if (selectedTab == downloadsStr) stringResource(R.string.empty_downloads) else stringResource(R.string.empty_history),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 16.sp
                     )

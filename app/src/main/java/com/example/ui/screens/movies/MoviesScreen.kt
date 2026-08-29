@@ -1,6 +1,8 @@
 package com.example.ui.screens.movies
 
 import android.widget.Toast
+import androidx.compose.ui.res.stringResource
+import com.example.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -97,7 +99,7 @@ fun MoviesScreen(
     val categories = listOf(
         CategoryItem("Movies", Icons.Default.LocalMovies),
         CategoryItem("Genres", Icons.Default.Category),
-        CategoryItem("New Releases", Icons.Default.NewReleases),
+        CategoryItem(stringResource(R.string.new_releases), Icons.Default.NewReleases),
         CategoryItem("Top Rated", Icons.Default.Star)
     )
     val ptrState = rememberPullToRefreshState()
@@ -166,7 +168,7 @@ fun MoviesScreen(
         
         if (selectedCategory == "Movies") {
 if (movieHistoryItems.isNotEmpty()) {
-            SectionTitleShared("متابعة المشاهدة", onSeeAllClick = onNavigateToWatching)
+            SectionTitleShared(stringResource(R.string.continue_watching), onSeeAllClick = onNavigateToWatching)
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -182,7 +184,7 @@ if (movieHistoryItems.isNotEmpty()) {
 
 
         // Popular Movies
-        SectionTitleShared("Popular Movies", onSeeAllClick = onNavigateToPopular)
+        SectionTitleShared(stringResource(R.string.popular_movies), onSeeAllClick = onNavigateToPopular)
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -209,7 +211,7 @@ if (movieHistoryItems.isNotEmpty()) {
         Spacer(modifier = Modifier.height(24.dp))
 
         // New Releases
-        SectionTitleShared("New Releases", onSeeAllClick = onNavigateToNewReleases)
+        SectionTitleShared(stringResource(R.string.new_releases), onSeeAllClick = onNavigateToNewReleases)
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -235,7 +237,7 @@ if (movieHistoryItems.isNotEmpty()) {
 
 } else {
             val displayItems = when (selectedCategory) {
-                "New Releases" -> uiState.movies.reversed()
+                stringResource(R.string.new_releases) -> uiState.movies.reversed()
                 "Top Rated" -> uiState.movies.sortedByDescending { it.rating }
                 "Genres" -> uiState.movies.shuffled() // Placeholder for genres
                 else -> uiState.movies
