@@ -45,6 +45,7 @@ import com.example.ui.components.ContinueWatchingCardShared
 import com.example.ui.components.HeroSectionShared
 import com.example.ui.components.MediaActionBottomSheet
 import com.example.ui.components.MediaCard
+import com.example.ui.components.VerticalGrid
 import com.example.ui.components.MediaScreenSkeleton
 import com.example.ui.components.HeroCarousel
 import com.example.ui.components.HeroItem
@@ -130,7 +131,13 @@ fun MoviesScreen(
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
                         .background(if (selectedCategory == category.name) Color(0xFFE50914) else Color(0xFF1E1E20))
-                        .clickable { selectedCategory = category.name }
+                        .clickable {
+                            if (selectedCategory == category.name) {
+                                selectedCategory = "Movies"
+                            } else {
+                                selectedCategory = category.name
+                            }
+                        }
                         .padding(horizontal = 16.dp, vertical = 8.dp),
                     contentAlignment = Alignment.Center
                 ) {
@@ -156,7 +163,9 @@ fun MoviesScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
         
-        if (movieHistoryItems.isNotEmpty()) {
+        
+        if (selectedCategory == "Movies") {
+if (movieHistoryItems.isNotEmpty()) {
             SectionTitleShared("متابعة المشاهدة", onSeeAllClick = onNavigateToWatching)
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp),
@@ -224,8 +233,39 @@ fun MoviesScreen(
             }
         }
 
+} else {
+            val displayItems = when (selectedCategory) {
+                "New Releases" -> uiState.movies.reversed()
+                "Top Rated" -> uiState.movies.sortedByDescending { it.rating }
+                "Genres" -> uiState.movies.shuffled() // Placeholder for genres
+                else -> uiState.movies
+            }
+            
+            com.example.ui.components.VerticalGrid(
+                items = displayItems,
+                columns = 3,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            ) { movie ->
+                MediaCard(
+                    title = movie.title,
+                    posterUrl = movie.posterUrl,
+                    rank = null,
+                    rating = movie.rating,
+                    year = movie.year.toString(),
+                    isMovie = true,
+                    mediaId = movie.id,
+                    onClick = { onMovieClick(movie.id) },
+                    onLongClick = { 
+                        selectedMediaId = movie.id
+                        selectedMediaTitle = movie.title
+                        selectedMediaPoster = movie.posterUrl
+                        showBottomSheet = true
+                    }
+                )
+            }
+        }
     }
-        if (showBottomSheet) {
+if (showBottomSheet) {
             MediaActionBottomSheet(
                 isMovie = true,
                 onDismissRequest = { showBottomSheet = false },

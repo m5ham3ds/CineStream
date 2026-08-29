@@ -29,9 +29,9 @@ class SeriesViewModel(private val repository: MediaRepository) : ViewModel() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             repository.getSeries()
-                .catch { e -> _uiState.update { it.copy(error = e.message, isLoading = false) } }
+                .catch { e -> _uiState.update { it.copy(error = e.message, isLoading = it.series.isEmpty()) } }
                 .collect { series ->
-                    _uiState.update { it.copy(series = series, isLoading = false) }
+                    _uiState.update { it.copy(series = series, isLoading = series.isEmpty()) }
                 }
         }
     }

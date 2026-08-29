@@ -45,6 +45,7 @@ import com.example.ui.components.ContinueWatchingCardShared
 import com.example.ui.components.HeroSectionShared
 import com.example.ui.components.MediaActionBottomSheet
 import com.example.ui.components.MediaCard
+import com.example.ui.components.VerticalGrid
 import com.example.ui.components.MediaScreenSkeleton
 import com.example.ui.components.HeroCarousel
 import com.example.ui.components.HeroItem
@@ -131,7 +132,13 @@ fun AnimeScreen(
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
                         .background(if (selectedCategory == category.name) Color(0xFFE50914) else Color(0xFF1E1E20))
-                        .clickable { selectedCategory = category.name }
+                        .clickable {
+                            if (selectedCategory == category.name) {
+                                selectedCategory = "Anime"
+                            } else {
+                                selectedCategory = category.name
+                            }
+                        }
                         .padding(horizontal = 16.dp, vertical = 8.dp),
                     contentAlignment = Alignment.Center
                 ) {
@@ -157,7 +164,11 @@ fun AnimeScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
         
-        if (animeHistoryItems.isNotEmpty()) {
+        
+
+        
+        if (selectedCategory == "Anime") {
+if (animeHistoryItems.isNotEmpty()) {
             SectionTitleShared("متابعة المشاهدة", onSeeAllClick = onNavigateToWatching)
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp),
@@ -225,8 +236,39 @@ fun AnimeScreen(
             }
         }
 
+} else {
+            val displayItems = when (selectedCategory) {
+                "New Releases" -> uiState.series.reversed()
+                "Top Rated" -> uiState.series.sortedByDescending { it.rating }
+                "Genres" -> uiState.series.shuffled() // Placeholder for genres
+                else -> uiState.series
+            }
+            
+            com.example.ui.components.VerticalGrid(
+                items = displayItems,
+                columns = 3,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            ) { series ->
+                MediaCard(
+                    title = series.title,
+                    posterUrl = series.posterUrl,
+                    rank = null,
+                    rating = series.rating,
+                    year = series.year.toString(),
+                    isMovie = false,
+                    mediaId = series.id,
+                    onClick = { onAnimeClick(series.id) },
+                    onLongClick = { 
+                        selectedMediaId = series.id
+                        selectedMediaTitle = series.title
+                        selectedMediaPoster = series.posterUrl
+                        showBottomSheet = true
+                    }
+                )
+            }
+        }
     }
-        if (showBottomSheet) {
+if (showBottomSheet) {
             MediaActionBottomSheet(
                 isMovie = false,
                 onDismissRequest = { showBottomSheet = false },

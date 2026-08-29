@@ -508,9 +508,15 @@ fun AppNavigation() {
                     )
                 }
                         composable(Screen.Anime.route) {
-            AnimeScreen(onAnimeClick = { seriesId ->
-                navController.navigate(Screen.SeriesDetails.createRoute(seriesId))
-            })
+            AnimeScreen(
+                onAnimeClick = { seriesId ->
+                    navController.navigate(Screen.SeriesDetails.createRoute(seriesId))
+                },
+                onNavigateToPopular = { navController.navigate(Screen.Popular.route) },
+                onNavigateToNewReleases = { navController.navigate(Screen.NewReleases.route) },
+                onNavigateToTrending = { navController.navigate(Screen.Trending.route) },
+                onNavigateToWatching = { navController.navigate(Screen.Watching.route) }
+            )
         }
         composable(Screen.Series.route) {
                     SeriesScreen(

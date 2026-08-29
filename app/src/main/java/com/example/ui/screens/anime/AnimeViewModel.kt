@@ -31,9 +31,9 @@ class AnimeViewModel(
         _uiState.update { it.copy(isLoading = true, error = null) }
         viewModelScope.launch {
             repository.getAnimeSeries()
-                .catch { e -> _uiState.update { it.copy(error = e.message, isLoading = false) } }
+                .catch { e -> _uiState.update { it.copy(error = e.message, isLoading = it.series.isEmpty()) } }
                 .collect { list ->
-                    _uiState.update { it.copy(series = list, isLoading = false) }
+                    _uiState.update { it.copy(series = list, isLoading = list.isEmpty()) }
                 }
         }
     }

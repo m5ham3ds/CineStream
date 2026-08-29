@@ -49,6 +49,7 @@ import com.example.data.repository.HistoryRepository
 import androidx.compose.runtime.collectAsState
 
 import com.example.ui.components.MediaCard
+import com.example.ui.components.VerticalGrid
 import com.example.ui.components.MediaScreenSkeleton
 import com.example.ui.components.HeroCarousel
 import com.example.ui.components.HeroItem
@@ -135,7 +136,13 @@ fun HomeScreen(
                             color = if (selectedCategory == category) Color.Transparent else Color.DarkGray,
                             shape = RoundedCornerShape(8.dp)
                         )
-                        .clickable { selectedCategory = category }
+                        .clickable {
+                            if (selectedCategory == category) {
+                                selectedCategory = "Home"
+                            } else {
+                                selectedCategory = category
+                            }
+                        }
                         .padding(horizontal = 16.dp, vertical = 8.dp),
                     contentAlignment = Alignment.Center
                 ) {
@@ -152,7 +159,9 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Trending Now
+        
+        if (selectedCategory == "Home") {
+// Trending Now
         SectionTitle("Trending Now", onSeeAllClick = onNavigateToTrending)
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
@@ -316,8 +325,63 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(24.dp))
         }
 
+} else {
+            val displayItems = when (selectedCategory) {
+                "Movies" -> uiState.allMovies
+                "Series" -> uiState.allSeries
+                "Anime" -> uiState.animeSeries
+                "Documentaries" -> uiState.allMovies.filter { it.genres.contains("Documentary") }
+                else -> emptyList()
+            }
+            
+            com.example.ui.components.VerticalGrid(
+                items = displayItems,
+                columns = 3,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            ) { item ->
+                // Because displayItems can be Movie or Series, we need to handle both
+                // We'll just cast check since Kotlin supports it
+                if (item is com.example.domain.models.Movie) {
+                    MediaCard(
+                        title = item.title,
+                        posterUrl = item.posterUrl,
+                        rank = null,
+                        rating = item.rating,
+                        year = item.year.toString(),
+                        isMovie = true,
+                        mediaId = item.id,
+                        onClick = { onMovieClick(item.id) },
+                        onLongClick = { 
+                            bottomSheetIsMovie = true
+                            selectedMediaId = item.id
+                            selectedMediaTitle = item.title
+                            selectedMediaPoster = item.posterUrl
+                            showBottomSheet = true
+                        }
+                    )
+                } else if (item is com.example.domain.models.Series) {
+                    MediaCard(
+                        title = item.title,
+                        posterUrl = item.posterUrl,
+                        rank = null,
+                        rating = item.rating,
+                        year = item.year.toString(),
+                        isMovie = false,
+                        mediaId = item.id,
+                        onClick = { onSeriesClick(item.id) },
+                        onLongClick = { 
+                            bottomSheetIsMovie = false
+                            selectedMediaId = item.id
+                            selectedMediaTitle = item.title
+                            selectedMediaPoster = item.posterUrl
+                            showBottomSheet = true
+                        }
+                    )
+                }
+            }
+        }
     }
-        if (showBottomSheet) {
+if (showBottomSheet) {
             MediaActionBottomSheet(
                 isMovie = bottomSheetIsMovie,
                 onDismissRequest = { showBottomSheet = false },

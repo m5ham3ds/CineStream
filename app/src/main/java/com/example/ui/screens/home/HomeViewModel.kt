@@ -5,10 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.example.domain.models.Movie
 import com.example.domain.models.Series
 import com.example.domain.repository.MediaRepository
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -17,6 +18,8 @@ data class HomeUiState(
     val trendingMovies: List<Movie> = emptyList(),
     val trendingSeries: List<Series> = emptyList(),
     val actionMovies: List<Movie> = emptyList(),
+    val allMovies: List<Movie> = emptyList(),
+    val allSeries: List<Series> = emptyList(),
     val animeSeries: List<Series> = emptyList(),
     val upcomingMovies: List<Movie> = emptyList(),
     val newReleasesMovies: List<Movie> = emptyList(),
@@ -39,46 +42,50 @@ class HomeViewModel(
         _uiState.update { it.copy(isLoading = true, error = null) }
         viewModelScope.launch {
             kotlinx.coroutines.delay(400) // Ensure shimmer effect is visible for a moment even if loading from cache
-            repository.getTrendingMovies()
-                .catch { e -> _uiState.update { it.copy(error = e.message, isLoading = false) } }
-                .collect { movies ->
-                    _uiState.update { it.copy(trendingMovies = movies) }
+            
+            try {
+                val trendingMoviesDeferred = async { repository.getTrendingMovies().firstOrNull() ?: emptyList() }
+                val animeSeriesDeferred = async { repository.getAnimeSeries().firstOrNull() ?: emptyList() }
+                val upcomingMoviesDeferred = async { repository.getUpcomingMovies().firstOrNull() ?: emptyList() }
+                val newReleasesMoviesDeferred = async { repository.getNewReleasesMovies().firstOrNull() ?: emptyList() }
+                val newReleasesSeriesDeferred = async { repository.getNewReleasesSeries().firstOrNull() ?: emptyList() }
+                val trendingSeriesDeferred = async { repository.getTrendingSeries().firstOrNull() ?: emptyList() }
+                val allMoviesDeferred = async { repository.getMovies().firstOrNull() ?: emptyList() }
+                val allSeriesDeferred = async { repository.getSeries().firstOrNull() ?: emptyList() }
+                
+                val trendingMovies = trendingMoviesDeferred.await()
+                val animeSeries = animeSeriesDeferred.await()
+                val upcomingMovies = upcomingMoviesDeferred.await()
+                val newReleasesMovies = newReleasesMoviesDeferred.await()
+                val newReleasesSeries = newReleasesSeriesDeferred.await()
+                val trendingSeries = trendingSeriesDeferred.await()
+                val allMovies = allMoviesDeferred.await()
+                val allSeries = allSeriesDeferred.await()
+                
+                val actionMovies = allMovies.filter { m -> m.genres.contains("Action") }
+                
+                val hasData = trendingMovies.isNotEmpty() || animeSeries.isNotEmpty() || trendingSeries.isNotEmpty() || actionMovies.isNotEmpty()
+                
+                _uiState.update {
+                    it.copy(
+                        trendingMovies = trendingMovies,
+                        animeSeries = animeSeries,
+                        upcomingMovies = upcomingMovies,
+                        newReleasesMovies = newReleasesMovies,
+                        newReleasesSeries = newReleasesSeries,
+                        trendingSeries = trendingSeries,
+                        actionMovies = actionMovies,
+                        allMovies = allMovies,
+                        allSeries = allSeries,
+                        isLoading = !hasData
+                    )
                 }
-            repository.getAnimeSeries()
-                .catch { e -> _uiState.update { it.copy(error = e.message) } }
-                .collect { animes ->
-                    _uiState.update { it.copy(animeSeries = animes) }
+            } catch (e: Exception) {
+                _uiState.update { state -> 
+                    val hasData = state.trendingMovies.isNotEmpty() || state.animeSeries.isNotEmpty() || state.trendingSeries.isNotEmpty() || state.actionMovies.isNotEmpty()
+                    state.copy(error = e.message, isLoading = !hasData)
                 }
-            repository.getUpcomingMovies()
-                .catch { e -> _uiState.update { it.copy(error = e.message) } }
-                .collect { upcoming ->
-                    _uiState.update { it.copy(upcomingMovies = upcoming) }
-                }
-            repository.getNewReleasesMovies()
-                .catch { e -> _uiState.update { it.copy(error = e.message) } }
-                .collect { movies ->
-                    _uiState.update { it.copy(newReleasesMovies = movies) }
-                }
-            repository.getNewReleasesSeries()
-                .catch { e -> _uiState.update { it.copy(error = e.message) } }
-                .collect { series ->
-                    _uiState.update { it.copy(newReleasesSeries = series) }
-                }
-            repository.getTrendingSeries()
-                .catch { e -> _uiState.update { it.copy(error = e.message, isLoading = false) } }
-                .collect { series ->
-                    _uiState.update { it.copy(trendingSeries = series) }
-                }
-            repository.getMovies()
-                .catch { e -> _uiState.update { it.copy(error = e.message, isLoading = false) } }
-                .collect { allMovies ->
-                    _uiState.update { 
-                        it.copy(
-                            actionMovies = allMovies.filter { m -> m.genres.contains("Action") },
-                            isLoading = false
-                        )
-                    }
-                }
+            }
         }
     }
 }

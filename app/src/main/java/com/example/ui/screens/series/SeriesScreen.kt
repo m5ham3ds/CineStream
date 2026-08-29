@@ -16,6 +16,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Category
+import androidx.compose.material.icons.filled.LocalMovies
+import androidx.compose.material.icons.filled.NewReleases
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.material3.*
 
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,6 +46,7 @@ import com.example.ui.components.ContinueWatchingCardShared
 import com.example.ui.components.HeroSectionShared
 import com.example.ui.components.MediaActionBottomSheet
 import com.example.ui.components.MediaCard
+import com.example.ui.components.VerticalGrid
 import com.example.ui.components.MediaScreenSkeleton
 import com.example.ui.components.HeroCarousel
 import com.example.ui.components.HeroItem
@@ -86,8 +92,14 @@ fun SeriesScreen(
     var selectedMediaTitle by remember { mutableStateOf("") }
     var selectedMediaPoster by remember { mutableStateOf("") }
 
-    var selectedCategory by remember { mutableStateOf("All") }
-    val categories = listOf("All", "Trending", "New Releases", "Top Rated", "Genres")
+    var selectedCategory by remember { mutableStateOf("Series") }
+    data class CategoryItem(val name: String, val icon: androidx.compose.ui.graphics.vector.ImageVector)
+    val categories = listOf(
+        CategoryItem("Series", Icons.Default.LocalMovies),
+        CategoryItem("Genres", Icons.Default.Category),
+        CategoryItem("New Releases", Icons.Default.NewReleases),
+        CategoryItem("Top Rated", Icons.Default.Star)
+    )
     val ptrState = rememberPullToRefreshState()
     
     PullToRefreshBox(
@@ -122,35 +134,47 @@ fun SeriesScreen(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(categories) { category ->
+                        items(categories) { category ->
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(percent = 50))
-                        .background(if (selectedCategory == category) Color(0xFFE50914) else Color(0xFF1E1E20))
-                        .clickable { selectedCategory = category }
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(if (selectedCategory == category.name) Color(0xFFE50914) else Color(0xFF1E1E20))
+                        .clickable {
+                            if (selectedCategory == category.name) {
+                                selectedCategory = "Series"
+                            } else {
+                                selectedCategory = category.name
+                            }
+                        }
                         .padding(horizontal = 16.dp, vertical = 8.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = category,
-                            color = if (selectedCategory == category) Color.White else Color.LightGray,
-                            fontSize = 14.sp,
-                            fontWeight = if (selectedCategory == category) FontWeight.SemiBold else FontWeight.Normal
+                        Icon(
+                            imageVector = category.icon, 
+                            contentDescription = category.name, 
+                            tint = if (selectedCategory == category.name) Color.White else Color.Gray,
+                            modifier = Modifier.size(16.dp)
                         )
-                        if (category == "Genres") {
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Icon(Icons.Default.ArrowDropDown, contentDescription = null, tint = Color.LightGray, modifier = Modifier.size(16.dp))
-                        }
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = category.name,
+                            color = if (selectedCategory == category.name) Color.White else Color.Gray,
+                            fontSize = 14.sp,
+                            fontWeight = if (selectedCategory == category.name) FontWeight.SemiBold else FontWeight.Normal
+                        )
                     }
                 }
+            }
             }
         }
 
 
         Spacer(modifier = Modifier.height(24.dp))
         
-        if (seriesHistoryItems.isNotEmpty()) {
+        
+        if (selectedCategory == "Series") {
+if (seriesHistoryItems.isNotEmpty()) {
             SectionTitleShared("متابعة المشاهدة", onSeeAllClick = onNavigateToWatching)
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp),
@@ -220,8 +244,39 @@ fun SeriesScreen(
             }
         }
 
+} else {
+            val displayItems = when (selectedCategory) {
+                "New Releases" -> uiState.series.reversed()
+                "Top Rated" -> uiState.series.sortedByDescending { it.rating }
+                "Genres" -> uiState.series.shuffled()
+                else -> uiState.series
+            }
+            
+            com.example.ui.components.VerticalGrid(
+                items = displayItems,
+                columns = 3,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            ) { series ->
+                MediaCard(
+                    title = series.title,
+                    posterUrl = series.posterUrl,
+                    rank = null,
+                    rating = series.rating,
+                    year = series.year.toString(),
+                    isMovie = false,
+                    mediaId = series.id,
+                    onClick = { onSeriesClick(series.id) },
+                    onLongClick = { 
+                        selectedMediaId = series.id
+                        selectedMediaTitle = series.title
+                        selectedMediaPoster = series.posterUrl
+                        showBottomSheet = true
+                    }
+                )
+            }
+        }
     }
-        if (showBottomSheet) {
+if (showBottomSheet) {
             MediaActionBottomSheet(
                 isMovie = false,
                 onDismissRequest = { showBottomSheet = false },
@@ -251,4 +306,3 @@ fun SeriesScreen(
             )
         }
     }
-}

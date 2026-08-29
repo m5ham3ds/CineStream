@@ -29,9 +29,9 @@ class MoviesViewModel(private val repository: MediaRepository) : ViewModel() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             repository.getMovies()
-                .catch { e -> _uiState.update { it.copy(error = e.message, isLoading = false) } }
+                .catch { e -> _uiState.update { it.copy(error = e.message, isLoading = it.movies.isEmpty()) } }
                 .collect { movies ->
-                    _uiState.update { it.copy(movies = movies, isLoading = false) }
+                    _uiState.update { it.copy(movies = movies, isLoading = movies.isEmpty()) }
                 }
         }
     }

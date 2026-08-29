@@ -55,7 +55,9 @@ fun InlineYouTubePlayer(
         AndroidView(
             modifier = Modifier.fillMaxSize(),
             factory = { ctx ->
-                val view = YouTubePlayerView(ctx)
+                val view = YouTubePlayerView(ctx).apply {
+                    enableAutomaticInitialization = false
+                }
                 lifecycleOwner.lifecycle.addObserver(view)
 
                 view.addFullscreenListener(object : FullscreenListener {
