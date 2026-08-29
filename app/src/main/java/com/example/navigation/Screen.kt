@@ -38,6 +38,8 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
         fun createRoute(movieId: String) = "movie_details/$movieId"
     }
     
+    object Social : Screen("social", "Community", Icons.Default.Person)
+    object Share : Screen("share", "Offline Share", Icons.Default.Download)
     object SeriesDetails : Screen("series_details/{seriesId}", "Series Details", Icons.Default.Tv) {
         fun createRoute(seriesId: String) = "series_details/$seriesId"
     }

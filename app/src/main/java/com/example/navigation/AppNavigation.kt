@@ -78,6 +78,10 @@ import com.example.ui.screens.onboarding.OnboardingScreen
 import com.example.ui.screens.profile.ProfileScreen
 import com.example.ui.screens.downloads.DownloadsScreen
 import com.example.ui.screens.settings.SettingsScreen
+
+import com.example.ui.screens.social.SocialScreen
+import com.example.ui.screens.share.ShareScreen
+
 import com.example.ui.screens.about.AboutScreen
 import com.example.ui.screens.auth.AuthScreen
 
@@ -276,7 +280,36 @@ fun AppNavigation() {
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
                 
-                HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant, modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp))
+                
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.Person, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface) },
+                    label = { Text("Community", color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp) },
+                    selected = currentRoute == Screen.Social.route,
+                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        if (currentRoute != Screen.Social.route) {
+                            navController.navigate(Screen.Social.route)
+                        }
+                    },
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Outlined.Download, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface) },
+                    label = { Text("Offline Share", color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp) },
+                    selected = currentRoute == Screen.Share.route,
+                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        if (currentRoute != Screen.Share.route) {
+                            navController.navigate(Screen.Share.route)
+                        }
+                    },
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+
+                                HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant, modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp))
                 
                 NavigationDrawerItem(
                     icon = { Icon(Icons.Outlined.Info, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface) },
@@ -619,7 +652,19 @@ fun AppNavigation() {
                         }
                     ) 
                 }
-                composable(Screen.Settings.route) { SettingsScreen() }
+                
+            composable(Screen.Social.route) {
+                SocialScreen(
+                    onBack = { navController.popBackStack() }
+                )
+            }
+            composable(Screen.Share.route) {
+                ShareScreen(
+                    onBack = { navController.popBackStack() }
+                )
+            }
+
+            composable(Screen.Settings.route) { SettingsScreen() }
                 composable(Screen.About.route) { AboutScreen() }
                 composable(Screen.Trending.route) {
                     TrendingScreen(
