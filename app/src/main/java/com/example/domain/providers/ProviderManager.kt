@@ -41,15 +41,57 @@ object ProviderManager {
         }
     }
 
-    suspend fun extractVideoLinks(mediaId: String, isMovie: Boolean, episodeId: String? = null): List<VideoSource> = withContext(Dispatchers.IO) {
+    
+suspend fun searchProviders(query: String): List<com.example.domain.models.Series> = withContext(Dispatchers.IO) {
+        val results = mutableListOf<com.example.domain.models.Series>()
+        for (source in sources) {
+            try {
+                val animeList = source.searchAnime(query, 1)
+                animeList.forEach { anime ->
+                    val safeTitle = anime.title.replace("|", "")
+                    val safeThumb = anime.thumbnailUrl?.replace("|", "") ?: "" ?: ""
+                    results.add(
+com.example.domain.models.Series(
+                            id = "provider|${source.name}|$safeTitle|$safeThumb|${anime.id.replace("|", "")}",
+                            title = anime.title,
+                            overview = anime.description ?: "",
+                            posterUrl = safeThumb,
+                            backdropUrl = safeThumb,
+                            year = 2024,
+                            firstAirDate = "2024",
+                            rating = 0.0,
+                            genres = emptyList(),
+                            seasons = emptyList()
+                        )
+                    )
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        return@withContext results
+    }
+
+suspend fun extractVideoLinks(mediaId: String, isMovie: Boolean, episodeId: String? = null): List<VideoSource> = withContext(Dispatchers.IO) {
         val allVideos = mutableListOf<VideoSource>()
+        
+        // Check if mediaId is from a provider
+        var targetProviderName: String? = null
+        var realMediaId = mediaId
+        if (mediaId.startsWith("provider|")) {
+            val parts = mediaId.split("|")
+            targetProviderName = parts.getOrNull(1)
+            realMediaId = parts.getOrNull(4) ?: mediaId
+        }
         
         // Loop through all sources to find video links
         for (source in sources) {
+            if (targetProviderName != null && source.name != targetProviderName) continue
+            
             try {
                 // In a real scenario, you'd pass the actual Episode object that was parsed.
                 // For this structure, we simulate passing an episode to get the video list.
-                val dummyEpisode = Episode(url = "/episode/$episodeId")
+                val dummyEpisode = Episode(url = "/episode/${episodeId ?: realMediaId}")
                 val videos = source.getVideoList(dummyEpisode)
                 
                 videos.forEach { video ->

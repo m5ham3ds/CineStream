@@ -2,6 +2,7 @@ package com.example.ui.screens.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.domain.providers.ProviderManager
 import com.example.domain.models.Movie
 import com.example.domain.models.Series
 import com.example.domain.repository.MediaRepository
@@ -50,8 +51,31 @@ class SearchViewModel(private val repository: MediaRepository) : ViewModel() {
 
     private fun performSearch(query: String) {
         viewModelScope.launch {
-            val (m, s) = repository.searchMulti(query)
-            _uiState.update { it.copy(movieResults = m, seriesResults = s, isSearching = false) }
+            // Fetch TMDB results
+            val (tmdbMovies, tmdbSeries) = repository.searchMulti(query)
+            
+            // Fetch Provider results
+            val providerSeries = ProviderManager.searchProviders(query)
+            
+            // Deduplicate: If TMDB already has this title, exclude from provider results
+            val tmdbTitles = (tmdbMovies.map { it.title.lowercase() } + tmdbSeries.map { it.title.lowercase() }).toSet()
+            
+            // Deduplicate within providers as well
+            val uniqueProviderSeries = mutableListOf<Series>()
+            val seenProviderTitles = mutableSetOf<String>()
+            
+            for (ps in providerSeries) {
+                val titleLow = ps.title.lowercase()
+                if (!tmdbTitles.contains(titleLow) && !seenProviderTitles.contains(titleLow)) {
+                    uniqueProviderSeries.add(ps)
+                    seenProviderTitles.add(titleLow)
+                }
+            }
+            
+            // Merge TMDB series and the unique Provider series
+            val finalSeries = tmdbSeries + uniqueProviderSeries
+            
+            _uiState.update { it.copy(movieResults = tmdbMovies, seriesResults = finalSeries, isSearching = false) }
         }
     }
 }
