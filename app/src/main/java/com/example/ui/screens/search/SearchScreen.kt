@@ -72,7 +72,7 @@ fun SearchScreen(
                 .padding(horizontal = 16.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(Icons.Default.Search, contentDescription = "Search", tint = Color(0xFFE50914), modifier = Modifier.size(24.dp))
+            Icon(Icons.Default.Search, contentDescription = "Search", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
             Spacer(modifier = Modifier.width(8.dp))
             TextField(
                 value = searchQuery,
@@ -86,13 +86,13 @@ fun SearchScreen(
                     unfocusedTextColor = Color.White,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
-                    cursorColor = Color(0xFFE50914)
+                    cursorColor = MaterialTheme.colorScheme.primary
                 ),
                 singleLine = true
             )
             Box(modifier = Modifier.width(1.dp).height(24.dp).background(Color.DarkGray))
             Spacer(modifier = Modifier.width(12.dp))
-            Icon(Icons.Default.FilterAlt, contentDescription = "Filter", tint = Color(0xFFE50914), modifier = Modifier.size(24.dp).clickable { /* Filter */ })
+            Icon(Icons.Default.FilterAlt, contentDescription = "Filter", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp).clickable { /* Filter */ })
         }
 
         if (searchQuery.isEmpty()) {
@@ -109,7 +109,7 @@ fun SearchScreen(
                         .clickable { searchQuery = text; viewModel.onQueryChange(text) },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(Icons.AutoMirrored.Filled.TrendingUp, contentDescription = null, tint = Color(0xFFE50914), modifier = Modifier.size(16.dp))
+                    Icon(Icons.AutoMirrored.Filled.TrendingUp, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(text, color = Color.LightGray, fontSize = 14.sp)
                 }
@@ -163,7 +163,7 @@ fun SearchScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        Icon(cat.second, contentDescription = cat.first, tint = Color(0xFFE50914), modifier = Modifier.size(32.dp))
+                        Icon(cat.second, contentDescription = cat.first, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(32.dp))
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(cat.first, color = Color.LightGray, fontSize = 11.sp)
                     }
@@ -250,11 +250,11 @@ fun SearchScreen(
                         Spacer(modifier = Modifier.height(12.dp))
                         Box(
                             modifier = Modifier
-                                .border(1.dp, Color(0xFFE50914), RoundedCornerShape(percent = 50))
+                                .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(percent = 50))
                                 .padding(horizontal = 16.dp, vertical = 8.dp)
                                 .clickable { /* Explore */ }
                         ) {
-                            Text("Explore All Content", color = Color(0xFFE50914), fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                            Text("Explore All Content", color = MaterialTheme.colorScheme.primary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -263,7 +263,7 @@ fun SearchScreen(
             // Search Results
             if (uiState.isSearching) {
                 Box(modifier = Modifier.fillMaxWidth().height(200.dp), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = Color(0xFFE50914))
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
             } else {
                 Text(
@@ -316,7 +316,7 @@ fun SectionTitleSharedWithAction(title: String, actionText: String) {
         Text(
             text = actionText,
             style = MaterialTheme.typography.labelLarge,
-            color = Color(0xFFE50914),
+            color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.clickable { /* action */ }
         )
     }

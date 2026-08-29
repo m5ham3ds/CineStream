@@ -195,7 +195,7 @@ fun MovieDetailsScreen(
                             }
                         },
                         modifier = Modifier.weight(1f).height(50.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE50914))
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) {
                         Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = Color.White)
                         Spacer(modifier = Modifier.width(8.dp))
@@ -215,7 +215,7 @@ fun MovieDetailsScreen(
                         if (downloadItem?.isCompleted == true) {
                             Icon(Icons.Default.DownloadDone, contentDescription = "Downloaded", tint = Color.Green)
                         } else if (downloadItem != null) {
-                            CircularProgressIndicator(progress = { downloadItem.progress }, color = Color(0xFFE50914), modifier = Modifier.size(24.dp))
+                            CircularProgressIndicator(progress = { downloadItem.progress }, color = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
                         } else {
                             Icon(Icons.Default.Download, contentDescription = "Download", tint = Color.White)
                         }
@@ -460,7 +460,7 @@ fun SeriesDetailsScreen(
                             }
                         },
                         modifier = Modifier.weight(1f).height(50.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE50914))
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) {
                         Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = Color.White)
                         Spacer(modifier = Modifier.width(8.dp))
@@ -480,7 +480,7 @@ fun SeriesDetailsScreen(
                         if (downloadItem?.isCompleted == true) {
                             Icon(Icons.Default.DownloadDone, contentDescription = "Downloaded", tint = Color.Green)
                         } else if (downloadItem != null) {
-                            CircularProgressIndicator(progress = { downloadItem.progress }, color = Color(0xFFE50914), modifier = Modifier.size(24.dp))
+                            CircularProgressIndicator(progress = { downloadItem.progress }, color = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
                         } else {
                             Icon(Icons.Default.Download, contentDescription = "Download", tint = Color.White)
                         }
@@ -546,7 +546,7 @@ fun SeriesDetailsScreen(
                                 onClick = { viewModel.selectSeason(season) },
                                 label = { Text("Season ${season.seasonNumber}") },
                                 colors = FilterChipDefaults.filterChipColors(
-                                    selectedContainerColor = Color(0xFFE50914),
+                                    selectedContainerColor = MaterialTheme.colorScheme.primary,
                                     selectedLabelColor = Color.White
                                 )
                             )

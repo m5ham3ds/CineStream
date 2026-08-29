@@ -83,7 +83,7 @@ fun ExpandableSearchBar(
                         onValueChange = { viewModel.onQueryChange(it) },
                         modifier = Modifier.weight(1f).focusRequester(focusRequester),
                         textStyle = TextStyle(color = Color.White, fontSize = 16.sp),
-                        cursorBrush = SolidColor(Color(0xFFE50914)),
+                        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                         decorationBox = { innerTextField ->
@@ -114,7 +114,7 @@ fun ExpandableSearchBar(
                     
                     if (uiState.isSearching) {
                         Box(modifier = Modifier.fillMaxWidth().padding(16.dp), contentAlignment = Alignment.Center) {
-                            CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color(0xFFE50914))
+                            CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.primary)
                         }
                     } else if (uiState.movieResults.isEmpty() && uiState.seriesResults.isEmpty()) {
                         Box(modifier = Modifier.fillMaxWidth().padding(16.dp), contentAlignment = Alignment.Center) {

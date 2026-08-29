@@ -1,6 +1,7 @@
 package com.example.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -61,7 +62,7 @@ fun CustomTopBar(
                     withStyle(style = SpanStyle(color = Color.White)) {
                         append("$titleFirst ")
                     }
-                    withStyle(style = SpanStyle(color = Color(0xFFE50914))) {
+                    withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
                         append(titleSecond)
                     }
                 },

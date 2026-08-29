@@ -65,7 +65,7 @@ fun HeroCarousel(
                     }
                     showRemoveDialog = null
                 }) {
-                    Text("إزالة", color = Color(0xFFE50914))
+                    Text("إزالة", color = MaterialTheme.colorScheme.primary)
                 }
             },
             dismissButton = {
@@ -140,7 +140,7 @@ fun HeroCarousel(
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(percent = 50))
-                                .background(Color(0xFFE50914))
+                                .background(MaterialTheme.colorScheme.primary)
                                 .clickable { onClick(item.id) }
                                 .padding(horizontal = 16.dp, vertical = 6.dp),
                             contentAlignment = Alignment.Center
@@ -193,7 +193,7 @@ fun HeroCarousel(
                     modifier = Modifier
                         .size(if (isSelected) 16.dp else 4.dp, 4.dp)
                         .clip(RoundedCornerShape(2.dp))
-                        .background(if (isSelected) Color(0xFFE50914) else Color.Gray)
+                        .background(if (isSelected) MaterialTheme.colorScheme.primary else Color.Gray)
                 )
             }
         }

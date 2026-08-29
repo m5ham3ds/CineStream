@@ -57,7 +57,7 @@ fun PopularScreen(
                 Box(
                     modifier = Modifier.weight(1f).clickable { selectedTab = tab }
                         .background(if (isSelected) Color(0xFF2A2A2E) else Color.Transparent)
-                        .border(if (isSelected) 1.dp else 0.dp, if (isSelected) Color(0xFFE50914) else Color.Transparent, RoundedCornerShape(12.dp))
+                        .border(if (isSelected) 1.dp else 0.dp, if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent, RoundedCornerShape(12.dp))
                         .padding(vertical = 12.dp),
                     contentAlignment = Alignment.Center
                 ) {

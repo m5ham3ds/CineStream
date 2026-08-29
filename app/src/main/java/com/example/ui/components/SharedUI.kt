@@ -60,7 +60,7 @@ fun HeroSectionShared(title: String, backdropUrl: String, desc: String, tag: Str
         ) {
             Box(
                 modifier = Modifier
-                    .background(Color(0xFFE50914).copy(alpha = 0.9f), RoundedCornerShape(4.dp))
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.9f), RoundedCornerShape(4.dp))
                     .padding(horizontal = 8.dp, vertical = 4.dp)
             ) {
                 Text(tag, color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
@@ -84,7 +84,7 @@ fun HeroSectionShared(title: String, backdropUrl: String, desc: String, tag: Str
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(percent = 50))
-                        .background(Color(0xFFE50914))
+                        .background(MaterialTheme.colorScheme.primary)
                         .clickable { onClick() }
                         .padding(horizontal = 24.dp, vertical = 10.dp),
                     contentAlignment = Alignment.Center
@@ -116,7 +116,7 @@ fun HeroSectionShared(title: String, backdropUrl: String, desc: String, tag: Str
                 .padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Box(modifier = Modifier.size(16.dp, 4.dp).clip(RoundedCornerShape(2.dp)).background(Color(0xFFE50914)))
+            Box(modifier = Modifier.size(16.dp, 4.dp).clip(RoundedCornerShape(2.dp)).background(MaterialTheme.colorScheme.primary))
             Box(modifier = Modifier.size(4.dp).clip(CircleShape).background(Color.Gray))
             Box(modifier = Modifier.size(4.dp).clip(CircleShape).background(Color.Gray))
             Box(modifier = Modifier.size(4.dp).clip(CircleShape).background(Color.Gray))
@@ -141,7 +141,7 @@ fun SectionTitleShared(title: String, onSeeAllClick: (() -> Unit)? = null) {
             Text(
                 text = "See All",
                 style = MaterialTheme.typography.labelLarge,
-                color = Color(0xFFE50914),
+                color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.clickable { onSeeAllClick() }
             )
         }
@@ -169,7 +169,7 @@ fun ContinueWatchingCardShared(item: HistoryItem, onClick: () -> Unit) {
                     modifier = Modifier.fillMaxSize()
                 )
                 Box(modifier = Modifier.align(Alignment.BottomStart).fillMaxWidth().height(3.dp).background(Color.DarkGray)) {
-                    Box(modifier = Modifier.fillMaxWidth(0.5f).height(3.dp).background(Color(0xFFE50914)))
+                    Box(modifier = Modifier.fillMaxWidth(0.5f).height(3.dp).background(MaterialTheme.colorScheme.primary))
                 }
             }
             

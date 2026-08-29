@@ -1,6 +1,7 @@
 package com.example.ui.screens.splash
 
 import androidx.compose.animation.core.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -84,7 +85,7 @@ fun SplashScreen(
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
-                            Color(0xFFE50914).copy(alpha = 0.2f),
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
                             Color.Transparent,
                             Color.Transparent
                         )
@@ -102,7 +103,7 @@ fun SplashScreen(
                     .clip(CircleShape)
                     .background(
                         Brush.radialGradient(
-                            colors = listOf(Color(0xFF4A1010), Color(0xFFE50914))
+                            colors = listOf(Color(0xFF4A1010), MaterialTheme.colorScheme.primary)
                         )
                     )
                     .padding(8.dp)
@@ -113,7 +114,7 @@ fun SplashScreen(
                 Icon(
                     imageVector = Icons.Default.PlayArrow,
                     contentDescription = "Logo",
-                    tint = Color(0xFFE50914),
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(50.dp)
                 )
             }
@@ -122,7 +123,7 @@ fun SplashScreen(
             
             Text(
                 text = buildAnnotatedString {
-                    withStyle(style = SpanStyle(color = Color(0xFFE50914))) {
+                    withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
                         append("Cine")
                     }
                     withStyle(style = SpanStyle(color = Color.White)) {
@@ -149,7 +150,7 @@ fun SplashScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             CircularProgressIndicator(
-                color = Color(0xFFE50914),
+                color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(32.dp),
                 strokeWidth = 3.dp
             )

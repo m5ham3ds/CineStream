@@ -100,7 +100,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
             )
             Text(
                 text = "CineStream",
-                color = Color(0xFFE50914),
+                color = MaterialTheme.colorScheme.primary,
                 fontSize = 40.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -151,7 +151,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 repeat(pages.size) { index ->
-                    val color = if (pagerState.currentPage == index) Color(0xFFE50914) else Color.DarkGray
+                    val color = if (pagerState.currentPage == index) MaterialTheme.colorScheme.primary else Color.DarkGray
                     Box(modifier = Modifier.size(8.dp).clip(CircleShape).background(color))
                 }
             }
@@ -175,7 +175,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE50914)),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Text(
@@ -193,7 +193,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
                     withStyle(style = SpanStyle(color = Color.LightGray)) {
                         append("Already have an account? ")
                     }
-                    withStyle(style = SpanStyle(color = Color(0xFFE50914))) {
+                    withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
                         append("Sign In")
                     }
                 },

@@ -60,7 +60,7 @@ fun AboutScreen(onBack: () -> Unit = {}) {
                     lineHeight = 20.sp
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                Box(modifier = Modifier.width(32.dp).height(2.dp).background(Color(0xFFE50914)))
+                Box(modifier = Modifier.width(32.dp).height(2.dp).background(MaterialTheme.colorScheme.primary))
                 Spacer(modifier = Modifier.height(24.dp))
                 
                 // Version Chip
@@ -72,7 +72,7 @@ fun AboutScreen(onBack: () -> Unit = {}) {
                         .padding(horizontal = 12.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(Icons.Outlined.Verified, contentDescription = null, tint = Color(0xFFE50914), modifier = Modifier.size(16.dp))
+                    Icon(Icons.Outlined.Verified, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("Version 1.0.0", color = Color.LightGray, fontSize = 12.sp)
                 }
@@ -93,7 +93,7 @@ fun AboutScreen(onBack: () -> Unit = {}) {
                     alpha = 0.8f
                 )
                 // Red C placeholder
-                Text("C", color = Color(0xFFE50914), fontSize = 60.sp, fontWeight = FontWeight.Black, fontFamily = androidx.compose.ui.text.font.FontFamily.Serif)
+                Text("C", color = MaterialTheme.colorScheme.primary, fontSize = 60.sp, fontWeight = FontWeight.Black, fontFamily = androidx.compose.ui.text.font.FontFamily.Serif)
             }
         }
 
@@ -112,7 +112,7 @@ fun AboutScreen(onBack: () -> Unit = {}) {
                 Column(modifier = Modifier.weight(0.7f)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         // Target icon placeholder
-                        Icon(Icons.Outlined.Verified, contentDescription = null, tint = Color(0xFFE50914))
+                        Icon(Icons.Outlined.Verified, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                         Spacer(modifier = Modifier.width(8.dp))
                         Text("Our Mission", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
                     }
@@ -169,7 +169,7 @@ fun AboutScreen(onBack: () -> Unit = {}) {
         Button(
             onClick = { },
             modifier = Modifier.fillMaxWidth().height(50.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE50914)),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
             shape = RoundedCornerShape(12.dp)
         ) {
             Text("Check for Updates", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
@@ -188,7 +188,7 @@ fun FeatureCard(modifier: Modifier = Modifier, icon: androidx.compose.ui.graphic
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Icon(icon, contentDescription = null, tint = Color(0xFFE50914), modifier = Modifier.size(24.dp))
+        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
         Spacer(modifier = Modifier.height(12.dp))
         Text(title, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
         Spacer(modifier = Modifier.height(8.dp))

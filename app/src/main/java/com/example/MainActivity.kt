@@ -36,16 +36,29 @@ class MainActivity : AppCompatActivity() {
     setContent {
       val themeMode by userPreferences.themeMode.collectAsState(initial = 0)
       val primaryColor by userPreferences.primaryColor.collectAsState(initial = 0)
-      val appLanguage by userPreferences.appLanguage.collectAsState(initial = "system")
+      val appLanguage by userPreferences.appLanguage.collectAsState(initial = null)
       
       // Update app language
       LaunchedEffect(appLanguage) {
-          val currentLocales = AppCompatDelegate.getApplicationLocales()
-          val desiredLanguage = if (appLanguage == "system") "" else appLanguage
-          if (desiredLanguage.isNotEmpty() && !currentLocales.toLanguageTags().contains(desiredLanguage)) {
-              AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(desiredLanguage))
-          } else if (desiredLanguage.isEmpty() && !currentLocales.isEmpty) {
-              AppCompatDelegate.setApplicationLocales(LocaleListCompat.getEmptyLocaleList())
+          if (appLanguage != null) {
+              val currentLocales = AppCompatDelegate.getApplicationLocales()
+              val desiredLanguage = if (appLanguage == "system") "" else appLanguage!!
+              
+              val currentTag = if (currentLocales.isEmpty) "" else currentLocales.toLanguageTags()
+              
+              val needsUpdate = if (desiredLanguage.isEmpty()) {
+                  !currentLocales.isEmpty
+              } else {
+                  !currentTag.startsWith(desiredLanguage)
+              }
+              
+              if (needsUpdate) {
+                  if (desiredLanguage.isEmpty()) {
+                      AppCompatDelegate.setApplicationLocales(LocaleListCompat.getEmptyLocaleList())
+                  } else {
+                      AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(desiredLanguage))
+                  }
+              }
           }
       }
 

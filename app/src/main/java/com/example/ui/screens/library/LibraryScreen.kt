@@ -70,7 +70,7 @@ fun LibraryScreen(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(percent = 50))
-                        .background(if (selectedTab == tab.name) Color(0xFFE50914) else Color.Transparent)
+                        .background(if (selectedTab == tab.name) MaterialTheme.colorScheme.primary else Color.Transparent)
                         .border(
                             1.dp,
                             if (selectedTab == tab.name) Color.Transparent else Color.DarkGray,

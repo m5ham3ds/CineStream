@@ -81,7 +81,7 @@ fun ProfileScreen() {
                     ) {
                         Text("👑", fontSize = 10.sp)
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("Premium Plan", color = Color(0xFFE50914), fontSize = 10.sp, fontWeight = FontWeight.SemiBold)
+                        Text("Premium Plan", color = MaterialTheme.colorScheme.primary, fontSize = 10.sp, fontWeight = FontWeight.SemiBold)
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("Member since May 2024", color = Color.DarkGray, fontSize = 10.sp)
@@ -119,7 +119,7 @@ fun ProfileScreen() {
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
                 .background(Color(0xFF161618))
-                .border(1.dp, Color(0xFFE50914).copy(alpha = 0.5f), RoundedCornerShape(16.dp))
+                .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f), RoundedCornerShape(16.dp))
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -145,7 +145,7 @@ fun ProfileScreen() {
             Spacer(modifier = Modifier.width(16.dp))
             Button(
                 onClick = { },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE50914)),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 shape = RoundedCornerShape(percent = 50),
                 modifier = Modifier.height(36.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp)
@@ -195,7 +195,7 @@ fun ProfileScreen() {
 @Composable
 fun StatItem(icon: androidx.compose.ui.graphics.vector.ImageVector, count: String, label: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Icon(icon, contentDescription = null, tint = Color(0xFFE50914), modifier = Modifier.size(24.dp))
+        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
         Spacer(modifier = Modifier.height(4.dp))
         Text(count, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(2.dp))
@@ -220,7 +220,7 @@ fun ProfileListItem(icon: androidx.compose.ui.graphics.vector.ImageVector, title
                 .background(Color(0xFF2A2A2E).copy(alpha = 0.5f)),
             contentAlignment = Alignment.Center
         ) {
-            Icon(icon, contentDescription = null, tint = Color(0xFFE50914), modifier = Modifier.size(20.dp))
+            Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
         }
         Spacer(modifier = Modifier.width(16.dp))
         Column(modifier = Modifier.weight(1f)) {

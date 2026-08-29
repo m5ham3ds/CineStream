@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -109,9 +110,7 @@ fun AppNavigation() {
         }
     }
     
-    val primaryColor by userPrefs.primaryColor.collectAsState(initial = 0)
-    val primaryColorVal = Color(if (primaryColor == 0) 0xFFE50914 else primaryColor.toLong())
-
+    
     val extensionUrls = remember { listOf("https://google.com", "https://bing.com") }
     val bottomBarRoutes = listOf(
         Screen.Home.route,
@@ -153,7 +152,7 @@ fun AppNavigation() {
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = FontFamily.Serif
                             ),
-                            color = Color(0xFFE50914),
+                            color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.fillMaxWidth(),
                             textAlign = TextAlign.Start
                         )
@@ -178,7 +177,7 @@ fun AppNavigation() {
                                 )
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     if (!isGuest) {
-                                        Icon(painter = painterResource(android.R.drawable.ic_dialog_info), contentDescription = null, tint = Color(0xFFE50914), modifier = Modifier.size(16.dp))
+                                        Icon(painter = painterResource(android.R.drawable.ic_dialog_info), contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
                                         Spacer(modifier = Modifier.width(4.dp))
                                     }
                                     Text(
@@ -194,7 +193,7 @@ fun AppNavigation() {
                                     .size(70.dp)
                                     .clip(CircleShape)
                                     .background(Color.Gray)
-                                    .border(2.dp, Color(0xFFE50914), CircleShape),
+                                    .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(Icons.Default.Person, contentDescription = "Avatar", tint = Color.White, modifier = Modifier.size(40.dp))
@@ -206,11 +205,11 @@ fun AppNavigation() {
                 Spacer(modifier = Modifier.height(16.dp))
                 
                 NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.Home, contentDescription = null, tint = if (currentRoute == Screen.Home.route) Color(0xFFE50914) else Color.White) },
+                    icon = { Icon(Icons.Default.Home, contentDescription = null, tint = if (currentRoute == Screen.Home.route) MaterialTheme.colorScheme.primary else Color.White) },
                     label = { Text(stringResource(R.string.home), color = Color.White, fontSize = 16.sp) },
                     selected = currentRoute == Screen.Home.route,
                     colors = NavigationDrawerItemDefaults.colors(
-                        selectedContainerColor = Color(0xFFE50914).copy(alpha = 0.2f),
+                        selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
                         unselectedContainerColor = Color.Transparent
                     ),
                     shape = RoundedCornerShape(16.dp),
@@ -336,7 +335,7 @@ fun AppNavigation() {
                     ) {
                         Text(if (isGuest) stringResource(R.string.login) else stringResource(R.string.logout), color = Color.White, fontSize = 16.sp)
                         Spacer(modifier = Modifier.width(12.dp))
-                        Icon(if (isGuest) Icons.Default.Person else Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Log", tint = Color(0xFFE50914))
+                        Icon(if (isGuest) Icons.Default.Person else Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Log", tint = MaterialTheme.colorScheme.primary)
                     }
                 }
             }
@@ -417,7 +416,7 @@ fun AppNavigation() {
                                                             Text(
                                                                 "CineStream",
                                                                 fontWeight = FontWeight.Bold,
-                                                                color = Color(0xFFE50914), // Red
+                                                                color = MaterialTheme.colorScheme.primary, // Red
                                                                 fontSize = 22.sp
                                                             )
                                                             
@@ -442,7 +441,7 @@ fun AppNavigation() {
                                 BadgedBox(
                                     badge = {
                                         Badge(
-                                            containerColor = Color(0xFFE50914), // Red badge
+                                            containerColor = MaterialTheme.colorScheme.primary, // Red badge
                                             contentColor = Color.White,
                                             modifier = Modifier.offset(x = (-4).dp, y = 4.dp)
                                         ) {
@@ -465,7 +464,7 @@ fun AppNavigation() {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .background(if (updateFinishedShowGreen) Color(0xFF4CAF50) else primaryColorVal)
+                                .background(if (updateFinishedShowGreen) Color(0xFF4CAF50) else Color(0xFFE50914))
                                 .padding(vertical = 4.dp),
                             contentAlignment = Alignment.Center
                         ) {

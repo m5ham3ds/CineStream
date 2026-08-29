@@ -80,7 +80,7 @@ fun MediaCard(
                     }
                     showRemoveDialog = false
                 }) {
-                    Text("إزالة", color = Color(0xFFE50914))
+                    Text("إزالة", color = MaterialTheme.colorScheme.primary)
                 }
             },
             dismissButton = {
@@ -134,7 +134,7 @@ fun MediaCard(
             if (rank != null) {
                 Box(
                     modifier = Modifier
-                        .background(Color(0xFFE50914), RoundedCornerShape(4.dp))
+                        .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp))
                         .padding(horizontal = 6.dp, vertical = 2.dp)
                 ) {
                     Text(text = rank.toString(), color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
@@ -146,7 +146,7 @@ fun MediaCard(
             Icon(
                 imageVector = if (isBookmarked) Icons.Default.Bookmark else Icons.Outlined.BookmarkBorder, 
                 contentDescription = "Bookmark", 
-                tint = if (isBookmarked) Color(0xFFE50914) else Color.White,
+                tint = if (isBookmarked) MaterialTheme.colorScheme.primary else Color.White,
                 modifier = Modifier.size(20.dp)
             )
         }
@@ -172,7 +172,7 @@ fun MediaCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Star, contentDescription = "Rating", tint = Color(0xFFE50914), modifier = Modifier.size(12.dp))
+                    Icon(Icons.Default.Star, contentDescription = "Rating", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(12.dp))
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(text = rating.toString(), color = Color.LightGray, fontSize = 11.sp)
                 }

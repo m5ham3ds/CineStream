@@ -138,7 +138,7 @@ fun SeriesScreen(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
-                        .background(if (selectedCategory == category.name) Color(0xFFE50914) else Color(0xFF1E1E20))
+                        .background(if (selectedCategory == category.name) MaterialTheme.colorScheme.primary else Color(0xFF1E1E20))
                         .clickable {
                             if (selectedCategory == category.name) {
                                 selectedCategory = "Series"

@@ -103,7 +103,7 @@ fun AuthScreen(
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopEnd) {
                 Text(
                     text = "Skip",
-                    color = Color(0xFFE50914),
+                    color = MaterialTheme.colorScheme.primary,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier
@@ -119,7 +119,7 @@ fun AuthScreen(
 
             Text(
                 text = "CineStream",
-                color = Color(0xFFE50914),
+                color = MaterialTheme.colorScheme.primary,
                 fontSize = 40.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = androidx.compose.ui.text.font.FontFamily.Serif
@@ -155,7 +155,7 @@ fun AuthScreen(
                         value = email,
                         onValueChange = { email = it },
                         placeholder = { Text("Email (Gmail)", color = Color.Gray) },
-                        leadingIcon = { Icon(Icons.Outlined.Mail, contentDescription = null, tint = Color(0xFFE50914)) },
+                        leadingIcon = { Icon(Icons.Outlined.Mail, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         colors = OutlinedTextFieldDefaults.colors(
@@ -173,7 +173,7 @@ fun AuthScreen(
                         value = password,
                         onValueChange = { password = it },
                         placeholder = { Text("Password", color = Color.Gray) },
-                        leadingIcon = { Icon(Icons.Outlined.Lock, contentDescription = null, tint = Color(0xFFE50914)) },
+                        leadingIcon = { Icon(Icons.Outlined.Lock, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
                         trailingIcon = {
                             IconButton(onClick = { passwordVisible = !passwordVisible }) {
                                 Icon(
@@ -208,7 +208,7 @@ fun AuthScreen(
                                 checked = rememberMe,
                                 onCheckedChange = { rememberMe = it },
                                 colors = CheckboxDefaults.colors(
-                                    checkedColor = Color(0xFFE50914),
+                                    checkedColor = MaterialTheme.colorScheme.primary,
                                     uncheckedColor = Color.Gray,
                                     checkmarkColor = Color.White
                                 )
@@ -218,7 +218,7 @@ fun AuthScreen(
                         if (!isSignUp) {
                             Text(
                                 text = "Forgot Password?",
-                                color = Color(0xFFE50914),
+                                color = MaterialTheme.colorScheme.primary,
                                 fontSize = 14.sp,
                                 modifier = Modifier.clickable { /* Handle forgot password */ }
                             )
@@ -242,7 +242,7 @@ fun AuthScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE50914)),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         shape = RoundedCornerShape(8.dp)
                     ) {
                         Text(if (isSignUp) "Sign Up" else "Sign In", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
@@ -289,7 +289,7 @@ fun AuthScreen(
                 )
                 Text(
                     text = if (isSignUp) "Sign In" else "Sign Up",
-                    color = Color(0xFFE50914),
+                    color = MaterialTheme.colorScheme.primary,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.clickable { isSignUp = !isSignUp }

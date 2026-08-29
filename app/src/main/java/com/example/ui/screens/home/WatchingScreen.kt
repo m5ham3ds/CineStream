@@ -70,7 +70,7 @@ fun WatchingScreen(
                     modifier = Modifier
                         .clickable { selectedTab = tab }
                         .clip(RoundedCornerShape(16.dp))
-                        .background(if (isSelected) Color(0xFFE50914) else Color(0xFF161618))
+                        .background(if (isSelected) MaterialTheme.colorScheme.primary else Color(0xFF161618))
                         .padding(horizontal = 16.dp, vertical = 8.dp),
                     contentAlignment = Alignment.Center
                 ) {
@@ -163,7 +163,7 @@ fun DetailedContinueWatchingCard(item: HistoryItem, onClick: () -> Unit) {
                 // Type Tag
                 Text(
                     text = if (item.isMovie) "Movie" else "TV Series",
-                    color = Color(0xFFE50914),
+                    color = MaterialTheme.colorScheme.primary,
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -208,7 +208,7 @@ fun DetailedContinueWatchingCard(item: HistoryItem, onClick: () -> Unit) {
                             modifier = Modifier
                                 .fillMaxWidth(0.5f)
                                 .fillMaxHeight()
-                                .background(Color(0xFFE50914))
+                                .background(MaterialTheme.colorScheme.primary)
                         )
                     }
                 }
@@ -219,10 +219,10 @@ fun DetailedContinueWatchingCard(item: HistoryItem, onClick: () -> Unit) {
                     Box(
                         modifier = Modifier
                             .size(24.dp)
-                            .border(1.dp, Color(0xFFE50914), CircleShape),
+                            .border(1.dp, MaterialTheme.colorScheme.primary, CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
-                        Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = Color(0xFFE50914), modifier = Modifier.size(16.dp))
+                        Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     Icon(Icons.Default.MoreVert, contentDescription = "More", tint = Color.Gray, modifier = Modifier.size(16.dp))

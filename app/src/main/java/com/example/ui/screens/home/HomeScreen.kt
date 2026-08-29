@@ -130,7 +130,7 @@ fun HomeScreen(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
-                        .background(if (selectedCategory == category) Color(0xFFE50914) else Color(0xFF1E1E20))
+                        .background(if (selectedCategory == category) MaterialTheme.colorScheme.primary else Color(0xFF1E1E20))
                         .border(
                             width = 1.dp,
                             color = if (selectedCategory == category) Color.Transparent else Color.DarkGray,
@@ -432,7 +432,7 @@ fun SectionTitle(title: String, onSeeAllClick: (() -> Unit)? = null) {
             Text(
                 text = "See All",
                 style = MaterialTheme.typography.labelLarge,
-                color = Color(0xFFE50914),
+                color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.clickable { onSeeAllClick() }
             )
         }

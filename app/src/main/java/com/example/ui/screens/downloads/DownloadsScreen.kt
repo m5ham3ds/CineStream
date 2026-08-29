@@ -88,7 +88,7 @@ fun DownloadsScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Outlined.Download, contentDescription = "Downloads", tint = Color(0xFFE50914), modifier = Modifier.size(28.dp))
+                    Icon(Icons.Outlined.Download, contentDescription = "Downloads", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(28.dp))
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("Downloads", color = Color.White, fontSize = 28.sp, fontWeight = FontWeight.Bold)
                 }
@@ -139,7 +139,7 @@ fun DownloadsScreen(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(percent = 50))
-                            .background(if (isSelected) Color(0xFFE50914) else Color(0xFF2A2A2E))
+                            .background(if (isSelected) MaterialTheme.colorScheme.primary else Color(0xFF2A2A2E))
                             .clickable { selectedTab = tab }
                             .padding(horizontal = 16.dp, vertical = 8.dp)
                     ) {
@@ -204,7 +204,7 @@ fun DownloadsScreen(
                 Column {
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Outlined.Storage, contentDescription = null, tint = Color(0xFFE50914), modifier = Modifier.size(20.dp))
+                            Icon(Icons.Outlined.Storage, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
                             Spacer(modifier = Modifier.width(8.dp))
                             Text("Storage", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
                         }
@@ -215,7 +215,7 @@ fun DownloadsScreen(
                     
                     // Progress Bar
                     Box(modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(percent = 50)).background(Color(0xFF2A2A2E))) {
-                        Box(modifier = Modifier.fillMaxWidth(usedPercentage).height(6.dp).clip(RoundedCornerShape(percent = 50)).background(Color(0xFFE50914)))
+                        Box(modifier = Modifier.fillMaxWidth(usedPercentage).height(6.dp).clip(RoundedCornerShape(percent = 50)).background(MaterialTheme.colorScheme.primary))
                     }
                     
                     Spacer(modifier = Modifier.height(12.dp))
@@ -247,7 +247,7 @@ fun DownloadsScreen(
                             alpha = 0.5f
                         )
                         Box(modifier = Modifier.size(32.dp).clip(RoundedCornerShape(8.dp)).background(Color(0xFF2A2A2E)), contentAlignment = Alignment.Center) {
-                            Icon(Icons.Outlined.Download, contentDescription = null, tint = Color(0xFFE50914), modifier = Modifier.size(20.dp))
+                            Icon(Icons.Outlined.Download, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
                         }
                     }
                     Spacer(modifier = Modifier.width(16.dp))
@@ -304,12 +304,12 @@ fun DownloadItemRow(item: DownloadItem, onClick: () -> Unit, onPauseResume: () -
             LinearProgressIndicator(
                 progress = { item.progress },
                 modifier = Modifier.fillMaxWidth().height(4.dp).clip(RoundedCornerShape(2.dp)),
-                color = if (item.isCompleted) Color.Green else Color(0xFFE50914),
+                color = if (item.isCompleted) Color.Green else MaterialTheme.colorScheme.primary,
                 trackColor = Color(0xFF2A2A2E)
             )
             Spacer(modifier = Modifier.height(8.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(if (item.isCompleted) "Completed" else if (item.isPaused) "Paused" else "Downloading...", color = if (item.isCompleted) Color.Green else if (item.isPaused) Color.Yellow else Color(0xFFE50914), fontSize = 12.sp)
+                Text(if (item.isCompleted) "Completed" else if (item.isPaused) "Paused" else "Downloading...", color = if (item.isCompleted) Color.Green else if (item.isPaused) Color.Yellow else MaterialTheme.colorScheme.primary, fontSize = 12.sp)
             }
         }
         Spacer(modifier = Modifier.width(8.dp))
@@ -331,11 +331,11 @@ fun DownloadStat(icon: androidx.compose.ui.graphics.vector.ImageVector, value: S
             modifier = Modifier
                 .size(36.dp)
                 .clip(RoundedCornerShape(8.dp))
-                .background(if (isPrimary) Color(0xFFE50914).copy(alpha = 0.1f) else Color.Transparent)
-                .border(1.dp, if (isPrimary) Color(0xFFE50914) else Color.DarkGray, RoundedCornerShape(8.dp)),
+                .background(if (isPrimary) MaterialTheme.colorScheme.primary.copy(alpha = 0.1f) else Color.Transparent)
+                .border(1.dp, if (isPrimary) MaterialTheme.colorScheme.primary else Color.DarkGray, RoundedCornerShape(8.dp)),
             contentAlignment = Alignment.Center
         ) {
-            Icon(icon, contentDescription = null, tint = if (isPrimary) Color(0xFFE50914) else Color.Gray, modifier = Modifier.size(18.dp))
+            Icon(icon, contentDescription = null, tint = if (isPrimary) MaterialTheme.colorScheme.primary else Color.Gray, modifier = Modifier.size(18.dp))
         }
         Spacer(modifier = Modifier.height(6.dp))
         Text(value, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold, maxLines = 1)

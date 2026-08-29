@@ -86,6 +86,11 @@ fun SettingsScreen() {
         "search" -> stringResource(R.string.search)
         "downloads" -> stringResource(R.string.downloads)
         "settings" -> stringResource(R.string.settings)
+        "movies" -> stringResource(R.string.movies)
+        "series" -> stringResource(R.string.series)
+        "anime" -> stringResource(R.string.anime)
+        "library" -> stringResource(R.string.library)
+        "profile" -> stringResource(R.string.profile)
         else -> stringResource(R.string.home)
     }
 
@@ -310,12 +315,32 @@ fun SettingsScreen() {
                     modifier = Modifier.clickable { coroutineScope.launch { userPrefs.saveStartScreen("home"); showStartScreenSheet = false } }
                 )
                 ListItem(
+                    headlineContent = { Text(stringResource(R.string.movies)) },
+                    modifier = Modifier.clickable { coroutineScope.launch { userPrefs.saveStartScreen("movies"); showStartScreenSheet = false } }
+                )
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.series)) },
+                    modifier = Modifier.clickable { coroutineScope.launch { userPrefs.saveStartScreen("series"); showStartScreenSheet = false } }
+                )
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.anime)) },
+                    modifier = Modifier.clickable { coroutineScope.launch { userPrefs.saveStartScreen("anime"); showStartScreenSheet = false } }
+                )
+                ListItem(
                     headlineContent = { Text(stringResource(R.string.search)) },
                     modifier = Modifier.clickable { coroutineScope.launch { userPrefs.saveStartScreen("search"); showStartScreenSheet = false } }
                 )
                 ListItem(
+                    headlineContent = { Text(stringResource(R.string.library)) },
+                    modifier = Modifier.clickable { coroutineScope.launch { userPrefs.saveStartScreen("library"); showStartScreenSheet = false } }
+                )
+                ListItem(
                     headlineContent = { Text(stringResource(R.string.downloads)) },
                     modifier = Modifier.clickable { coroutineScope.launch { userPrefs.saveStartScreen("downloads"); showStartScreenSheet = false } }
+                )
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.profile)) },
+                    modifier = Modifier.clickable { coroutineScope.launch { userPrefs.saveStartScreen("profile"); showStartScreenSheet = false } }
                 )
                 ListItem(
                     headlineContent = { Text(stringResource(R.string.settings)) },
