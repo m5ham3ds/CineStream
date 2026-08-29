@@ -103,7 +103,7 @@ fun AppNavigation() {
     var searchQuery by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf("") }
     var showLogoutDialog by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
 
-    var isUpdatingData by remember { mutableStateOf(true) }
+    var isUpdatingData by remember { mutableStateOf(com.example.utils.NetworkUtils.isInternetAvailable(context)) }
     var updateFinishedShowGreen by remember { mutableStateOf(false) }
     
     androidx.compose.runtime.LaunchedEffect(updateFinishedShowGreen) {
