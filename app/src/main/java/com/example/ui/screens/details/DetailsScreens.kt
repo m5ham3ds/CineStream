@@ -65,7 +65,8 @@ fun MovieDetailsScreen(
     val downloadItems by downloadRepository.getDownloadItems().collectAsState(initial = emptyList())
     
     val isFavorite = libraryItems.any { it.id == movieId }
-    val isDownloaded = downloadItems.any { it.id == movieId }
+    val downloadItem = downloadItems.find { it.id == movieId }
+    var showDeleteConfirm by remember { mutableStateOf(false) }
 
     LaunchedEffect(movieId) {
         viewModel.loadMovie(movieId)
@@ -96,7 +97,29 @@ fun MovieDetailsScreen(
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
             ) {
+                
+                if (showDeleteConfirm) {
+                    AlertDialog(
+                        onDismissRequest = { showDeleteConfirm = false },
+                        title = { Text("حذف التنزيل", color = Color.White) },
+                        text = { Text("هل أنت متأكد أنك تريد حذف هذا العنصر من التنزيلات؟", color = Color.LightGray) },
+                        confirmButton = {
+                            TextButton(onClick = {
+                                downloadItem?.let {
+                                    scope.launch { downloadRepository.removeFromDownloads(it) }
+                                }
+                                showDeleteConfirm = false
+                            }) { Text("نعم، احذف", color = Color.Red) }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { showDeleteConfirm = false }) { Text("إلغاء", color = Color.White) }
+                        },
+                        containerColor = Color(0xFF161618)
+                    )
+                }
+                
                 // Hero Image or Video Player
+
                 if (selectedTrailerId != null) {
                     Box(modifier = Modifier.fillMaxWidth().aspectRatio(16f/9f)) {
                         com.example.ui.components.InlineYouTubePlayer(
@@ -163,19 +186,38 @@ fun MovieDetailsScreen(
                 // Action Buttons
                 Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Button(
-                        onClick = { isDownloadMode = false; showSourceSheet = true },
+                        onClick = { 
+                            if (downloadItem?.isCompleted == true) {
+                                onPlay("local_offline_file://${downloadItem.id}")
+                            } else {
+                                isDownloadMode = false; showSourceSheet = true 
+                            }
+                        },
                         modifier = Modifier.weight(1f).height(50.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE50914))
                     ) {
                         Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = Color.White)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Resume", color = Color.White, fontWeight = FontWeight.Bold)
+                        Text(if (downloadItem?.isCompleted == true) "Resume Offline" else "Resume", color = Color.White, fontWeight = FontWeight.Bold)
                     }
                     IconButton(
-                        onClick = { isDownloadMode = true; showSourceSheet = true },
+                        onClick = { 
+                            if (downloadItem?.isCompleted == true) {
+                                showDeleteConfirm = true
+                            } else if (downloadItem == null) {
+                                isDownloadMode = true
+                                showSourceSheet = true
+                            }
+                        },
                         modifier = Modifier.size(50.dp).background(Color.DarkGray, CircleShape)
                     ) {
-                        Icon(Icons.Default.Download, contentDescription = "Download", tint = if (isDownloaded) Color.Green else Color.White)
+                        if (downloadItem?.isCompleted == true) {
+                            Icon(Icons.Default.DownloadDone, contentDescription = "Downloaded", tint = Color.Green)
+                        } else if (downloadItem != null) {
+                            CircularProgressIndicator(progress = { downloadItem.progress }, color = Color(0xFFE50914), modifier = Modifier.size(24.dp))
+                        } else {
+                            Icon(Icons.Default.Download, contentDescription = "Download", tint = Color.White)
+                        }
                     }
                     IconButton(
                         onClick = { 
@@ -288,7 +330,8 @@ fun SeriesDetailsScreen(
     val downloadItems by downloadRepository.getDownloadItems().collectAsState(initial = emptyList())
     
     val isFavorite = libraryItems.any { it.id == seriesId }
-    val isDownloaded = downloadItems.any { it.id == seriesId }
+    val downloadItem = downloadItems.find { it.id == seriesId }
+    var showDeleteConfirm by remember { mutableStateOf(false) }
 
     LaunchedEffect(seriesId) {
         viewModel.loadSeries(seriesId)
@@ -319,7 +362,29 @@ fun SeriesDetailsScreen(
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
             ) {
+                
+                if (showDeleteConfirm) {
+                    AlertDialog(
+                        onDismissRequest = { showDeleteConfirm = false },
+                        title = { Text("حذف التنزيل", color = Color.White) },
+                        text = { Text("هل أنت متأكد أنك تريد حذف هذا العنصر من التنزيلات؟", color = Color.LightGray) },
+                        confirmButton = {
+                            TextButton(onClick = {
+                                downloadItem?.let {
+                                    scope.launch { downloadRepository.removeFromDownloads(it) }
+                                }
+                                showDeleteConfirm = false
+                            }) { Text("نعم، احذف", color = Color.Red) }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { showDeleteConfirm = false }) { Text("إلغاء", color = Color.White) }
+                        },
+                        containerColor = Color(0xFF161618)
+                    )
+                }
+                
                 // Hero Image or Video Player
+
                 if (selectedTrailerId != null) {
                     Box(modifier = Modifier.fillMaxWidth().aspectRatio(16f/9f)) {
                         com.example.ui.components.InlineYouTubePlayer(
@@ -386,19 +451,38 @@ fun SeriesDetailsScreen(
                 // Action Buttons
                 Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Button(
-                        onClick = { isDownloadMode = false; showSourceSheet = true },
+                        onClick = { 
+                            if (downloadItem?.isCompleted == true) {
+                                onPlay("local_offline_file://${downloadItem.id}")
+                            } else {
+                                isDownloadMode = false; showSourceSheet = true 
+                            }
+                        },
                         modifier = Modifier.weight(1f).height(50.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE50914))
                     ) {
                         Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = Color.White)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Resume", color = Color.White, fontWeight = FontWeight.Bold)
+                        Text(if (downloadItem?.isCompleted == true) "Resume Offline" else "Resume", color = Color.White, fontWeight = FontWeight.Bold)
                     }
                     IconButton(
-                        onClick = { isDownloadMode = true; showSourceSheet = true },
+                        onClick = { 
+                            if (downloadItem?.isCompleted == true) {
+                                showDeleteConfirm = true
+                            } else if (downloadItem == null) {
+                                isDownloadMode = true
+                                showSourceSheet = true
+                            }
+                        },
                         modifier = Modifier.size(50.dp).background(Color.DarkGray, CircleShape)
                     ) {
-                        Icon(Icons.Default.Download, contentDescription = "Download", tint = if (isDownloaded) Color.Green else Color.White)
+                        if (downloadItem?.isCompleted == true) {
+                            Icon(Icons.Default.DownloadDone, contentDescription = "Downloaded", tint = Color.Green)
+                        } else if (downloadItem != null) {
+                            CircularProgressIndicator(progress = { downloadItem.progress }, color = Color(0xFFE50914), modifier = Modifier.size(24.dp))
+                        } else {
+                            Icon(Icons.Default.Download, contentDescription = "Download", tint = Color.White)
+                        }
                     }
                     IconButton(
                         onClick = { 

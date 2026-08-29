@@ -1,22 +1,9 @@
-package com.example.ui.screens.player
+import re
 
-import android.webkit.WebChromeClient
-import android.webkit.WebView
-import android.webkit.WebViewClient
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DownloadDone
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
+with open('app/src/main/java/com/example/ui/screens/player/TrailerScreen.kt', 'r') as f:
+    content = f.read()
 
-@Composable
+replacement = """@Composable
 fun TrailerScreen(trailerId: String, onBack: () -> Unit) {
     Column(modifier = Modifier.fillMaxSize().background(Color.Black)) {
         Row(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
@@ -51,13 +38,13 @@ fun TrailerScreen(trailerId: String, onBack: () -> Unit) {
                         settings.mediaPlaybackRequiresUserGesture = false
                         webChromeClient = WebChromeClient()
                         webViewClient = WebViewClient()
-                        val htmlData = """
+                        val htmlData = \"\"\"
                             <html>
                                 <body style="margin:0;padding:0;background-color:black;display:flex;justify-content:center;align-items:center;">
                                     <iframe width="100%" height="100%" src="https://www.youtube.com/embed/$trailerId?autoplay=1&fs=1&modestbranding=1&rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                                 </body>
                             </html>
-                        """.trimIndent()
+                        \"\"\".trimIndent()
                         loadData(htmlData, "text/html", "UTF-8")
                     }
                 }
@@ -65,3 +52,14 @@ fun TrailerScreen(trailerId: String, onBack: () -> Unit) {
         }
     }
 }
+"""
+
+content = re.sub(r'@Composable\nfun TrailerScreen\(trailerId: String, onBack: \(\) -> Unit\) \{.*', replacement, content, flags=re.DOTALL)
+
+# Also add import for DownloadDone if missing
+if 'import androidx.compose.material.icons.filled.DownloadDone' not in content:
+    content = content.replace('import androidx.compose.material.icons.Icons', 'import androidx.compose.material.icons.Icons\nimport androidx.compose.material.icons.filled.DownloadDone')
+
+with open('app/src/main/java/com/example/ui/screens/player/TrailerScreen.kt', 'w') as f:
+    f.write(content)
+

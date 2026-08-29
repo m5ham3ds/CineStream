@@ -4,13 +4,14 @@ import android.content.Context
 import androidx.room.Room
 import com.example.data.db.AppDatabase
 import com.example.data.model.DownloadItem
+import com.example.utils.NotificationHelper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
 
-class DownloadRepository(context: Context) {
+class DownloadRepository(private val context: Context) {
     private val db = AppDatabase.getDatabase(context)
     private val downloadDao = db.downloadDao()
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -21,6 +22,7 @@ class DownloadRepository(context: Context) {
 
     suspend fun addToDownloads(item: DownloadItem) {
         downloadDao.insertItem(item)
+        NotificationHelper.showDownloadStarted(context, item.title)
         startSimulatedDownload(item.id)
     }
 
@@ -35,6 +37,7 @@ class DownloadRepository(context: Context) {
     private fun startSimulatedDownload(id: String) {
         scope.launch {
             var currentItem = downloadDao.getItemById(id) ?: return@launch
+            var isAlreadyCompleted = currentItem.isCompleted
             
             while (currentItem.progress < 1f && !currentItem.isCompleted) {
                 delay(1000) // update every second
@@ -53,6 +56,10 @@ class DownloadRepository(context: Context) {
                 )
                 
                 downloadDao.updateItem(currentItem)
+                
+                if (isCompleted && !isAlreadyCompleted) {
+                    NotificationHelper.showDownloadCompleted(context, currentItem.title)
+                }
             }
         }
     }
