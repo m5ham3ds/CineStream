@@ -87,7 +87,7 @@ fun AuthScreen(
                 val googleIdOption = GetGoogleIdOption.Builder()
                     .setFilterByAuthorizedAccounts(false)
                     .setServerClientId(webClientId)
-                    .setAutoSelectEnabled(true)
+                    .setAutoSelectEnabled(false) // Changed to false
                     .build()
                 val request = GetCredentialRequest.Builder()
                     .addCredentialOption(googleIdOption)
@@ -105,6 +105,10 @@ fun AuthScreen(
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
+                launch {
+                    val apiKey = try { com.google.firebase.FirebaseApp.getInstance().options.apiKey } catch(ex: Exception) { "Unknown" }
+                    android.widget.Toast.makeText(context, "G-Sign In Failed: ${e.message}\nAPI Key: $apiKey", android.widget.Toast.LENGTH_LONG).show()
+                }
             }
         }
     }
