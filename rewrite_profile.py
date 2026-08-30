@@ -1,4 +1,6 @@
-package com.example.ui.screens.profile
+import os
+
+content = """package com.example.ui.screens.profile
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -263,3 +265,7 @@ fun ProfileListItem(icon: androidx.compose.ui.graphics.vector.ImageVector, title
         Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(MaterialTheme.colorScheme.surfaceVariant))
     }
 }
+"""
+
+with open('app/src/main/java/com/example/ui/screens/profile/ProfileScreen.kt', 'w') as f:
+    f.write(content)

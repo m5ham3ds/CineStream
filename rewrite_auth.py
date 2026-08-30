@@ -1,4 +1,6 @@
-package com.example.ui.screens.auth
+import os
+
+content = """package com.example.ui.screens.auth
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -156,7 +158,7 @@ fun AuthScreen(
                         onSkip()
                     }
                 }) {
-                    Text("Skip", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(R.string.skip), color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
 
@@ -179,14 +181,14 @@ fun AuthScreen(
             }
             Spacer(modifier = Modifier.height(24.dp))
             Text(
-                text = if (isSignUp) "Create Account" else "Welcome Back",
+                text = if (isSignUp) stringResource(R.string.create_account) else stringResource(R.string.welcome_back),
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = if (isSignUp) "Sign up to get started" else "Sign in to continue",
+                text = if (isSignUp) stringResource(R.string.sign_up_desc) else stringResource(R.string.sign_in_desc),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 16.sp,
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
@@ -197,7 +199,7 @@ fun AuthScreen(
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                placeholder = { Text("", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                placeholder = { Text(stringResource(R.string.email_hint), color = MaterialTheme.colorScheme.onSurfaceVariant) },
                 leadingIcon = { Icon(Icons.Outlined.Mail, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
@@ -207,7 +209,7 @@ fun AuthScreen(
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                placeholder = { Text("", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                placeholder = { Text(stringResource(R.string.password_hint), color = MaterialTheme.colorScheme.onSurfaceVariant) },
                 leadingIcon = { Icon(Icons.Outlined.Lock, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
                 trailingIcon = {
                     IconButton(onClick = { passwordVisible = !passwordVisible }) {
@@ -235,7 +237,7 @@ fun AuthScreen(
                         checked = rememberMe,
                         onCheckedChange = { rememberMe = it }
                     )
-                    Text("", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
+                    Text(stringResource(R.string.remember_me), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
                 }
                 if (!isSignUp) {
                     Text(
@@ -267,14 +269,14 @@ fun AuthScreen(
                 if (isLoading) {
                     CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary)
                 } else {
-                    Text(if (isSignUp) "" else "", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    Text(if (isSignUp) stringResource(R.string.sign_up) else stringResource(R.string.sign_in), fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 }
             }
 
             Spacer(modifier = Modifier.height(32.dp))
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                 Box(modifier = Modifier.weight(1f).height(1.dp).background(MaterialTheme.colorScheme.surfaceVariant))
-                Text("", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp, modifier = Modifier.padding(horizontal = 16.dp))
+                Text(stringResource(R.string.or_continue_with), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp, modifier = Modifier.padding(horizontal = 16.dp))
                 Box(modifier = Modifier.weight(1f).height(1.dp).background(MaterialTheme.colorScheme.surfaceVariant))
             }
             
@@ -287,7 +289,7 @@ fun AuthScreen(
                 enabled = !isLoading
             ) {
                 Text("G", color = MaterialTheme.colorScheme.onSecondaryContainer, fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(end = 8.dp))
-                Text("", color = MaterialTheme.colorScheme.onSecondaryContainer, fontWeight = FontWeight.Medium, fontSize = 16.sp)
+                Text(stringResource(R.string.sign_in_with_google), color = MaterialTheme.colorScheme.onSecondaryContainer, fontWeight = FontWeight.Medium, fontSize = 16.sp)
             }
 
             Spacer(modifier = Modifier.weight(1f))
@@ -308,3 +310,7 @@ fun AuthScreen(
         }
     }
 }
+"""
+
+with open('app/src/main/java/com/example/ui/screens/auth/AuthScreen.kt', 'w') as f:
+    f.write(content)

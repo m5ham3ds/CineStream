@@ -12,9 +12,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class SocialViewModel : ViewModel() {
-    private val repository = SocialRepository()
+    
 
-    private val _currentUser = MutableStateFlow<UserProfile?>(repository.getCurrentUser())
+    private val _currentUser = MutableStateFlow<UserProfile?>(SocialRepository().getCurrentUser())
     val currentUser: StateFlow<UserProfile?> = _currentUser.asStateFlow()
 
     private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
@@ -24,27 +24,31 @@ class SocialViewModel : ViewModel() {
     val stories: StateFlow<List<Story>> = _stories.asStateFlow()
 
     init {
-        if (_currentUser.value != null) {
-            startListening()
+        com.google.firebase.auth.FirebaseAuth.getInstance().addAuthStateListener { auth ->
+            val user = SocialRepository().getCurrentUser()
+            _currentUser.value = user
+            if (user != null) {
+                startListening()
+            }
         }
     }
 
     fun refreshUser() {
-        _currentUser.value = repository.getCurrentUser()
+        _currentUser.value = SocialRepository().getCurrentUser()
         if (_currentUser.value != null) {
-            viewModelScope.launch { repository.saveUserProfile() }
+            viewModelScope.launch { SocialRepository().saveUserProfile() }
             startListening()
         }
     }
 
     private fun startListening() {
         viewModelScope.launch {
-            repository.getMessages().collect { msgs ->
+            SocialRepository().getMessages().collect { msgs ->
                 _messages.value = msgs
             }
         }
         viewModelScope.launch {
-            repository.getStories().collect { sts ->
+            SocialRepository().getStories().collect { sts ->
                 _stories.value = sts
             }
         }
@@ -52,13 +56,13 @@ class SocialViewModel : ViewModel() {
 
     fun sendMessage(text: String) {
         if (text.isNotBlank()) {
-            repository.sendMessage(text)
+            SocialRepository().sendMessage(text)
         }
     }
 
     fun addStory(imageUrl: String) {
         if (imageUrl.isNotBlank()) {
-            repository.addStory(imageUrl)
+            SocialRepository().addStory(imageUrl)
         }
     }
 }

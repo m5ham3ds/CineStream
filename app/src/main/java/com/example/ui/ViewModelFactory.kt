@@ -36,6 +36,9 @@ class ViewModelFactory : ViewModelProvider.Factory {
         if (modelClass.isAssignableFrom(com.example.ui.screens.social.SocialViewModel::class.java)) {
             return com.example.ui.screens.social.SocialViewModel() as T
         }
+                if (modelClass.isAssignableFrom(com.example.ui.screens.auth.AuthViewModel::class.java)) {
+            return com.example.ui.screens.auth.AuthViewModel() as T
+        }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

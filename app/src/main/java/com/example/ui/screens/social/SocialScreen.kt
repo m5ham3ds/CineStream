@@ -33,11 +33,6 @@ import com.example.BuildConfig
 import com.example.ui.ViewModelFactory
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import androidx.credentials.CredentialManager
-import androidx.credentials.GetCredentialRequest
-import androidx.credentials.exceptions.GetCredentialException
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
-import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
@@ -62,52 +57,12 @@ fun SocialScreen(
     var messageText by remember { mutableStateOf("") }
     var isSigningIn by remember { mutableStateOf(false) }
 
-    fun signInWithGoogle() {
-        val webClientId = BuildConfig.WEB_CLIENT_ID
-        if (webClientId.isEmpty()) {
-            Log.e("SocialScreen", "WEB_CLIENT_ID is empty. Please set it in AI Studio Secrets.")
-            return
-        }
-        isSigningIn = true
-        scope.launch {
-            try {
-                val credentialManager = CredentialManager.create(context)
-                val googleIdOption = GetGoogleIdOption.Builder()
-                    .setFilterByAuthorizedAccounts(false)
-                    .setServerClientId(webClientId)
-                    .setAutoSelectEnabled(true)
-                    .build()
-
-                val request = GetCredentialRequest.Builder()
-                    .addCredentialOption(googleIdOption)
-                    .build()
-
-                val result = credentialManager.getCredential(context, request)
-                val credential = result.credential
-                
-                if (credential is GoogleIdTokenCredential) {
-                    val idToken = credential.idToken
-                    val authCredential = GoogleAuthProvider.getCredential(idToken, null)
-                    FirebaseAuth.getInstance().signInWithCredential(authCredential).await()
-                    viewModel.refreshUser()
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            } finally {
-                isSigningIn = false
-            }
-        }
-    }
-    
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background
-    ) { padding ->
         if (currentUser == null) {
             // Login Screen
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(padding),
+                    .padding(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -119,20 +74,13 @@ fun SocialScreen(
                 Spacer(modifier = Modifier.height(32.dp))
                 
                 Button(
-                    onClick = { signInWithGoogle() },
-                    enabled = !isSigningIn,
+                    onClick = { 
+                        // Instead of signing in here, users should sign in through the Profile tab or Main Auth
+                        // For simplicity, we just prompt them.
+                    },
                     modifier = Modifier.fillMaxWidth(0.8f).height(50.dp)
                 ) {
-                    if (isSigningIn) {
-                        CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary)
-                    } else {
-                        Text("Sign in with Google")
-                    }
-                }
-                
-                if (BuildConfig.WEB_CLIENT_ID.isEmpty()) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text("Warning: WEB_CLIENT_ID not configured.", color = MaterialTheme.colorScheme.error, fontSize = 12.sp)
+                    Text("Go to Profile to Sign In")
                 }
             }
         } else {
@@ -140,7 +88,7 @@ fun SocialScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(padding)
+                    .padding(8.dp)
             ) {
                 // Stories Header
                 Row(
@@ -278,4 +226,3 @@ fun SocialScreen(
             }
         }
     }
-}
