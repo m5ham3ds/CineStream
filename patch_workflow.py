@@ -4,12 +4,17 @@ filepath = '.github/workflows/build.yml'
 with open(filepath, 'r') as f:
     content = f.read()
 
-# Remove the Generate debug keystore step
-content = re.sub(
-    r"      - name: Generate debug keystore\n        run: \|\n          keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname \"C=US, O=Android, CN=Android Debug\"\n",
-    "",
-    content
-)
+replacement = """      - name: Setup Keystore
+        run: |
+          if [ -f "debug.keystore.base64" ]; then
+            base64 -d debug.keystore.base64 > debug.keystore
+          else
+            echo "debug.keystore.base64 not found!"
+            exit 1
+          fi
+      - name: Build Debug APK"""
+
+content = content.replace("      - name: Build Debug APK", replacement)
 
 with open(filepath, 'w') as f:
     f.write(content)
