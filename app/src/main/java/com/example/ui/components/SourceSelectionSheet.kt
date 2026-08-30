@@ -23,6 +23,7 @@ fun SourceSelectionSheet(
     mediaId: String,
     mediaTitle: String = "Unknown",
     isMovie: Boolean,
+    episodeId: String? = null,
     onDismiss: () -> Unit,
     onSourceSelected: (VideoSource) -> Unit
 ) {
@@ -33,7 +34,7 @@ fun SourceSelectionSheet(
     LaunchedEffect(mediaId) {
         isLoading = true
         // Pass dummy episode ID if not a movie
-        sources = ProviderManager.extractVideoLinks(mediaId, isMovie, if (!isMovie) "1" else null)
+        sources = ProviderManager.extractVideoLinks(mediaId, isMovie, episodeId)
         isLoading = false
     }
 

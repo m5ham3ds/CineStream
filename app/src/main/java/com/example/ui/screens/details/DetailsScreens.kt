@@ -8,6 +8,7 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -315,223 +316,159 @@ fun MovieDetailsScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
 fun SeriesDetailsScreen(
     onPersonClick: (String) -> Unit = {},
-    seriesId: String, 
+    seriesId: String,
     onBack: () -> Unit,
-    onPlay: (String) -> Unit,
-    viewModel: SeriesDetailsViewModel = viewModel(factory = ViewModelFactory())
+    onPlay: (String) -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
-    val downloadRepository = remember { DownloadRepository(context) }
-    val libraryRepository = remember { LibraryRepository(context) }
+    val viewModel: SeriesDetailsViewModel = viewModel(factory = ViewModelFactory())
+    val uiState by viewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
-    val libraryItems by libraryRepository.getLibraryItems().collectAsState(initial = emptyList())
-    val downloadItems by downloadRepository.getDownloadItems().collectAsState(initial = emptyList())
-    
-    val isFavorite = libraryItems.any { it.id == seriesId }
-    val downloadItem = downloadItems.find { it.id == seriesId }
-    var showDeleteConfirm by remember { mutableStateOf(false) }
+    val libraryRepository = remember { LibraryRepository(context) }
+    val isFavorite by libraryRepository.isItemInLibrary(seriesId).collectAsState(initial = false)
+    val downloadRepository = remember { DownloadRepository(context) }
+    val historyRepository = remember { com.example.data.repository.HistoryRepository(context) }
+    val watchedRepo = remember { com.example.data.repository.WatchedEpisodeRepository(context) }
+    val watchedEpisodes by watchedRepo.getAllWatched().collectAsState(initial = emptyList())
+    val watchedEpisodeIds = watchedEpisodes.map { it.id }.toSet()
+
+    var selectedEpisodeForSource by remember { mutableStateOf<Episode?>(null) }
+    var isDownloadMode by remember { mutableStateOf(false) }
+    var showBatchDownloadSheet by remember { mutableStateOf(false) }
 
     LaunchedEffect(seriesId) {
         viewModel.loadSeries(seriesId)
     }
 
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background
-    ) { padding ->
-        if (uiState.isLoading) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
-        } else if (uiState.series != null) {
-            val series = uiState.series!!
-            val ctx = LocalContext.current
-            val historyRepository = remember { com.example.data.repository.HistoryRepository(ctx) }
-            var showSourceSheet by remember { mutableStateOf(false) }
-            var isDownloadMode by remember { mutableStateOf(false) }
-            var selectedTrailerId by remember { mutableStateOf<String?>(null) }
+    val pullRefreshState = rememberPullToRefreshState()
+    PullToRefreshBox(
+        isRefreshing = uiState.isLoading,
+        onRefresh = { viewModel.loadSeries(seriesId) },
+        state = pullRefreshState
+    ) {
+        val series = uiState.series
+        if (series == null && !uiState.isLoading) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(uiState.error ?: "Failed to load details", color = MaterialTheme.colorScheme.error)
+            }
+            return@PullToRefreshBox
+        }
 
-            val ptrState = rememberPullToRefreshState()
-            PullToRefreshBox(
-                isRefreshing = uiState.isLoading,
-                onRefresh = { viewModel.loadSeries(seriesId) },
-                state = ptrState,
-                modifier = Modifier.fillMaxSize().padding(bottom = padding.calculateBottomPadding())
-            ) {
+        if (series != null) {
+            val scrollState = rememberScrollState()
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(scrollState)
             ) {
-                
-                if (showDeleteConfirm) {
-                    AlertDialog(
-                        onDismissRequest = { showDeleteConfirm = false },
-                        title = { Text(stringResource(R.string.delete_download), color = MaterialTheme.colorScheme.onBackground) },
-                        text = { Text(stringResource(R.string.delete_download_confirm), color = MaterialTheme.colorScheme.onSurfaceVariant) },
-                        confirmButton = {
-                            TextButton(onClick = {
-                                downloadItem?.let {
-                                    scope.launch { downloadRepository.removeFromDownloads(it) }
-                                }
-                                showDeleteConfirm = false
-                            }) { Text(stringResource(R.string.yes_delete), color = Color.Red) }
-                        },
-                        dismissButton = {
-                            TextButton(onClick = { showDeleteConfirm = false }) { Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.onBackground) }
-                        },
-                        containerColor = MaterialTheme.colorScheme.surface
+                Box(modifier = Modifier.fillMaxWidth().height(400.dp)) {
+                    AsyncImage(
+                        model = series.posterUrl,
+                        contentDescription = series.title,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(
+                                Brush.verticalGradient(
+                                    colors = listOf(Color.Transparent, MaterialTheme.colorScheme.background),
+                                    startY = 300f
+                                )
+                            )
                     )
                 }
-                
-                // Hero Image or Video Player
 
-                if (selectedTrailerId != null) {
-                    Box(modifier = Modifier.fillMaxWidth().aspectRatio(16f/9f)) {
-                        com.example.ui.components.InlineYouTubePlayer(
-                            videoId = selectedTrailerId!!,
-                            modifier = Modifier.fillMaxSize()
-                        )
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(series.title, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.Star, contentDescription = "Rating", tint = Color(0xFFFFC107), modifier = Modifier.size(20.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(String.format("%.1f", series.rating), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Text(series.year.toString(), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     Spacer(modifier = Modifier.height(16.dp))
-                    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                        Text(text = series.title, style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
-                        Spacer(modifier = Modifier.height(8.dp))
-                        
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text("${series.year} • ${series.genres.take(3).joinToString(" • ")}", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium)
-                        }
-                        Spacer(modifier = Modifier.height(8.dp))
-                        
-                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Default.Star, contentDescription = "Rating", tint = Color(0xFFFFC107), modifier = Modifier.size(18.dp))
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(String.format("%.1f", series.rating), color = MaterialTheme.colorScheme.onBackground, fontWeight = FontWeight.Bold)
-                            }
-                            Badge(containerColor = Color.DarkGray) { Text("18+", color = MaterialTheme.colorScheme.onBackground) }
-                        }
-                    }
-                } else {
-                    Box(modifier = Modifier.fillMaxWidth().aspectRatio(0.8f)) {
-                        AsyncImage(
-                            model = series.posterUrl.takeIf { it.isNotBlank() } ?: series.backdropUrl,
-                            contentDescription = series.title,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                        Box(modifier = Modifier.fillMaxSize().background(
-                            Brush.verticalGradient(
-                                colors = listOf(Color.Transparent, Color.Black.copy(alpha=0.6f), MaterialTheme.colorScheme.background),
-                                startY = 0f
-                            )
-                        ))
-                        Column(
-                            modifier = Modifier.align(Alignment.BottomStart).padding(16.dp)
-                        ) {
-                            Text(text = series.title, style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
-                            Spacer(modifier = Modifier.height(8.dp))
-                            
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text("${series.year} • ${series.genres.take(3).joinToString(" • ")}", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium)
-                            }
-                            Spacer(modifier = Modifier.height(8.dp))
-                            
-                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(Icons.Default.Star, contentDescription = "Rating", tint = Color(0xFFFFC107), modifier = Modifier.size(18.dp))
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text(String.format("%.1f", series.rating), color = MaterialTheme.colorScheme.onBackground, fontWeight = FontWeight.Bold)
+                    
+                    val firstUnplayedEpisode = uiState.episodes.firstOrNull { !watchedEpisodeIds.contains(it.id) } ?: uiState.episodes.firstOrNull()
+
+                    // Action Buttons
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                        Button(
+                            onClick = {
+                                if (firstUnplayedEpisode != null) {
+                                    selectedEpisodeForSource = firstUnplayedEpisode
+                                    isDownloadMode = false
+                                } else {
+                                    Toast.makeText(context, "No episodes available", Toast.LENGTH_SHORT).show()
                                 }
-                                Badge(containerColor = Color.DarkGray) { Text("18+", color = MaterialTheme.colorScheme.onBackground) } 
-                            }
+                            },
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Icon(Icons.Default.PlayArrow, contentDescription = "Play")
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(stringResource(R.string.play))
+                        }
+                        IconButton(
+                            onClick = {
+                                showBatchDownloadSheet = true
+                            },
+                            modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp))
+                        ) {
+                            Icon(Icons.Default.Download, contentDescription = "Download")
+                        }
+                        IconButton(
+                            onClick = {
+                                scope.launch {
+                                    if (isFavorite) {
+                                        libraryRepository.removeFromLibrary(LibraryItem(id = series.id, title = series.title, posterUrl = series.posterUrl, isMovie = false))
+                                    } else {
+                                        libraryRepository.addToLibrary(
+                                            LibraryItem(
+                                                id = series.id,
+                                                title = series.title,
+                                                posterUrl = series.posterUrl,
+                                                isMovie = false
+                                            )
+                                        )
+                                    }
+                                }
+                            },
+                            modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp))
+                        ) {
+                            Icon(if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder, contentDescription = "Add to Favorites", tint = if (isFavorite) Color.Red else MaterialTheme.colorScheme.onBackground)
                         }
                     }
-                }
-                
-                // Action Buttons
-                Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Button(
-                        onClick = { 
-                            if (downloadItem?.isCompleted == true) {
-                                onPlay("local_offline_file://${downloadItem.id}")
-                            } else {
-                                isDownloadMode = false; showSourceSheet = true 
-                            }
-                        },
-                        modifier = Modifier.weight(1f).height(50.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                    ) {
-                        Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = MaterialTheme.colorScheme.onBackground)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(if (downloadItem?.isCompleted == true) "Resume Offline" else "Resume", color = MaterialTheme.colorScheme.onBackground, fontWeight = FontWeight.Bold)
-                    }
-                    IconButton(
-                        onClick = { 
-                            if (downloadItem?.isCompleted == true) {
-                                showDeleteConfirm = true
-                            } else if (downloadItem == null) {
-                                isDownloadMode = true
-                                showSourceSheet = true
-                            }
-                        },
-                        modifier = Modifier.size(50.dp).background(Color.DarkGray, CircleShape)
-                    ) {
-                        if (downloadItem?.isCompleted == true) {
-                            Icon(Icons.Default.DownloadDone, contentDescription = "Downloaded", tint = Color.Green)
-                        } else if (downloadItem != null) {
-                            CircularProgressIndicator(progress = { downloadItem.progress }, color = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
-                        } else {
-                            Icon(Icons.Default.Download, contentDescription = "Download", tint = MaterialTheme.colorScheme.onBackground)
-                        }
-                    }
-                    IconButton(
-                        onClick = { 
-                            scope.launch {
-                                val item = LibraryItem(id = series.id, title = series.title, posterUrl = series.posterUrl, isMovie = false)
-                                if (isFavorite) libraryRepository.removeFromLibrary(item)
-                                else libraryRepository.addToLibrary(item)
-                            }
-                        },
-                        modifier = Modifier.size(50.dp).background(Color.DarkGray, CircleShape)
-                    ) {
-                        Icon(if (isFavorite) Icons.Default.Bookmark else Icons.Default.BookmarkBorder, contentDescription = "Favorite", tint = MaterialTheme.colorScheme.onBackground)
-                    }
-                }
-                
-                Spacer(modifier = Modifier.height(24.dp))
-                
-                // Trailers
-                if (series.trailers.isNotEmpty()) {
-                    Text(stringResource(R.string.trailers), color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
-                    Spacer(modifier = Modifier.height(8.dp))
-                    LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        items(series.trailers) { trailer ->
-                            TrailerCard(trailer) {
-                                selectedTrailerId = trailer.key
-                            }
-                        }
-                    }
+
                     Spacer(modifier = Modifier.height(24.dp))
-                }
-                
-                // Overview
-                Text(stringResource(R.string.overview), color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(series.overview, color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(horizontal = 16.dp))
-                
-                Spacer(modifier = Modifier.height(24.dp))
-                
-                // Cast
-                if (series.cast.isNotEmpty()) {
-                    Text(stringResource(R.string.cast), color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
-                    Spacer(modifier = Modifier.height(8.dp))
-                    LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                        items(series.cast) { CastMemberCard(it) { onPersonClick(it.id) } }
+                    Text(series.overview, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onBackground)
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    if (series.trailers.isNotEmpty()) {
+                        Text(stringResource(R.string.trailers), color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                            items(series.trailers) { trailer ->
+                                TrailerCard(trailer) { onPlay("trailer:${trailer.key}") }
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(32.dp))
                     }
-                    Spacer(modifier = Modifier.height(32.dp))
+                    if (series.cast.isNotEmpty()) {
+                        Text(stringResource(R.string.cast), color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                            items(series.cast) { CastMemberCard(it) { onPersonClick(it.id) } }
+                        }
+                        Spacer(modifier = Modifier.height(32.dp))
+                    }
                 }
 
                 // Seasons & Episodes
@@ -561,28 +498,45 @@ fun SeriesDetailsScreen(
                         Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
                     } else {
                         uiState.episodes.forEach { episode ->
-                            EpisodeCard(episode) { 
-                                isDownloadMode = false
-                                showSourceSheet = true 
-                            }
+                            val isWatched = watchedEpisodeIds.contains(episode.id)
+                            EpisodeCard(
+                                episode = episode,
+                                isWatched = isWatched,
+                                onClick = {
+                                    selectedEpisodeForSource = episode
+                                    isDownloadMode = false
+                                },
+                                onLongClick = {
+                                    scope.launch {
+                                        if (isWatched) watchedRepo.markAsUnwatched(episode.id)
+                                        else watchedRepo.markAsWatched(episode.id)
+                                    }
+                                },
+                                onDownloadClick = {
+                                    selectedEpisodeForSource = episode
+                                    isDownloadMode = true
+                                }
+                            )
                         }
                     }
                     Spacer(modifier = Modifier.height(32.dp))
                 }
             }
-
-            }
-            if (showSourceSheet) {
+            
+            if (selectedEpisodeForSource != null) {
                 SourceSelectionSheet(
                     mediaId = series.id,
+                    mediaTitle = "${series.title} S${uiState.selectedSeason?.seasonNumber}E${selectedEpisodeForSource?.episodeNumber}",
                     isMovie = false,
-                    onDismiss = { showSourceSheet = false },
+                    episodeId = selectedEpisodeForSource?.id,
+                    onDismiss = { selectedEpisodeForSource = null },
                     onSourceSelected = { source ->
-                        showSourceSheet = false
+                        val ep = selectedEpisodeForSource!!
+                        selectedEpisodeForSource = null
                         if (isDownloadMode) {
                             scope.launch {
                                 downloadRepository.addToDownloads(DownloadItem(
-                                    id = series.id, title = series.title, posterUrl = series.posterUrl, isMovie = false, quality = source.quality
+                                    id = ep.id, title = "${series.title} - S${uiState.selectedSeason?.seasonNumber}E${ep.episodeNumber}", posterUrl = ep.thumbnailUrl, isMovie = false, quality = source.quality
                                 ))
                                 Toast.makeText(context, "Download Started: ${source.providerName}", Toast.LENGTH_SHORT).show()
                             }
@@ -596,22 +550,31 @@ fun SeriesDetailsScreen(
                                         isMovie = false
                                     )
                                 )
+                                watchedRepo.markAsWatched(ep.id)
                                 onPlay(source.url)
                             }
                         }
                     }
                 )
             }
+            
+            if (showBatchDownloadSheet) {
+                com.example.ui.components.BatchDownloadSheet(
+                    series = series,
+                    currentSeason = uiState.selectedSeason,
+                    episodes = uiState.episodes,
+                    onDismiss = { showBatchDownloadSheet = false }
+                )
+            }
 
             IconButton(
                 onClick = onBack,
                 modifier = Modifier
-                    .padding(top = padding.calculateTopPadding() + 8.dp, start = 16.dp)
+                    .padding(top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() + 8.dp, start = 16.dp)
                     .background(Color.Black.copy(alpha=0.3f), CircleShape)
             ) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onBackground)
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
             }
-
         }
     }
 }
@@ -632,11 +595,11 @@ fun TrailerCard(trailer: VideoTrailer, onClick: () -> Unit) {
             modifier = Modifier.fillMaxSize()
         )
         Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha=0.3f)), contentAlignment = Alignment.Center) {
-            Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = MaterialTheme.colorScheme.onBackground, modifier = Modifier.size(48.dp))
+            Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = Color.White, modifier = Modifier.size(48.dp))
         }
         Text(
             text = trailer.name,
-            color = MaterialTheme.colorScheme.onBackground,
+            color = Color.White,
             style = MaterialTheme.typography.labelSmall,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -660,12 +623,22 @@ fun CastMemberCard(cast: CastMember, onClick: () -> Unit) {
     }
 }
 
+@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
-fun EpisodeCard(episode: Episode, onClick: () -> Unit) {
+fun EpisodeCard(
+    episode: Episode,
+    isWatched: Boolean,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit,
+    onDownloadClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick
+            )
             .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -678,11 +651,18 @@ fun EpisodeCard(episode: Episode, onClick: () -> Unit) {
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize().background(Color.DarkGray)
             )
-            Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = MaterialTheme.colorScheme.onBackground, modifier = Modifier.align(Alignment.Center))
+            Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = Color.White, modifier = Modifier.align(Alignment.Center))
         }
         Spacer(modifier = Modifier.width(16.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text("${episode.episodeNumber}. ${episode.title}", color = MaterialTheme.colorScheme.onBackground, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(
+                text = "${episode.episodeNumber}. ${episode.title}",
+                color = if (isWatched) MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f) else MaterialTheme.colorScheme.onBackground,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
             Spacer(modifier = Modifier.height(4.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Default.Star, contentDescription = "Rating", tint = Color(0xFFFFC107), modifier = Modifier.size(12.dp))
@@ -694,7 +674,7 @@ fun EpisodeCard(episode: Episode, onClick: () -> Unit) {
             Spacer(modifier = Modifier.height(4.dp))
             Text(episode.overview, color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall, maxLines = 2, overflow = TextOverflow.Ellipsis)
         }
-        IconButton(onClick = onClick) {
+        IconButton(onClick = onDownloadClick) {
             Icon(Icons.Default.Download, contentDescription = "Download", tint = MaterialTheme.colorScheme.onBackground)
         }
     }

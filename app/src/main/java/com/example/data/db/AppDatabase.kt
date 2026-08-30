@@ -7,12 +7,14 @@ import androidx.room.RoomDatabase
 import com.example.data.model.LibraryItem
 import com.example.data.model.DownloadItem
 import com.example.data.model.HistoryItem
+import com.example.data.model.WatchedEpisode
 
-@Database(entities = [LibraryItem::class, DownloadItem::class, HistoryItem::class], version = 2, exportSchema = false)
+@Database(entities = [LibraryItem::class, DownloadItem::class, HistoryItem::class, WatchedEpisode::class], version = 3, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun libraryDao(): LibraryDao
     abstract fun downloadDao(): DownloadDao
     abstract fun historyDao(): HistoryDao
+    abstract fun watchedEpisodeDao(): WatchedEpisodeDao
 
     companion object {
         @Volatile
