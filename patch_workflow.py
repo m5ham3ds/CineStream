@@ -6,15 +6,14 @@ with open(filepath, 'r') as f:
 
 replacement = """      - name: Setup Keystore
         run: |
-          if [ -f "debug.keystore.base64" ]; then
-            base64 -d debug.keystore.base64 > debug.keystore
-          else
-            echo "debug.keystore.base64 not found!"
-            exit 1
-          fi
-      - name: Build Debug APK"""
+          echo "MIIKZgIBAzCCChAGCSqGSIb3DQEHAaCCCgEEggn9MIIJ+TCCBcAGCSqGSIb3DQEHAaCCBbEEggWtMIIFqTCCBaUGCyqGSIb3DQEMCgECoIIFQDCCBTwwZgYJKoZIhvcNAQUNMFkwOAYJKoZIhvcNAQUMMCsEFLopxgHus7W1ZBEKAD7evXtAerLRAgInEAIBIDAMBggqhkiG9w0CCQUAMB0GCWCGSAFlAwQBKgQQ96Z7mcQF8QFNpp654TMP/wSCBNA4brUxhtLIDHq6DzA7yU0YVvNTBAhFkndX6/fnQl+eU40C45II/XHsCBa2rWhSn2pduVQY4aZx2kvBtoK4Ehuyl4ERZ++b8f2DiorTQkKfxxbQG+xWe+WnH+RB5/fZWqz69W4llGSbbFG/x0MJsXZyHHroroGPGG+Gp2tNDusmz1lpW/49IEsZ2gAVYoLyqSR5xAJzADn4gyzs2XEXZmOwJrI0+t3RKfWsC4aOnsL4Gebj/1IbrNmGtR+nEa+VvDR7uA1rM/lPcjdIFE6saQIfzg3FSv0XS80cFrAO8lGBh2ilwExirErPWTGFY2sZxtKEFte5QMrxa5i0hrS8hIkUtLh8I+L6tiiAvwuSMKtxBrA4TrL56lZ4xCTTccvtRFdosD9CoIn8F/vUEG8HWzP5L1OTSYFht1bMf/qxcEPobdXlAUeYb2s//smRwyq7PzZKnxVbwXhMB1Z/JLa0oSAY+GIun+p3yIRfY4hgVjawRqwZVWb1BXtfzu5nxARi6VyF7zGOKIyTNYgD9nDDZhm5MJlHN9ORBASuFbRH4ovk5MYzAMf3Xjc6ONiY+m4Meior3dyougHqFA6HZCCC0Dk1snKpc5MH+SRsKz8DAeX+QjXI+B60peR2xy+I/SeMLQEtzKW1XO/5cIgFYppSb+HhH3e7AjT0NvHqTQ30tutjz3ynQjRoQO1OBAV56j4FBkrl6J6uuIwS/3OfBN2z0rPA+n/sFS6fJuIdwAmU8F0itAkacG5yXb5q/6+Rzd4WSIMEouXVD6rLCShs4jW4ysotuQW4kRdaqTB04icrzcqiQDj+3eLp8Pmgf2opOF60QRK5fJTsCA59oqGxvEgLvIpMXV3MHRhuLXafFfaLEKBeVRdwMlLQr3ikH/VK8HZY0mKnT2OPca8lmllrgTEa9NjfMghkIF7fe9MlWuV0QLOslg3rQ90HZOtEYA8tDS6ggSAnhdpj7yXEB9SPni4hXRyVHDLcXar/LpGeCyxde/iW7gDYSHqfiyFH5ia+s9TS6ZZ2HFSkcW4AoEoHS2/Tj2lzWVS5QrMbAIZbDnZL1AMSywHq32lj0EaG5AthfwELKfaRx9PM2/jy6FzSG/7c7SAAE1tDNak/aUN3AN/3Wv0l77xunX1o2NFmWd1SdMZv9TJaeOlpv2WcgfcyBs/c640J/zsqOrSmO9mu2xNr1YNSJzAp05v/fCdOhMtcdaAQlhMSudw6SguR8wnlMSuoMHE5WRaWvsb8j1iy4+/Q5m+7VLcY6BR8++erW/lYMmYfIfIzFcF20m6uUPNM9ywxGOntIkI0+m+abC1Q93w39mh/tssLVq2AoOsSoP9ZUE4RQ3HFKRP3NUiE68eUi3k8f2PeLl/WRAffW4RPja1RI8zFbyW/aBUdBQHckDMgwtUsZxB8Apj9dSHgd9eV7yYP7ZTUIbTFiTdDuCIF1XngLaVsdmXyKnY8oDpOTaQ4ZqimCrAscTddiHGORrkpue0yWu3kg53lWSh10RT2li2tjpOqWQB0/Kc6llJ9oO+Kwq8QiorNzpUmGAS2eAImU7bsgUymxjUeF82efqlXOOsozkg33a5uPiKZ9a3HTj7AW370d7YK99wwo5iYEIZHFub1nkwmz+Gws/hnfxVqV2WNQC9XbDFSMC0GCSqGSIb3DQEJFDEgHh4AYQBuAGQAcgBvAGkAZABkAGUAYgB1AGcAawBlAHkwIQYJKoZIhvcNAQkVMRQEElRpbWUgMTc4NzcwOTQxMDc0ODCCBDEGCSqGSIb3DQEHBqCCBCIwggQeAgEAMIIEFwYJKoZIhvcNAQcBMGYGCSqGSIb3DQEFDTBZMDgGCSqGSIb3DQEFDDArBBRrASMHcGPJw54xOiQ0Vr959VIRfAICJxACASAwDAYIKoZIhvcNAgkFADAdBglghkgBZQMEASoEEESGGg4GYn4gbaVMAGBIs5eAggOg2/SVMtQuB3+ipymJ0YFvhuLYagFFlRNf9GsQzW4Au2WQXaiiOSgpUSbrVIM/h8XAZQwootvaU6wKzbmw2WfbqTT3Py+sPJqKEVL4u1y4nBXCwusxMkTcmJFtmHXhhFwRjdeaZtv2pV20HDXDQ/83Lqzu2ScFf/36myqBqVg78dwSHjoJ/tXjl0kxPsxfaIINZYxUvlUte/xNNWSqrsOQdFrFL4Ao0e7rPINly5ffKb3d5dobHJe4ZZibqgMmYRlcI4h4jWVFjzYKzYptgO6haYpncMMAav52MySL71Qa//xk6IIlHGEtGLllxXMRMo2WsD2tMS+1nVgY6ovMu5gLTl8ywKSvbja1LjwoP6hfnUXHK7V9z8LWl8+UTj7YmddFk4svuXS609hVOonIsFcy9mN4luzqZbQUqoYBDWyUz5n7vCjdsONwO5vkybCqWMBkHKt5dalPonNAyGlLdeNJRQkZNw+/8fqWTGqun2WcP6sBWSKyEZB2srY7Gn1i+4Khpui//w2zR+mxj+T2u2b9OzQHD0cVuYt067/EzVEZGj+64uWXIkcKPJAuPxP/KEZu0cvaAvzzryyk4+G/T9DjnBTt07sDhdQNogWmX/yfz07S8pD5gHQDuUfE2Pab1zfKoWWrCQ0xcT2M3dw7nwmLcm+5XITXuyupTD/BI9MhiJTYcEuTWsaHbQJZ/1eJqzZ5xPFhjJxfrQMR6oFf0AHu/N75jYzGHn8v3tA0RhNhF+qaMkymhWX3Pd0BGrqHfwqaWlnbQMBldH3w0gE11aUSk9CEc+Q+3fUcWPcf4+mUmPShbW/2GFTL4Zi9SoQqYU2H8ODbtgqT6OQegTp6aywPJUIARY/RVHOr4nl4I2THvLrAOKwebA/A8r5ZlY9dVb5pNYelyBk1RRFoLUkLNbaMyqsdTeIAVY4aHeY7hBnD/bFH3d54xcaKoYCzeo+8bzF5YQw5DtrZc/r9RVK/ie9RZntc8iYkZJJ43KXr4VcxrBYLtmI7B7c6JK2v/gauT01BHzhrksQRTMoTa40wJOR0I5rhzDgPEoavIwRlm2jf7S6Q7QOxeg5L/gQh4834erLFCmcKZCIPDhcfBZnOh2dRTiPru0Az72pdarLeOxgUIgEn+23+dONxKg6DWkrWjFN+Cjmgvk09m23A4WARsl13U0YwdBsDBzondTWM+Z8OJtmUOpztRapTISS7cZ9LtfDUXQAl9ciQ1qxE53PEeaDfhDBNMDEwDQYJYIZIAWUDBAIBBQAEIFKqcNgjWMDKniayC/jEwHfLxvp1xRRoCEGpMNvkxlWvBBTgJHFvUSs8E+q0bAt3u5QUzi9ZrQICJxA=" | base64 -d > debug.keystore"""
 
-content = content.replace("      - name: Build Debug APK", replacement)
+# Regex replacement to safely overwrite the exact step.
+content = re.sub(
+    r"      - name: Setup Keystore\n        run: \|\n          if \[ -f \"debug\.keystore\.base64\" \]; then\n            base64 -d debug\.keystore\.base64 > debug\.keystore\n          else\n            echo \"debug\.keystore\.base64 not found!\"\n            exit 1\n          fi",
+    replacement,
+    content
+)
 
 with open(filepath, 'w') as f:
     f.write(content)
