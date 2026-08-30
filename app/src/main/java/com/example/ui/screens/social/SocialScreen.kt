@@ -52,15 +52,7 @@ fun SocialScreen(
     )}
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Community", fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back") }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
-            )
-        },
+
         containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         Column(

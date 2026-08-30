@@ -81,36 +81,10 @@ fun ShareScreen(
     var showSendDialog by remember { mutableStateOf(false) }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Offline Share", fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back") }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
-            )
-        },
+
         containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
-        if (!permissionsState.allPermissionsGranted) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Icon(Icons.Default.Bluetooth, contentDescription = null, modifier = Modifier.size(64.dp), tint = MaterialTheme.colorScheme.primary)
-                Spacer(modifier = Modifier.height(16.dp))
-                Text("Nearby Share requires Bluetooth and Location permissions to connect to devices offline.", color = MaterialTheme.colorScheme.onBackground, textAlign = TextAlign.Center)
-                Spacer(modifier = Modifier.height(24.dp))
-                Button(onClick = { permissionsState.launchMultiplePermissionRequest() }, colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)) {
-                    Text("Grant Permissions")
-                }
-            }
-            return@Scaffold
-        }
+
 
         LazyColumn(
             modifier = Modifier

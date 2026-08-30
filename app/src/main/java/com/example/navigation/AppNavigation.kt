@@ -6,6 +6,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.outlined.Share
+
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -130,7 +135,7 @@ fun AppNavigation() {
         drawerState = drawerState,
         gesturesEnabled = drawerState.isOpen,
         drawerContent = {
-            ModalDrawerSheet(
+                        ModalDrawerSheet(
                 drawerContainerColor = MaterialTheme.colorScheme.surface,
                 modifier = Modifier.width(300.dp)
             ) {
@@ -206,142 +211,141 @@ fun AppNavigation() {
                     }
                 }
                 
-                Spacer(modifier = Modifier.height(16.dp))
-                
-                NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.Home, contentDescription = null, tint = if (currentRoute == Screen.Home.route) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground) },
-                    label = { Text(stringResource(R.string.home), color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp) },
-                    selected = currentRoute == Screen.Home.route,
-                    colors = NavigationDrawerItemDefaults.colors(
-                        selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
-                        unselectedContainerColor = Color.Transparent
-                    ),
-                    shape = RoundedCornerShape(16.dp),
-                    onClick = {
-                        scope.launch { drawerState.close() }
-                        if (currentRoute == Screen.Home.route) {
-                            navController.popBackStack(Screen.Home.route, inclusive = true)
-                            navController.navigate(Screen.Home.route)
-                        } else {
-                            navController.navigate(Screen.Home.route)
-                        }
-                    },
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                )
+                Column(modifier = Modifier.weight(1f).verticalScroll(androidx.compose.foundation.rememberScrollState())) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    NavigationDrawerItem(
+                        icon = { Icon(Icons.Default.Home, contentDescription = null, tint = if (currentRoute == Screen.Home.route) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground) },
+                        label = { Text(stringResource(R.string.home), color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp) },
+                        selected = currentRoute == Screen.Home.route,
+                        colors = NavigationDrawerItemDefaults.colors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+                            unselectedContainerColor = Color.Transparent
+                        ),
+                        shape = RoundedCornerShape(16.dp),
+                        onClick = {
+                            scope.launch { drawerState.close() }
+                            if (currentRoute == Screen.Home.route) {
+                                navController.popBackStack(Screen.Home.route, inclusive = true)
+                                navController.navigate(Screen.Home.route)
+                            } else {
+                                navController.navigate(Screen.Home.route)
+                            }
+                        },
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
 
-                NavigationDrawerItem(
-                    icon = { Icon(Icons.Outlined.Download, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface) },
-                    label = { Text(stringResource(R.string.downloads), color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp) },
-                    selected = currentRoute == Screen.Downloads.route,
-                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
-                    onClick = {
-                        scope.launch { drawerState.close() }
-                        if (currentRoute == Screen.Downloads.route) {
-                            navController.popBackStack(Screen.Downloads.route, inclusive = true)
-                            navController.navigate(Screen.Downloads.route)
-                        } else {
-                            navController.navigate(Screen.Downloads.route)
-                        }
-                    },
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                )
-                
-                NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.Favorite, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface) },
-                    label = { Text(stringResource(R.string.library), color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp) },
-                    selected = currentRoute == Screen.Library.route,
-                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
-                    onClick = {
-                        scope.launch { drawerState.close() }
-                        if (currentRoute == Screen.Library.route) {
-                            navController.popBackStack(Screen.Library.route, inclusive = true)
-                            navController.navigate(Screen.Library.route)
-                        } else {
-                            navController.navigate(Screen.Library.route)
-                        }
-                    },
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                )
+                    NavigationDrawerItem(
+                        icon = { Icon(Icons.Default.Favorite, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface) },
+                        label = { Text(stringResource(R.string.library), color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp) },
+                        selected = currentRoute == Screen.Library.route,
+                        colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
+                        onClick = {
+                            scope.launch { drawerState.close() }
+                            if (currentRoute == Screen.Library.route) {
+                                navController.popBackStack(Screen.Library.route, inclusive = true)
+                                navController.navigate(Screen.Library.route)
+                            } else {
+                                navController.navigate(Screen.Library.route)
+                            }
+                        },
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
 
-                NavigationDrawerItem(
-                    icon = { Icon(Icons.Outlined.Settings, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface) },
-                    label = { Text(stringResource(R.string.settings), color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp) },
-                    selected = currentRoute == Screen.Settings.route,
-                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
-                    onClick = {
-                        scope.launch { drawerState.close() }
-                        if (currentRoute == Screen.Settings.route) {
-                            navController.popBackStack(Screen.Settings.route, inclusive = true)
-                            navController.navigate(Screen.Settings.route)
-                        } else {
-                            navController.navigate(Screen.Settings.route)
-                        }
-                    },
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                )
-                
-                
-                NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.Person, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface) },
-                    label = { Text("Community", color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp) },
-                    selected = currentRoute == Screen.Social.route,
-                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
-                    onClick = {
-                        scope.launch { drawerState.close() }
-                        if (currentRoute != Screen.Social.route) {
-                            navController.navigate(Screen.Social.route)
-                        }
-                    },
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                )
+                    NavigationDrawerItem(
+                        icon = { Icon(Icons.Outlined.Settings, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface) },
+                        label = { Text(stringResource(R.string.settings), color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp) },
+                        selected = currentRoute == Screen.Settings.route,
+                        colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
+                        onClick = {
+                            scope.launch { drawerState.close() }
+                            if (currentRoute == Screen.Settings.route) {
+                                navController.popBackStack(Screen.Settings.route, inclusive = true)
+                                navController.navigate(Screen.Settings.route)
+                            } else {
+                                navController.navigate(Screen.Settings.route)
+                            }
+                        },
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+                    
+                    NavigationDrawerItem(
+                        icon = { Icon(Icons.Default.Person, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface) },
+                        label = { Text("Community", color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp) },
+                        selected = currentRoute == Screen.Social.route,
+                        colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
+                        onClick = {
+                            scope.launch { drawerState.close() }
+                            if (currentRoute != Screen.Social.route) {
+                                navController.navigate(Screen.Social.route)
+                            }
+                        },
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
 
-                NavigationDrawerItem(
-                    icon = { Icon(Icons.Outlined.Download, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface) },
-                    label = { Text("Offline Share", color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp) },
-                    selected = currentRoute == Screen.Share.route,
-                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
-                    onClick = {
-                        scope.launch { drawerState.close() }
-                        if (currentRoute != Screen.Share.route) {
-                            navController.navigate(Screen.Share.route)
-                        }
-                    },
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                )
+                    NavigationDrawerItem(
+                        icon = { Icon(Icons.Outlined.Download, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface) },
+                        label = { Text(stringResource(R.string.downloads), color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp) },
+                        selected = currentRoute == Screen.Downloads.route,
+                        colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
+                        onClick = {
+                            scope.launch { drawerState.close() }
+                            if (currentRoute == Screen.Downloads.route) {
+                                navController.popBackStack(Screen.Downloads.route, inclusive = true)
+                                navController.navigate(Screen.Downloads.route)
+                            } else {
+                                navController.navigate(Screen.Downloads.route)
+                            }
+                        },
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+                    
+                    NavigationDrawerItem(
+                        icon = { Icon(Icons.Outlined.Share, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface) },
+                        label = { Text("Offline Share", color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp) },
+                        selected = currentRoute == Screen.Share.route,
+                        colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
+                        onClick = {
+                            scope.launch { drawerState.close() }
+                            if (currentRoute != Screen.Share.route) {
+                                navController.navigate(Screen.Share.route)
+                            }
+                        },
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
 
-                                HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant, modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp))
-                
-                NavigationDrawerItem(
-                    icon = { Icon(Icons.Outlined.Info, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface) },
-                    label = { Text(stringResource(R.string.about_app), color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp) },
-                    selected = currentRoute == Screen.About.route,
-                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
-                    onClick = {
-                        scope.launch { drawerState.close() }
-                        if (currentRoute == Screen.About.route) {
-                            navController.popBackStack(Screen.About.route, inclusive = true)
-                            navController.navigate(Screen.About.route)
-                        } else {
-                            navController.navigate(Screen.About.route)
-                        }
-                    },
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                )
-                
-                NavigationDrawerItem(
-                    icon = { Icon(Icons.AutoMirrored.Filled.Help, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface) },
-                    label = { Text(stringResource(R.string.help_support), color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp) },
-                    selected = false,
-                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
-                    onClick = { scope.launch { drawerState.close() } },
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                )
-                
-                Spacer(modifier = Modifier.weight(1f))
+                    HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant, modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp))
+                    
+                    NavigationDrawerItem(
+                        icon = { Icon(Icons.Outlined.Info, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface) },
+                        label = { Text(stringResource(R.string.about_app), color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp) },
+                        selected = currentRoute == Screen.About.route,
+                        colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
+                        onClick = {
+                            scope.launch { drawerState.close() }
+                            if (currentRoute == Screen.About.route) {
+                                navController.popBackStack(Screen.About.route, inclusive = true)
+                                navController.navigate(Screen.About.route)
+                            } else {
+                                navController.navigate(Screen.About.route)
+                            }
+                        },
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+                    
+                    NavigationDrawerItem(
+                        icon = { Icon(Icons.AutoMirrored.Filled.Help, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface) },
+                        label = { Text(stringResource(R.string.help_support), color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp) },
+                        selected = false,
+                        colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
+                        onClick = { scope.launch { drawerState.close() } },
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+                }
                 
                 HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant, modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp))
 
-                // Bottom Area (Logout)
+                // Bottom Area (Logout)// Bottom Area (Logout)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -412,7 +416,7 @@ fun AppNavigation() {
             topBar = {
                 Column {
 
-                    if (bottomBarRoutes.contains(currentRoute) || currentRoute in listOf(Screen.Profile.route, Screen.Downloads.route, Screen.Settings.route, Screen.About.route)) {
+                    if (bottomBarRoutes.contains(currentRoute) || currentRoute in listOf(Screen.Profile.route, Screen.Downloads.route, Screen.Settings.route, Screen.About.route, Screen.Social.route, Screen.Share.route)) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()

@@ -4,16 +4,14 @@ import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
 import android.webkit.CookieManager
-import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.utils.NetworkUtils
 import kotlinx.coroutines.delay
@@ -52,15 +50,19 @@ fun BackgroundWebView(
 
     if (currentUrl != null) {
         AndroidView(
-            // Use 1.dp so it's technically rendered, but almost invisible
-            modifier = Modifier.alpha(0.01f).size(1.dp), 
+            // Make it occupy full size but completely transparent so it acts like a real browser
+            // Cloudflare Turnstile explicitly checks for screen visibility and rects
+            modifier = Modifier.fillMaxSize().alpha(0.01f), 
             factory = { ctx ->
                 WebView(ctx).apply {
                     setLayerType(android.view.View.LAYER_TYPE_SOFTWARE, null)
                     settings.apply {
                         javaScriptEnabled = true
                         domStorageEnabled = true
-                        userAgentString = "Mozilla/5.0 (Linux; Android 13; Pixel 7 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Mobile Safari/537.36"
+                        databaseEnabled = true
+                        javaScriptCanOpenWindowsAutomatically = true
+                        // Using the system default user agent is the most reliable way to avoid Cloudflare bot detection
+                        userAgentString = WebSettings.getDefaultUserAgent(ctx)
                         mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
                         cacheMode = WebSettings.LOAD_DEFAULT
                         mediaPlaybackRequiresUserGesture = false
@@ -72,30 +74,41 @@ fun BackgroundWebView(
 
                     webViewClient = object : WebViewClient() {
                         private var timeoutHandler = Handler(Looper.getMainLooper())
-                        private var reloadRunnable: Runnable? = null
+                        private var checkRunnable: Runnable? = null
+                        private var isBypassed = false
 
                         override fun onPageFinished(view: WebView, url: String) {
                             super.onPageFinished(view, url)
                             cookieManager.flush()
+                            isBypassed = false
                             
-                            // Cancel any previous reload timeout
-                            reloadRunnable?.let { timeoutHandler.removeCallbacks(it) }
+                            // Cancel any existing runnables
+                            checkRunnable?.let { timeoutHandler.removeCallbacks(it) }
                             
-                            // Evaluate the page content to see if we bypassed Cloudflare/Captcha
                             val jsCheck = """
                                 (function() {
+                                    // Keep clicking challenge boxes if they exist
+                                    var cf = document.querySelector('.cf-turnstile-wrapper, #challenge-stage, input[type="checkbox"], #challenge-form');
+                                    if (cf) { cf.click(); }
+                                    
+                                    try {
+                                        var iframes = document.querySelectorAll('iframe');
+                                        for (var i = 0; i < iframes.length; i++) {
+                                            var innerBtn = iframes[i].contentWindow.document.querySelector('input[type="checkbox"]');
+                                            if (innerBtn) innerBtn.click();
+                                        }
+                                    } catch(e) {}
+
                                     var title = document.title.toLowerCase();
                                     var body = document.body.innerText.toLowerCase();
                                     var hasCloudflare = title.includes('just a moment') || 
-                                                        body.includes('cloudflare') || 
-                                                        body.includes('security check') || 
-                                                        body.includes('تأكد من أنك لست روبوت') || 
-                                                        body.includes('robot');
+                                                        title.includes('attention required') ||
+                                                         body.includes('cloudflare') ||
+                                                         body.includes('security check') ||
+                                                         body.includes('تأكد من أنك لست روبوت') ||
+                                                         body.includes('robot');
                                     
                                     if (hasCloudflare) {
-                                        // Attempt to find and click checkboxes or turnstile wrappers
-                                        var cf = document.querySelector('.cf-turnstile-wrapper, #challenge-stage, input[type="checkbox"]');
-                                        if (cf) { cf.click(); }
                                         return 'CAPTCHA';
                                     } else if (body.length > 50) {
                                         return 'SUCCESS';
@@ -104,26 +117,31 @@ fun BackgroundWebView(
                                 })();
                             """.trimIndent()
                             
-                            view.evaluateJavascript(jsCheck) { result ->
-                                val res = result?.replace("\"", "") ?: "UNKNOWN"
-                                if (res == "SUCCESS") {
-                                    // Successfully bypassed
-                                    onSiteVerified(currentUrl)
-                                    currentIndex++
-                                } else {
-                                    // It's a captcha or unknown. Schedule a reload after 10 seconds if it doesn't navigate away.
-                                    reloadRunnable = Runnable {
-                                        reloadTrigger++
+                            // Check continuously every 2 seconds because Cloudflare can auto-redirect or load components asynchronously
+                            checkRunnable = object : Runnable {
+                                override fun run() {
+                                    if (isBypassed) return
+                                    
+                                    view.evaluateJavascript(jsCheck) { result ->
+                                        val res = result?.replace("\"", "") ?: "UNKNOWN"
+                                        if (res == "SUCCESS") {
+                                            isBypassed = true
+                                            cookieManager.flush()
+                                            onSiteVerified(currentUrl)
+                                            currentIndex++
+                                        } else {
+                                            // It's a captcha or unknown. Schedule another check.
+                                            timeoutHandler.postDelayed(this, 2000)
+                                        }
                                     }
-                                    timeoutHandler.postDelayed(reloadRunnable!!, 10000)
                                 }
                             }
+                            timeoutHandler.postDelayed(checkRunnable!!, 1000)
                         }
                     }
                 }
             },
             update = { webView ->
-                // When url changes OR reload is triggered, we load/reload
                 if (webView.url != currentUrl) {
                     onProgress(currentUrl)
                     webView.loadUrl(currentUrl)
