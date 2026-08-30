@@ -43,7 +43,7 @@ class P2PManager(private val context: Context) {
     private val _transferProgress = MutableStateFlow(0f)
     val transferProgress = _transferProgress.asStateFlow()
 
-    var onMovieReceived: ((String, String, Boolean) -> Unit)? = null // id, title, isMovie
+    var onMovieReceived: ((String, String, Boolean, String) -> Unit)? = null // id, title, isMovie, posterUrl // id, title, isMovie
 
     // Key: Payload ID, Value: File path/info
     private val incomingFilePayloads = mutableMapOf<Long, File>()
@@ -84,7 +84,7 @@ class P2PManager(private val context: Context) {
         _discoveredEndpoints.value = emptyList()
     }
 
-    fun sendMovie(endpointId: String, movieId: String, title: String, isMovie: Boolean, file: File) {
+    fun sendMovie(endpointId: String, movieId: String, title: String, isMovie: Boolean, posterUrl: String, file: File) {
         try {
             // 1. Send Metadata as bytes
             val metadata = JSONObject()
@@ -92,6 +92,7 @@ class P2PManager(private val context: Context) {
             metadata.put("id", movieId)
             metadata.put("title", title)
             metadata.put("isMovie", isMovie)
+            metadata.put("posterUrl", posterUrl)
             val metadataPayload = Payload.fromBytes(metadata.toString().toByteArray())
             connectionsClient.sendPayload(endpointId, metadataPayload)
 
@@ -160,7 +161,8 @@ class P2PManager(private val context: Context) {
                     
                     payloadFile.copyTo(destFile, overwrite = true)
                     
-                    onMovieReceived?.invoke(id, title, isMovie)
+                    val posterUrl = incomingMetadata!!.optString("posterUrl", "")
+                    onMovieReceived?.invoke(id, title, isMovie, posterUrl)
                     
                     incomingMetadata = null
                     incomingFilePayloads.remove(update.payloadId)

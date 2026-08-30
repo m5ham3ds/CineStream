@@ -27,6 +27,10 @@ class DownloadRepository(private val context: Context) {
         return downloadDao.getAllItems()
     }
 
+        suspend fun addCompletedDownload(item: DownloadItem) {
+        downloadDao.insertItem(item)
+    }
+
     suspend fun addToDownloads(item: DownloadItem) {
         downloadDao.insertItem(item)
         NotificationHelper.showDownloadStarted(context, item.title)
