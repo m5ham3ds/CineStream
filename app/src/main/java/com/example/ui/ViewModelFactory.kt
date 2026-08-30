@@ -33,6 +33,9 @@ class ViewModelFactory : ViewModelProvider.Factory {
         if (modelClass.isAssignableFrom(AnimeViewModel::class.java)) {
             return AnimeViewModel(AppContainer.mediaRepository) as T
         }
+        if (modelClass.isAssignableFrom(com.example.ui.screens.social.SocialViewModel::class.java)) {
+            return com.example.ui.screens.social.SocialViewModel() as T
+        }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

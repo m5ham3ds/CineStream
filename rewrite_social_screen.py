@@ -1,4 +1,7 @@
-package com.example.ui.screens.social
+import re
+
+filepath = 'app/src/main/java/com/example/ui/screens/social/SocialScreen.kt'
+new_content = """package com.example.ui.screens.social
 
 import android.content.Context
 import android.util.Log
@@ -39,7 +42,6 @@ import androidx.credentials.exceptions.GetCredentialException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -191,9 +193,9 @@ fun SocialScreen(
                     }
                 }
                 
-                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+                Divider(modifier = Modifier.padding(vertical = 16.dp))
                 
-                Text("Global Chat", fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 8.dp))
+                Text("Global Chat", fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(horizontal = 16.dp, bottom = 8.dp))
                 
                 // Chat List
                 LazyColumn(
@@ -279,3 +281,7 @@ fun SocialScreen(
         }
     }
 }
+"""
+
+with open(filepath, 'w') as f:
+    f.write(new_content)
