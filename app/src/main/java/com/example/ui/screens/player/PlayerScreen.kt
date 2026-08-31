@@ -1,60 +1,39 @@
 @file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 package com.example.ui.screens.player
 
-
-
-import androidx.compose.ui.res.stringResource
-import com.example.R
-import androidx.annotation.OptIn
-import androidx.compose.animation.*
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import android.app.Activity
 import android.content.pm.ActivityInfo
-import androidx.compose.material3.ExperimentalMaterial3Api
-
-import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.ui.input.pointer.pointerInput
+import androidx.annotation.OptIn
+import androidx.compose.animation.*
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Size
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.PictureInPictureAlt
-import androidx.compose.material.icons.filled.Fullscreen
-import androidx.compose.material.icons.filled.VideoLibrary
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.TransformOrigin
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
@@ -80,6 +59,12 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
     var currentQuality by remember { mutableStateOf("1080p") }
     var showQualitySheet by remember { mutableStateOf(false) }
     var showEpisodesSheet by remember { mutableStateOf(false) }
+    
+    // Server & Website state
+    var showServerSheet by remember { mutableStateOf(false) }
+    var showWebsiteSheet by remember { mutableStateOf(false) }
+    var currentServer by remember { mutableStateOf("Server 1") }
+    var currentWebsite by remember { mutableStateOf("VidSrc") }
 
     // Force landscape mode for better viewing
     DisposableEffect(Unit) {
@@ -155,7 +140,7 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(Color.Black)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null
@@ -192,61 +177,80 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
                             .align(Alignment.CenterStart)
                             .padding(32.dp)
                     ) {
-                        Icon(Icons.Default.Lock, contentDescription = "Unlock", tint = MaterialTheme.colorScheme.onBackground, modifier = Modifier.size(32.dp))
+                        Icon(Icons.Default.Lock, contentDescription = "Unlock", tint = Color.White, modifier = Modifier.size(32.dp))
                     }
                 } else {
-                    // Full Controls
                     // Top Bar
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 24.dp, start = 24.dp, end = 24.dp)
+                            .padding(top = 16.dp, start = 24.dp, end = 24.dp)
                             .align(Alignment.TopCenter),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
+                        // Left section
                         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
-                            IconButton(onClick = onBack) {
-                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White, modifier = Modifier.size(28.dp))
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack, 
+                                contentDescription = "Back", 
+                                tint = Color.White, 
+                                modifier = Modifier.size(28.dp).clickable { onBack() }
+                            )
+                            Spacer(modifier = Modifier.weight(1f))
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.clickable { showServerSheet = true }.padding(8.dp)
+                            ) {
+                                Text("SERVER", color = Color.Gray, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Icon(Icons.Default.KeyboardArrowDown, contentDescription = null, tint = Color(0xFFE50914), modifier = Modifier.size(16.dp))
                             }
                             Spacer(modifier = Modifier.weight(1f))
-                            Text("SERVER", color = Color.Gray, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Icon(Icons.Default.KeyboardArrowDown, contentDescription = null, tint = Color(0xFFE50914), modifier = Modifier.size(16.dp))
-                            Spacer(modifier = Modifier.weight(1f))
                         }
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        
+                        // Center section
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(1.2f)) {
                             Text("Now Playing", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                             Spacer(modifier = Modifier.height(4.dp))
                             Text("Episode 1", color = Color.LightGray, fontSize = 14.sp)
                         }
+                        
+                        // Right section
                         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
                             Spacer(modifier = Modifier.weight(1f))
-                            Icon(Icons.Default.KeyboardArrowDown, contentDescription = null, tint = Color(0xFFE50914), modifier = Modifier.size(16.dp))
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text("WEBSITE", color = Color.Gray, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
-                            Spacer(modifier = Modifier.weight(1f))
-                            IconButton(onClick = { /* Menu */ }) {
-                                Icon(Icons.Default.MoreVert, contentDescription = "Menu", tint = Color.White, modifier = Modifier.size(28.dp))
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.clickable { showWebsiteSheet = true }.padding(8.dp)
+                            ) {
+                                Icon(Icons.Default.KeyboardArrowDown, contentDescription = null, tint = Color(0xFFE50914), modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text("WEBSITE", color = Color.Gray, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                             }
+                            Spacer(modifier = Modifier.weight(1f))
+                            Icon(
+                                Icons.Default.MoreVert, 
+                                contentDescription = "Menu", 
+                                tint = Color.White, 
+                                modifier = Modifier.size(28.dp).clickable { /* Menu */ }
+                            )
                         }
                     }
 
                     // Left Vertical Slider (Brightness)
-                    Box(modifier = Modifier.align(Alignment.CenterStart).padding(start = 32.dp)) {
+                    Box(modifier = Modifier.align(Alignment.CenterStart).padding(start = 24.dp)) {
                         VerticalSlider(
-                            value = brightness,
-                            onValueChange = { brightness = it },
+                            value = brightness, 
+                            onValueChange = { brightness = it }, 
                             topIcon = Icons.Default.BrightnessMedium,
                             bottomIcon = Icons.Default.PictureInPictureAlt
                         )
                     }
 
                     // Right Vertical Slider (Volume)
-                    Box(modifier = Modifier.align(Alignment.CenterEnd).padding(end = 32.dp)) {
+                    Box(modifier = Modifier.align(Alignment.CenterEnd).padding(end = 24.dp)) {
                         VerticalSlider(
-                            value = volume,
-                            onValueChange = { volume = it },
+                            value = volume, 
+                            onValueChange = { volume = it }, 
                             topIcon = Icons.AutoMirrored.Filled.VolumeUp,
                             bottomIcon = Icons.Default.Fullscreen
                         )
@@ -256,40 +260,41 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
                     Row(
                         modifier = Modifier.align(Alignment.Center),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(40.dp)
+                        horizontalArrangement = Arrangement.spacedBy(32.dp)
                     ) {
-                        IconButton(
-                            onClick = { exoPlayer.seekTo((exoPlayer.currentPosition - 10000).coerceAtLeast(0)) },
+                        Box(
+                            contentAlignment = Alignment.Center,
                             modifier = Modifier
                                 .size(56.dp)
                                 .border(1.dp, Color.White.copy(alpha = 0.2f), CircleShape)
+                                .clickable { exoPlayer.seekTo((exoPlayer.currentPosition - 10000).coerceAtLeast(0)) }
                         ) {
-                            Icon(Icons.Default.Replay10, contentDescription = "Rewind", tint = Color.White, modifier = Modifier.size(32.dp))
+                            Icon(Icons.Default.Replay10, contentDescription = "Rewind", tint = Color.White, modifier = Modifier.size(28.dp))
                         }
-
-                        IconButton(
-                            onClick = { 
-                                if (isPlaying) exoPlayer.pause() else exoPlayer.play() 
-                            },
+                        
+                        Box(
+                            contentAlignment = Alignment.Center,
                             modifier = Modifier
-                                .size(96.dp)
+                                .size(72.dp)
                                 .border(2.dp, Color(0xFFE50914), CircleShape)
+                                .clickable { if (isPlaying) exoPlayer.pause() else exoPlayer.play() }
                         ) {
                             Icon(
                                 if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
                                 contentDescription = "Play/Pause",
                                 tint = Color.White,
-                                modifier = Modifier.size(48.dp)
+                                modifier = Modifier.size(36.dp)
                             )
                         }
-
-                        IconButton(
-                            onClick = { exoPlayer.seekTo((exoPlayer.currentPosition + 10000).coerceAtMost(exoPlayer.duration)) },
+                        
+                        Box(
+                            contentAlignment = Alignment.Center,
                             modifier = Modifier
                                 .size(56.dp)
                                 .border(1.dp, Color.White.copy(alpha = 0.2f), CircleShape)
+                                .clickable { exoPlayer.seekTo((exoPlayer.currentPosition + 10000).coerceAtMost(exoPlayer.duration)) }
                         ) {
-                            Icon(Icons.Default.Forward10, contentDescription = "Forward", tint = Color.White, modifier = Modifier.size(32.dp))
+                            Icon(Icons.Default.Forward10, contentDescription = "Forward", tint = Color.White, modifier = Modifier.size(28.dp))
                         }
                     }
 
@@ -298,7 +303,7 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                             .fillMaxWidth()
-                            .padding(horizontal = 48.dp, vertical = 24.dp)
+                            .padding(horizontal = 32.dp, vertical = 24.dp)
                     ) {
                         // Progress Bar Row
                         Row(
@@ -325,7 +330,7 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
                         // Action Toolbar Row
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             BottomAction(icon = Icons.Default.Speed, text = "Speed (${if (currentSpeed == 1f) "1" else currentSpeed}x)") { 
@@ -353,7 +358,7 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
         }
     }
 
-
+    // Modal Bottom Sheets
     if (showQualitySheet) {
         ModalBottomSheet(
             onDismissRequest = { showQualitySheet = false },
@@ -403,6 +408,58 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
         }
     }
 
+    if (showServerSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showServerSheet = false },
+            containerColor = Color(0xFF1C1C1E)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text("Select Server", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(16.dp))
+                val servers = listOf("Server 1", "Server 2", "VIP Server", "Fast Server")
+                servers.forEach { s ->
+                    TextButton(
+                        onClick = { 
+                            currentServer = s
+                            showServerSheet = false
+                            android.widget.Toast.makeText(context, "Switched to $s", android.widget.Toast.LENGTH_SHORT).show()
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(s, color = if (s == currentServer) Color(0xFFE50914) else Color.White)
+                    }
+                }
+                Spacer(modifier = Modifier.height(32.dp))
+            }
+        }
+    }
+
+    if (showWebsiteSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showWebsiteSheet = false },
+            containerColor = Color(0xFF1C1C1E)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text("Select Source Website", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(16.dp))
+                val websites = listOf("VidSrc", "SuperStream", "FlixHQ", "Goku")
+                websites.forEach { w ->
+                    TextButton(
+                        onClick = { 
+                            currentWebsite = w
+                            showWebsiteSheet = false
+                            android.widget.Toast.makeText(context, "Switched source to $w", android.widget.Toast.LENGTH_SHORT).show()
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(w, color = if (w == currentWebsite) Color(0xFFE50914) else Color.White)
+                    }
+                }
+                Spacer(modifier = Modifier.height(32.dp))
+            }
+        }
+    }
+
     if (showDownloadSheet) {
         DownloadQualitySheet(
             onDismiss = { showDownloadSheet = false },
@@ -415,32 +472,65 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
 }
 
 @Composable
-fun VerticalSlider(value: Float, onValueChange: (Float) -> Unit, topIcon: ImageVector, bottomIcon: ImageVector) {
+fun VerticalSlider(
+    value: Float,
+    onValueChange: (Float) -> Unit,
+    topIcon: ImageVector,
+    bottomIcon: ImageVector
+) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Icon(topIcon, contentDescription = null, tint = Color.White, modifier = Modifier.size(28.dp))
         Spacer(modifier = Modifier.height(16.dp))
-        Box(
+        
+        Canvas(
             modifier = Modifier
-                .width(40.dp)
-                .height(200.dp),
-            contentAlignment = Alignment.Center
+                .width(32.dp)
+                .height(140.dp)
+                .pointerInput(Unit) {
+                    detectTapGestures { offset ->
+                        val newValue = 1f - (offset.y / size.height).coerceIn(0f, 1f)
+                        onValueChange(newValue)
+                    }
+                }
+                .pointerInput(Unit) {
+                    detectDragGestures { change, _ ->
+                        val newValue = 1f - (change.position.y / size.height).coerceIn(0f, 1f)
+                        onValueChange(newValue)
+                    }
+                }
         ) {
-            SimpleSlider(
-                value = value,
-                onValueChange = onValueChange,
-                modifier = Modifier
-                    .width(200.dp)
-                    .graphicsLayer {
-                        rotationZ = -90f
-                        transformOrigin = TransformOrigin(0.5f, 0.5f)
-                    },
-                activeColor = Color.White,
-                thumbColor = Color.White,
-                inactiveColor = Color.DarkGray.copy(alpha = 0.5f),
-                thumbRadius = 16f,
-                trackHeight = 8f
+            val width = size.width
+            val height = size.height
+            val centerX = width / 2f
+            val trackWidth = 4.dp.toPx()
+            val thumbRadius = 8.dp.toPx()
+            
+            val thumbY = height - (height * value)
+            
+            // Inactive Track (Full height)
+            drawRoundRect(
+                color = Color.White.copy(alpha = 0.3f),
+                topLeft = Offset(centerX - trackWidth / 2f, 0f),
+                size = Size(trackWidth, height),
+                cornerRadius = CornerRadius(trackWidth / 2f)
+            )
+            
+            // Active Track (From bottom to thumb)
+            drawRoundRect(
+                color = Color.White,
+                topLeft = Offset(centerX - trackWidth / 2f, thumbY),
+                size = Size(trackWidth, height - thumbY),
+                cornerRadius = CornerRadius(trackWidth / 2f)
+            )
+            
+            // Thumb
+            drawCircle(
+                color = Color.White,
+                radius = thumbRadius,
+                center = Offset(centerX, thumbY)
             )
         }
+        
         Spacer(modifier = Modifier.height(16.dp))
         Icon(bottomIcon, contentDescription = null, tint = Color.White, modifier = Modifier.size(28.dp))
     }
@@ -473,7 +563,7 @@ fun QualityAction(currentQuality: String, onClick: () -> Unit) {
                 .border(1.dp, Color(0xFFE50914), CircleShape)
                 .padding(horizontal = 6.dp, vertical = 2.dp)
         ) {
-            Text("1080p", color = Color(0xFFE50914), fontSize = 10.sp, fontWeight = FontWeight.Bold)
+            Text(currentQuality, color = Color(0xFFE50914), fontSize = 10.sp, fontWeight = FontWeight.Bold)
         }
     }
 }
@@ -505,7 +595,7 @@ fun SimpleSlider(
     inactiveColor: Color = Color.DarkGray,
     thumbColor: Color = Color(0xFFE50914),
     thumbRadius: Float = 12f,
-    trackHeight: Float = 8f
+    trackHeight: Float = 4f // Made track slightly thinner for elegance
 ) {
     Canvas(
         modifier = modifier
