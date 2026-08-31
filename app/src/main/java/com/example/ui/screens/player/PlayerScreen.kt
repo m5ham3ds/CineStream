@@ -224,8 +224,7 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
                         VerticalSlider(
                             value = brightness, 
                             onValueChange = { brightness = it }, 
-                            topIcon = Icons.Default.BrightnessMedium,
-                            bottomIcon = Icons.Default.PictureInPictureAlt
+                            icon = Icons.Default.BrightnessMedium
                         )
                     }
 
@@ -234,8 +233,7 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
                         VerticalSlider(
                             value = volume, 
                             onValueChange = { volume = it }, 
-                            topIcon = Icons.AutoMirrored.Filled.VolumeUp,
-                            bottomIcon = Icons.Default.Fullscreen
+                            icon = Icons.AutoMirrored.Filled.VolumeUp
                         )
                     }
 
@@ -305,6 +303,10 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
                             )
                             Spacer(modifier = Modifier.width(16.dp))
                             Text(formatTime(totalDuration), color = Color.White, fontSize = 14.sp)
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Icon(Icons.Default.PictureInPictureAlt, contentDescription = "PiP", tint = Color.White, modifier = Modifier.size(24.dp).clickable { /* PiP Action */ })
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Icon(Icons.Default.Fullscreen, contentDescription = "Fullscreen", tint = Color.White, modifier = Modifier.size(28.dp).clickable { /* Fullscreen Action */ })
                         }
 
                         Spacer(modifier = Modifier.height(16.dp))
@@ -402,21 +404,21 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
 }
 
 @Composable
-fun VerticalSlider(value: Float, onValueChange: (Float) -> Unit, topIcon: ImageVector, bottomIcon: ImageVector) {
+fun VerticalSlider(value: Float, onValueChange: (Float) -> Unit, icon: ImageVector) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Icon(topIcon, contentDescription = null, tint = Color.White, modifier = Modifier.size(24.dp))
+        Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(28.dp))
         Spacer(modifier = Modifier.height(16.dp))
         Box(
             modifier = Modifier
                 .width(40.dp)
-                .height(120.dp),
+                .height(240.dp),
             contentAlignment = Alignment.Center
         ) {
             SimpleSlider(
                 value = value,
                 onValueChange = onValueChange,
                 modifier = Modifier
-                    .width(120.dp)
+                    .width(240.dp)
                     .graphicsLayer {
                         rotationZ = -90f
                         transformOrigin = TransformOrigin(0.5f, 0.5f)
@@ -424,12 +426,10 @@ fun VerticalSlider(value: Float, onValueChange: (Float) -> Unit, topIcon: ImageV
                 activeColor = Color.White,
                 thumbColor = Color.White,
                 inactiveColor = Color.DarkGray.copy(alpha = 0.5f),
-                thumbRadius = 14f,
-                trackHeight = 6f
+                thumbRadius = 18f,
+                trackHeight = 10f
             )
         }
-        Spacer(modifier = Modifier.height(16.dp))
-        Icon(bottomIcon, contentDescription = null, tint = Color.White, modifier = Modifier.size(24.dp))
     }
 }
 

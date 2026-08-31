@@ -38,6 +38,18 @@ fun ProfileScreen() {
     val context = LocalContext.current
 
     var showEditProfile by remember { mutableStateOf(false) }
+    var showEditPhoto by remember { mutableStateOf(false) }
+    
+    if (showEditPhoto) {
+        AlertDialog(
+            onDismissRequest = { showEditPhoto = false },
+            title = { Text("Change Photo") },
+            text = { Text("Coming soon...") },
+            confirmButton = {
+                TextButton(onClick = { showEditPhoto = false }) { Text("OK", color = primaryRed) }
+            }
+        )
+    }
 
     val primaryRed = Color(0xFFE50914)
     val bgColor = Color(0xFF121212)
@@ -141,7 +153,7 @@ fun ProfileScreen() {
                             .size(24.dp)
                             .clip(CircleShape)
                             .background(Color(0xFF3A3A3C))
-                            .clickable { showEditProfile = true },
+                            .clickable { showEditPhoto = true },
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(Icons.Filled.Edit, contentDescription = "Edit", tint = Color.White, modifier = Modifier.size(14.dp))
@@ -149,13 +161,21 @@ fun ProfileScreen() {
                 }
             }
             Spacer(modifier = Modifier.width(16.dp))
-            Column(modifier = Modifier.weight(1f)) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .clickable(enabled = currentUser != null) { showEditProfile = true }
+                    .padding(vertical = 4.dp)
+            ) {
                 val displayName = if (currentUser != null) {
                     "${currentUser?.firstName} ${currentUser?.lastName}".trim().takeIf { it.isNotBlank() } ?: currentUser?.username ?: "User"
                 } else {
                     "Guest User"
                 }
                 Text(displayName, color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                if (currentUser != null && !currentUser?.username.isNullOrEmpty()) {
+                    Text("@${currentUser?.username}", color = Color.LightGray, fontSize = 14.sp)
+                }
                 Text(currentUser?.email ?: "Sign in to access features", color = Color.Gray, fontSize = 14.sp)
                 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -168,8 +188,6 @@ fun ProfileScreen() {
                         Spacer(modifier = Modifier.width(4.dp))
                         Text("Premium Plan", color = Color(0xFFFF5252), fontSize = 10.sp, fontWeight = FontWeight.Bold)
                     }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Member since May 2024", color = Color.Gray, fontSize = 10.sp)
                 }
             }
             Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.Gray)
@@ -184,6 +202,7 @@ fun ProfileScreen() {
         ) {
             StatItem(Icons.Outlined.Movie, "24", "Movies", primaryRed)
             StatItem(Icons.Outlined.Tv, "12", "Series", primaryRed)
+            StatItem(Icons.Outlined.Face, "5", "Anime", primaryRed)
             StatItem(Icons.Outlined.FavoriteBorder, "18", "Watchlist", primaryRed)
             StatItem(Icons.Outlined.Download, "7", "Downloads", primaryRed)
         }
