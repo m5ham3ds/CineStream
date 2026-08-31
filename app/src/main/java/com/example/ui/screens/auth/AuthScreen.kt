@@ -62,6 +62,7 @@ fun AuthScreen(
 
     LaunchedEffect(currentUser) {
         if (currentUser != null) {
+            android.widget.Toast.makeText(context, "Signed in successfully!", android.widget.Toast.LENGTH_SHORT).show()
             userPrefs.saveIsGuest(false)
             userPrefs.saveIsLoggedIn(true)
             onAuthSuccess()
@@ -78,7 +79,7 @@ fun AuthScreen(
     fun signInWithGoogle() {
         val webClientId = BuildConfig.WEB_CLIENT_ID
         if (webClientId.isEmpty()) {
-            Toast.makeText(context, "Google Sign-In not configured", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Please add WEB_CLIENT_ID to the Secrets panel in AI Studio for Google Sign-In, and ensure SHA-1 is added in Firebase.", Toast.LENGTH_LONG).show()
             return
         }
         scope.launch {

@@ -756,13 +756,14 @@ fun AppNavigation() {
                         movieId = movieId, 
                         onBack = { navController.popBackStack() },
                         onPersonClick = { personId -> navController.navigate("person/$personId") },
-                        onPlay = { url -> 
+                        onPlay = { title, url -> 
                             if (url.startsWith("trailer:")) {
                                 val trailerId = url.removePrefix("trailer:")
                                 navController.navigate("trailer/$trailerId")
                             } else {
                                 val encodedUrl = URLEncoder.encode(url, "UTF-8")
-                                navController.navigate("player?url=$encodedUrl")
+                                val encodedTitle = URLEncoder.encode(title, "UTF-8")
+                                navController.navigate("player?url=$encodedUrl&title=$encodedTitle")
                             }
                         }
                     )
@@ -773,13 +774,14 @@ fun AppNavigation() {
                         seriesId = seriesId, 
                         onBack = { navController.popBackStack() },
                         onPersonClick = { personId -> navController.navigate("person/$personId") },
-                        onPlay = { url -> 
+                        onPlay = { title, url -> 
                             if (url.startsWith("trailer:")) {
                                 val trailerId = url.removePrefix("trailer:")
                                 navController.navigate("trailer/$trailerId")
                             } else {
                                 val encodedUrl = URLEncoder.encode(url, "UTF-8")
-                                navController.navigate("player?url=$encodedUrl")
+                                val encodedTitle = URLEncoder.encode(title, "UTF-8")
+                                navController.navigate("player?url=$encodedUrl&title=$encodedTitle")
                             }
                         }
                     )
@@ -790,10 +792,12 @@ fun AppNavigation() {
                     com.example.ui.screens.player.TrailerScreen(trailerId = trailerId, onBack = { navController.popBackStack() })
                 }
 
-                composable("player?url={url}") { backStackEntry ->
+                composable("player?url={url}&title={title}") { backStackEntry ->
                     val url = backStackEntry.arguments?.getString("url") ?: return@composable
+                    val title = backStackEntry.arguments?.getString("title") ?: "Unknown"
                     val decodedUrl = URLDecoder.decode(url, "UTF-8")
-                    PlayerScreen(videoUrl = decodedUrl, onBack = { navController.popBackStack() })
+                    val decodedTitle = URLDecoder.decode(title, "UTF-8")
+                    PlayerScreen(videoUrl = decodedUrl, title = decodedTitle, onBack = { navController.popBackStack() })
                 }
             }
         }

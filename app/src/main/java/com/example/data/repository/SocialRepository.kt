@@ -60,9 +60,8 @@ class SocialRepository {
             trySend(emptyList())
             return@callbackFlow
         }
+        val lowerQuery = query.lowercase()
         val listener = db.collection("users")
-            .whereGreaterThanOrEqualTo("displayName", query)
-            .whereLessThanOrEqualTo("displayName", query + "\uf8ff")
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
                     close(e)
@@ -70,7 +69,8 @@ class SocialRepository {
                 }
                 if (snapshot != null) {
                     val users = snapshot.documents.mapNotNull { it.toObject(UserProfile::class.java) }
-                    trySend(users)
+                    val filtered = users.filter { it.displayName.lowercase().contains(lowerQuery) }
+                    trySend(filtered)
                 }
             }
         awaitClose { listener.remove() }

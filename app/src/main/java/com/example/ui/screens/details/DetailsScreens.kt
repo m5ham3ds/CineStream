@@ -57,7 +57,7 @@ fun MovieDetailsScreen(
     onPersonClick: (String) -> Unit = {},
     movieId: String, 
     onBack: () -> Unit,
-    onPlay: (String) -> Unit,
+    onPlay: (String, String) -> Unit,
     viewModel: MovieDetailsViewModel = viewModel(factory = ViewModelFactory())
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -192,7 +192,7 @@ fun MovieDetailsScreen(
                     Button(
                         onClick = { 
                             if (downloadItem?.isCompleted == true) {
-                                onPlay("local_offline_file://${downloadItem.id}")
+                                onPlay(movie.title, "local_offline_file://${downloadItem.id}")
                             } else {
                                 isDownloadMode = false; showSourceSheet = true 
                             }
@@ -296,7 +296,7 @@ fun MovieDetailsScreen(
                                         isMovie = true
                                     )
                                 )
-                                onPlay(source.url)
+                                onPlay(movie.title, source.url)
                             }
                         }
                     }
@@ -322,7 +322,7 @@ fun SeriesDetailsScreen(
     onPersonClick: (String) -> Unit = {},
     seriesId: String,
     onBack: () -> Unit,
-    onPlay: (String) -> Unit
+    onPlay: (String, String) -> Unit
 ) {
     val context = LocalContext.current
     val viewModel: SeriesDetailsViewModel = viewModel(factory = ViewModelFactory())
@@ -456,7 +456,7 @@ fun SeriesDetailsScreen(
                         Spacer(modifier = Modifier.height(8.dp))
                         LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                             items(series.trailers) { trailer ->
-                                TrailerCard(trailer) { onPlay("trailer:${trailer.key}") }
+                                TrailerCard(trailer) { onPlay(series.title, "trailer:${trailer.key}") }
                             }
                         }
                         Spacer(modifier = Modifier.height(32.dp))
@@ -551,7 +551,7 @@ fun SeriesDetailsScreen(
                                     )
                                 )
                                 watchedRepo.markAsWatched(ep.id)
-                                onPlay(source.url)
+                                onPlay("${series.title} - ${ep.title}", source.url)
                             }
                         }
                     }

@@ -1,4 +1,7 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 package com.example.ui.screens.player
+
+
 
 import androidx.compose.ui.res.stringResource
 import com.example.R
@@ -18,6 +21,8 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Size
@@ -58,9 +63,10 @@ import androidx.media3.ui.PlayerView
 import kotlinx.coroutines.delay
 import com.example.ui.components.DownloadQualitySheet
 
-@OptIn(UnstableApi::class)
+@OptIn(androidx.media3.common.util.UnstableApi::class, androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
-fun PlayerScreen(videoUrl: String, onBack: () -> Unit) {
+@Suppress("OPT_IN_USAGE")
+fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
     val context = LocalContext.current
     var showDownloadSheet by remember { mutableStateOf(false) }
     var showControls by remember { mutableStateOf(true) }
@@ -70,13 +76,27 @@ fun PlayerScreen(videoUrl: String, onBack: () -> Unit) {
     var brightness by remember { mutableStateOf(0.5f) }
     var volume by remember { mutableStateOf(0.5f) }
     var isLocked by remember { mutableStateOf(false) }
+    var currentSpeed by remember { mutableStateOf(1f) }
+    var currentQuality by remember { mutableStateOf("1080p") }
+    var showQualitySheet by remember { mutableStateOf(false) }
+    var showEpisodesSheet by remember { mutableStateOf(false) }
 
     // Force landscape mode for better viewing
     DisposableEffect(Unit) {
         val activity = context as? Activity
         activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+        
+        val window = activity?.window
+        var insetsController: WindowInsetsControllerCompat? = null
+        if (window != null) {
+            insetsController = WindowInsetsControllerCompat(window, window.decorView)
+            insetsController.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            insetsController.hide(androidx.core.view.WindowInsetsCompat.Type.systemBars())
+        }
+        
         onDispose {
             activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+            insetsController?.show(androidx.core.view.WindowInsetsCompat.Type.systemBars())
         }
     }
 
@@ -99,6 +119,19 @@ fun PlayerScreen(videoUrl: String, onBack: () -> Unit) {
         }
     }
 
+    LaunchedEffect(brightness) {
+        val window = (context as? Activity)?.window
+        window?.let {
+            val lp = it.attributes
+            lp.screenBrightness = brightness
+            it.attributes = lp
+        }
+    }
+    
+    LaunchedEffect(volume) {
+        exoPlayer.volume = volume
+    }
+    
     LaunchedEffect(isPlaying) {
         while (isPlaying) {
             currentTime = exoPlayer.currentPosition
@@ -282,21 +315,77 @@ fun PlayerScreen(videoUrl: String, onBack: () -> Unit) {
                             horizontalArrangement = Arrangement.SpaceEvenly,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            BottomAction(icon = Icons.Default.Speed, text = "Speed (1x)") { 
-                                val newSpeed = if (exoPlayer.playbackParameters.speed == 1f) 1.5f else 1f
-                                exoPlayer.setPlaybackSpeed(newSpeed)
+                            BottomAction(icon = Icons.Default.Speed, text = "Speed (${currentSpeed}x)") { 
+                                val nextSpeed = when(currentSpeed) {
+                                    0.5f -> 1f
+                                    1f -> 1.5f
+                                    1.5f -> 2f
+                                    else -> 0.5f
+                                }
+                                currentSpeed = nextSpeed
+                                exoPlayer.setPlaybackSpeed(nextSpeed)
                             }
                             ActionDivider()
                             BottomAction(icon = Icons.Default.LockOpen, text = "Lock") { isLocked = true }
                             ActionDivider()
-                            BottomAction(icon = Icons.Default.VideoLibrary, text = "Episodes") { }
+                            BottomAction(icon = Icons.Default.VideoLibrary, text = "Episodes") { showEpisodesSheet = true }
                             ActionDivider()
-                            QualityAction(onClick = { })
+                            QualityAction(currentQuality, onClick = { showQualitySheet = true })
                             ActionDivider()
                             BottomAction(icon = Icons.Default.Download, text = "Download") { showDownloadSheet = true }
                         }
                     }
                 }
+            }
+        }
+    }
+
+
+    if (showQualitySheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showQualitySheet = false },
+            containerColor = Color(0xFF1C1C1E)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text("Select Quality", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(16.dp))
+                val qualities = listOf("4K", "1080p", "720p", "480p", "360p")
+                qualities.forEach { q ->
+                    TextButton(
+                        onClick = { 
+                            currentQuality = q
+                            showQualitySheet = false
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(q, color = if (q == currentQuality) Color(0xFFE50914) else Color.White)
+                    }
+                }
+                Spacer(modifier = Modifier.height(32.dp))
+            }
+        }
+    }
+    
+    if (showEpisodesSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showEpisodesSheet = false },
+            containerColor = Color(0xFF1C1C1E)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text("Episodes", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(16.dp))
+                Column {
+                    repeat(5) { i ->
+                        val epNum = i + 1
+                        TextButton(
+                            onClick = { showEpisodesSheet = false },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Episode $epNum", color = Color.White)
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(32.dp))
             }
         }
     }
@@ -357,7 +446,7 @@ fun BottomAction(icon: ImageVector, text: String, onClick: () -> Unit) {
 }
 
 @Composable
-fun QualityAction(onClick: () -> Unit) {
+fun QualityAction(currentQuality: String, onClick: () -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.clickable(onClick = onClick).padding(8.dp)

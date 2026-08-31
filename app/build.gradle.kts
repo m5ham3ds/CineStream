@@ -52,6 +52,7 @@ android {
   }
   kotlinOptions {
     jvmTarget = "11"
+    freeCompilerArgs += listOf("-opt-in=androidx.compose.material3.ExperimentalMaterial3Api")
   }
   compileOptions {
     sourceCompatibility = JavaVersion.VERSION_11
