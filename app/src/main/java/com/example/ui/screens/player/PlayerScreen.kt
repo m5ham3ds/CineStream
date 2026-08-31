@@ -202,38 +202,53 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
                             .fillMaxWidth()
                             .padding(top = 24.dp, start = 24.dp, end = 24.dp)
                             .align(Alignment.TopCenter),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        IconButton(onClick = onBack) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White, modifier = Modifier.size(28.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                            IconButton(onClick = onBack) {
+                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White, modifier = Modifier.size(28.dp))
+                            }
+                            Spacer(modifier = Modifier.weight(1f))
+                            Text("SERVER", color = Color.Gray, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Icon(Icons.Default.KeyboardArrowDown, contentDescription = null, tint = Color(0xFFE50914), modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.weight(1f))
                         }
-                        Spacer(modifier = Modifier.weight(1f))
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text("Now Playing", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                             Spacer(modifier = Modifier.height(4.dp))
                             Text("Episode 1", color = Color.LightGray, fontSize = 14.sp)
                         }
-                        Spacer(modifier = Modifier.weight(1f))
-                        IconButton(onClick = { /* Menu */ }) {
-                            Icon(Icons.Default.MoreVert, contentDescription = "Menu", tint = Color.White, modifier = Modifier.size(28.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                            Spacer(modifier = Modifier.weight(1f))
+                            Icon(Icons.Default.KeyboardArrowDown, contentDescription = null, tint = Color(0xFFE50914), modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("WEBSITE", color = Color.Gray, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                            Spacer(modifier = Modifier.weight(1f))
+                            IconButton(onClick = { /* Menu */ }) {
+                                Icon(Icons.Default.MoreVert, contentDescription = "Menu", tint = Color.White, modifier = Modifier.size(28.dp))
+                            }
                         }
                     }
 
                     // Left Vertical Slider (Brightness)
                     Box(modifier = Modifier.align(Alignment.CenterStart).padding(start = 32.dp)) {
                         VerticalSlider(
-                            value = brightness, 
-                            onValueChange = { brightness = it }, 
-                            icon = Icons.Default.BrightnessMedium
+                            value = brightness,
+                            onValueChange = { brightness = it },
+                            topIcon = Icons.Default.BrightnessMedium,
+                            bottomIcon = Icons.Default.PictureInPictureAlt
                         )
                     }
 
                     // Right Vertical Slider (Volume)
                     Box(modifier = Modifier.align(Alignment.CenterEnd).padding(end = 32.dp)) {
                         VerticalSlider(
-                            value = volume, 
-                            onValueChange = { volume = it }, 
-                            icon = Icons.AutoMirrored.Filled.VolumeUp
+                            value = volume,
+                            onValueChange = { volume = it },
+                            topIcon = Icons.AutoMirrored.Filled.VolumeUp,
+                            bottomIcon = Icons.Default.Fullscreen
                         )
                     }
 
@@ -303,10 +318,6 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
                             )
                             Spacer(modifier = Modifier.width(16.dp))
                             Text(formatTime(totalDuration), color = Color.White, fontSize = 14.sp)
-                            Spacer(modifier = Modifier.width(16.dp))
-                            Icon(Icons.Default.PictureInPictureAlt, contentDescription = "PiP", tint = Color.White, modifier = Modifier.size(24.dp).clickable { /* PiP Action */ })
-                            Spacer(modifier = Modifier.width(16.dp))
-                            Icon(Icons.Default.Fullscreen, contentDescription = "Fullscreen", tint = Color.White, modifier = Modifier.size(28.dp).clickable { /* Fullscreen Action */ })
                         }
 
                         Spacer(modifier = Modifier.height(16.dp))
@@ -317,7 +328,7 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
                             horizontalArrangement = Arrangement.SpaceEvenly,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            BottomAction(icon = Icons.Default.Speed, text = "Speed (${currentSpeed}x)") { 
+                            BottomAction(icon = Icons.Default.Speed, text = "Speed (${if (currentSpeed == 1f) "1" else currentSpeed}x)") { 
                                 val nextSpeed = when(currentSpeed) {
                                     0.5f -> 1f
                                     1f -> 1.5f
@@ -328,7 +339,7 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
                                 exoPlayer.setPlaybackSpeed(nextSpeed)
                             }
                             ActionDivider()
-                            BottomAction(icon = Icons.Default.LockOpen, text = "Lock") { isLocked = true }
+                            BottomAction(icon = Icons.Default.Lock, text = "Lock") { isLocked = true }
                             ActionDivider()
                             BottomAction(icon = Icons.Default.VideoLibrary, text = "Episodes") { showEpisodesSheet = true }
                             ActionDivider()
@@ -404,21 +415,21 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
 }
 
 @Composable
-fun VerticalSlider(value: Float, onValueChange: (Float) -> Unit, icon: ImageVector) {
+fun VerticalSlider(value: Float, onValueChange: (Float) -> Unit, topIcon: ImageVector, bottomIcon: ImageVector) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(28.dp))
+        Icon(topIcon, contentDescription = null, tint = Color.White, modifier = Modifier.size(28.dp))
         Spacer(modifier = Modifier.height(16.dp))
         Box(
             modifier = Modifier
                 .width(40.dp)
-                .height(240.dp),
+                .height(200.dp),
             contentAlignment = Alignment.Center
         ) {
             SimpleSlider(
                 value = value,
                 onValueChange = onValueChange,
                 modifier = Modifier
-                    .width(240.dp)
+                    .width(200.dp)
                     .graphicsLayer {
                         rotationZ = -90f
                         transformOrigin = TransformOrigin(0.5f, 0.5f)
@@ -426,10 +437,12 @@ fun VerticalSlider(value: Float, onValueChange: (Float) -> Unit, icon: ImageVect
                 activeColor = Color.White,
                 thumbColor = Color.White,
                 inactiveColor = Color.DarkGray.copy(alpha = 0.5f),
-                thumbRadius = 18f,
-                trackHeight = 10f
+                thumbRadius = 16f,
+                trackHeight = 8f
             )
         }
+        Spacer(modifier = Modifier.height(16.dp))
+        Icon(bottomIcon, contentDescription = null, tint = Color.White, modifier = Modifier.size(28.dp))
     }
 }
 
