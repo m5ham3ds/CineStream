@@ -7,6 +7,13 @@ import android.content.pm.ActivityInfo
 import androidx.annotation.OptIn
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.PictureInPictureAlt
+import androidx.compose.material.icons.filled.Fullscreen
+import androidx.compose.material.icons.filled.VideoLibrary
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -145,70 +152,83 @@ fun PlayerScreen(videoUrl: String, onBack: () -> Unit) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 16.dp, start = 16.dp, end = 16.dp)
+                            .padding(top = 24.dp, start = 24.dp, end = 24.dp)
                             .align(Alignment.TopCenter),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         IconButton(onClick = onBack) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onBackground)
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White, modifier = Modifier.size(28.dp))
                         }
                         Spacer(modifier = Modifier.weight(1f))
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(stringResource(R.string.now_playing), color = MaterialTheme.colorScheme.onBackground, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                            Text(stringResource(R.string.episode_number, 1), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
+                            Text("Now Playing", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text("Episode 1", color = Color.LightGray, fontSize = 14.sp)
                         }
                         Spacer(modifier = Modifier.weight(1f))
-                        Spacer(modifier = Modifier.width(48.dp)) // Balance the back button
+                        IconButton(onClick = { /* Menu */ }) {
+                            Icon(Icons.Default.MoreVert, contentDescription = "Menu", tint = Color.White, modifier = Modifier.size(28.dp))
+                        }
                     }
 
                     // Left Vertical Slider (Brightness)
-                    Box(modifier = Modifier.align(Alignment.CenterStart).padding(start = 24.dp)) {
-                        VerticalSlider(value = brightness, onValueChange = { brightness = it }, icon = Icons.Default.BrightnessMedium)
+                    Box(modifier = Modifier.align(Alignment.CenterStart).padding(start = 32.dp)) {
+                        VerticalSlider(
+                            value = brightness, 
+                            onValueChange = { brightness = it }, 
+                            topIcon = Icons.Default.BrightnessMedium,
+                            bottomIcon = Icons.Default.PictureInPictureAlt
+                        )
                     }
 
                     // Right Vertical Slider (Volume)
-                    Box(modifier = Modifier.align(Alignment.CenterEnd).padding(end = 24.dp)) {
-                        VerticalSlider(value = volume, onValueChange = { volume = it }, icon = Icons.AutoMirrored.Filled.VolumeUp)
+                    Box(modifier = Modifier.align(Alignment.CenterEnd).padding(end = 32.dp)) {
+                        VerticalSlider(
+                            value = volume, 
+                            onValueChange = { volume = it }, 
+                            topIcon = Icons.AutoMirrored.Filled.VolumeUp,
+                            bottomIcon = Icons.Default.Fullscreen
+                        )
                     }
 
                     // Center Playback Controls
                     Row(
                         modifier = Modifier.align(Alignment.Center),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(48.dp)
+                        horizontalArrangement = Arrangement.spacedBy(40.dp)
                     ) {
                         IconButton(
-                            onClick = { exoPlayer.seekTo((exoPlayer.currentPosition - 5000).coerceAtLeast(0)) },
-                            modifier = Modifier.size(56.dp)
+                            onClick = { exoPlayer.seekTo((exoPlayer.currentPosition - 10000).coerceAtLeast(0)) },
+                            modifier = Modifier
+                                .size(64.dp)
+                                .border(1.dp, Color.White.copy(alpha = 0.2f), CircleShape)
                         ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Icon(Icons.Default.Refresh, contentDescription = "Rewind", tint = MaterialTheme.colorScheme.onBackground, modifier = Modifier.size(48.dp).graphicsLayer { scaleX = -1f })
-                                Text("5", color = MaterialTheme.colorScheme.onBackground, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                            }
+                            Icon(Icons.Default.Replay10, contentDescription = "Rewind", tint = Color.White, modifier = Modifier.size(36.dp))
                         }
 
                         IconButton(
                             onClick = { 
                                 if (isPlaying) exoPlayer.pause() else exoPlayer.play() 
                             },
-                            modifier = Modifier.size(80.dp)
+                            modifier = Modifier
+                                .size(96.dp)
+                                .border(2.dp, Color(0xFFE50914), CircleShape)
                         ) {
                             Icon(
                                 if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
                                 contentDescription = "Play/Pause",
-                                tint = MaterialTheme.colorScheme.onBackground,
-                                modifier = Modifier.size(64.dp)
+                                tint = Color.White,
+                                modifier = Modifier.size(48.dp)
                             )
                         }
 
                         IconButton(
-                            onClick = { exoPlayer.seekTo((exoPlayer.currentPosition + 5000).coerceAtMost(exoPlayer.duration)) },
-                            modifier = Modifier.size(56.dp)
+                            onClick = { exoPlayer.seekTo((exoPlayer.currentPosition + 10000).coerceAtMost(exoPlayer.duration)) },
+                            modifier = Modifier
+                                .size(64.dp)
+                                .border(1.dp, Color.White.copy(alpha = 0.2f), CircleShape)
                         ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Icon(Icons.Default.Refresh, contentDescription = "Forward", tint = MaterialTheme.colorScheme.onBackground, modifier = Modifier.size(48.dp))
-                                Text("5", color = MaterialTheme.colorScheme.onBackground, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                            }
+                            Icon(Icons.Default.Forward10, contentDescription = "Forward", tint = Color.White, modifier = Modifier.size(36.dp))
                         }
                     }
 
@@ -217,15 +237,15 @@ fun PlayerScreen(videoUrl: String, onBack: () -> Unit) {
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                             .fillMaxWidth()
-                            .padding(horizontal = 24.dp, vertical = 16.dp)
+                            .padding(horizontal = 48.dp, vertical = 24.dp)
                     ) {
                         // Progress Bar Row
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text(formatTime(currentTime), color = MaterialTheme.colorScheme.onBackground, fontSize = 14.sp)
-                            Spacer(modifier = Modifier.width(12.dp))
+                            Text(formatTime(currentTime), color = Color.White, fontSize = 14.sp)
+                            Spacer(modifier = Modifier.width(16.dp))
                             Slider(
                                 value = if (totalDuration > 0) (currentTime.toFloat() / totalDuration.toFloat()) else 0f,
                                 onValueChange = { percent ->
@@ -235,33 +255,35 @@ fun PlayerScreen(videoUrl: String, onBack: () -> Unit) {
                                 },
                                 modifier = Modifier.weight(1f),
                                 colors = SliderDefaults.colors(
-                                    thumbColor = Color(0xFF00A8FF),
-                                    activeTrackColor = Color(0xFF00A8FF),
-                                    inactiveTrackColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                                    thumbColor = Color(0xFFE50914),
+                                    activeTrackColor = Color(0xFFE50914),
+                                    inactiveTrackColor = Color.DarkGray
                                 )
                             )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text(formatTime(totalDuration), color = MaterialTheme.colorScheme.onBackground, fontSize = 14.sp)
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(formatTime(totalDuration), color = Color.White, fontSize = 14.sp)
                         }
 
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
 
                         // Action Toolbar Row
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
+                            horizontalArrangement = Arrangement.SpaceEvenly,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             BottomAction(icon = Icons.Default.Speed, text = "Speed (1x)") { 
                                 val newSpeed = if (exoPlayer.playbackParameters.speed == 1f) 1.5f else 1f
                                 exoPlayer.setPlaybackSpeed(newSpeed)
                             }
+                            ActionDivider()
                             BottomAction(icon = Icons.Default.LockOpen, text = "Lock") { isLocked = true }
-                            BottomAction(icon = Icons.Default.Settings, text = "Quality (المتوفرة)") { /* Future implementation */ }
+                            ActionDivider()
+                            BottomAction(icon = Icons.Default.VideoLibrary, text = "Episodes") { }
+                            ActionDivider()
+                            QualityAction(onClick = { })
+                            ActionDivider()
                             BottomAction(icon = Icons.Default.Download, text = "Download") { showDownloadSheet = true }
-                            BottomAction(icon = null, text = "+85 s") { 
-                                exoPlayer.seekTo((exoPlayer.currentPosition + 85000).coerceAtMost(exoPlayer.duration))
-                            }
                         }
                     }
                 }
@@ -281,9 +303,9 @@ fun PlayerScreen(videoUrl: String, onBack: () -> Unit) {
 }
 
 @Composable
-fun VerticalSlider(value: Float, onValueChange: (Float) -> Unit, icon: ImageVector) {
+fun VerticalSlider(value: Float, onValueChange: (Float) -> Unit, topIcon: ImageVector, bottomIcon: ImageVector) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onBackground)
+        Icon(topIcon, contentDescription = null, tint = Color.White, modifier = Modifier.size(24.dp))
         Spacer(modifier = Modifier.height(16.dp))
         Box(
             modifier = Modifier
@@ -301,27 +323,57 @@ fun VerticalSlider(value: Float, onValueChange: (Float) -> Unit, icon: ImageVect
                         transformOrigin = TransformOrigin(0.5f, 0.5f)
                     },
                 colors = SliderDefaults.colors(
-                    thumbColor = MaterialTheme.colorScheme.onBackground,
-                    activeTrackColor = MaterialTheme.colorScheme.onBackground,
-                    inactiveTrackColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                    thumbColor = Color.White,
+                    activeTrackColor = Color(0xFFE50914),
+                    inactiveTrackColor = Color.DarkGray
                 )
             )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Icon(bottomIcon, contentDescription = null, tint = Color.White, modifier = Modifier.size(24.dp))
+    }
+}
+
+@Composable
+fun BottomAction(icon: ImageVector, text: String, onClick: () -> Unit) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.clickable(onClick = onClick).padding(8.dp)
+    ) {
+        Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(20.dp))
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(text, color = Color.LightGray, fontSize = 14.sp, fontWeight = FontWeight.Normal)
+    }
+}
+
+@Composable
+fun QualityAction(onClick: () -> Unit) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.clickable(onClick = onClick).padding(8.dp)
+    ) {
+        Icon(Icons.Default.Settings, contentDescription = null, tint = Color.White, modifier = Modifier.size(20.dp))
+        Spacer(modifier = Modifier.width(8.dp))
+        Text("Quality", color = Color.LightGray, fontSize = 14.sp, fontWeight = FontWeight.Normal)
+        Spacer(modifier = Modifier.width(6.dp))
+        Box(
+            modifier = Modifier
+                .border(1.dp, Color(0xFFE50914), CircleShape)
+                .padding(horizontal = 6.dp, vertical = 2.dp)
+        ) {
+            Text("1080p", color = Color(0xFFE50914), fontSize = 10.sp, fontWeight = FontWeight.Bold)
         }
     }
 }
 
 @Composable
-fun BottomAction(icon: ImageVector?, text: String, onClick: () -> Unit) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.clickable(onClick = onClick).padding(8.dp)
-    ) {
-        if (icon != null) {
-            Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onBackground, modifier = Modifier.size(20.dp))
-            Spacer(modifier = Modifier.width(6.dp))
-        }
-        Text(text, color = MaterialTheme.colorScheme.onBackground, fontSize = 14.sp, fontWeight = FontWeight.Medium)
-    }
+fun ActionDivider() {
+    Box(
+        modifier = Modifier
+            .width(1.dp)
+            .height(16.dp)
+            .background(Color.DarkGray)
+    )
 }
 
 fun formatTime(timeMs: Long): String {
