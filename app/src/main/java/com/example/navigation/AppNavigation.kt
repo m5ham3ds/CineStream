@@ -85,6 +85,7 @@ import com.example.ui.screens.downloads.DownloadsScreen
 import com.example.ui.screens.settings.SettingsScreen
 
 import com.example.ui.screens.social.SocialScreen
+import com.example.ui.screens.social.ChatScreen
 import com.example.ui.screens.share.ShareScreen
 
 import com.example.ui.screens.about.AboutScreen
@@ -659,6 +660,14 @@ fun AppNavigation() {
                 
             composable(Screen.Social.route) {
                 SocialScreen(
+                    onChatSelected = { convId -> navController.navigate("chat/$convId") },
+                    onBack = { navController.popBackStack() }
+                )
+            }
+            composable("chat/{conversationId}") { backStackEntry ->
+                val convId = backStackEntry.arguments?.getString("conversationId") ?: return@composable
+                ChatScreen(
+                    conversationId = convId,
                     onBack = { navController.popBackStack() }
                 )
             }

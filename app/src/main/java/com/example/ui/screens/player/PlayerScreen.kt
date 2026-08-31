@@ -1,11 +1,26 @@
 package com.example.ui.screens.player
 
-import android.app.Activity
 import androidx.compose.ui.res.stringResource
 import com.example.R
-import android.content.pm.ActivityInfo
 import androidx.annotation.OptIn
 import androidx.compose.animation.*
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import android.app.Activity
+import android.content.pm.ActivityInfo
+import androidx.compose.material3.ExperimentalMaterial3Api
+
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.foundation.Canvas
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Size
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.material.icons.filled.MoreVert
@@ -200,10 +215,10 @@ fun PlayerScreen(videoUrl: String, onBack: () -> Unit) {
                         IconButton(
                             onClick = { exoPlayer.seekTo((exoPlayer.currentPosition - 10000).coerceAtLeast(0)) },
                             modifier = Modifier
-                                .size(64.dp)
+                                .size(56.dp)
                                 .border(1.dp, Color.White.copy(alpha = 0.2f), CircleShape)
                         ) {
-                            Icon(Icons.Default.Replay10, contentDescription = "Rewind", tint = Color.White, modifier = Modifier.size(36.dp))
+                            Icon(Icons.Default.Replay10, contentDescription = "Rewind", tint = Color.White, modifier = Modifier.size(32.dp))
                         }
 
                         IconButton(
@@ -225,10 +240,10 @@ fun PlayerScreen(videoUrl: String, onBack: () -> Unit) {
                         IconButton(
                             onClick = { exoPlayer.seekTo((exoPlayer.currentPosition + 10000).coerceAtMost(exoPlayer.duration)) },
                             modifier = Modifier
-                                .size(64.dp)
+                                .size(56.dp)
                                 .border(1.dp, Color.White.copy(alpha = 0.2f), CircleShape)
                         ) {
-                            Icon(Icons.Default.Forward10, contentDescription = "Forward", tint = Color.White, modifier = Modifier.size(36.dp))
+                            Icon(Icons.Default.Forward10, contentDescription = "Forward", tint = Color.White, modifier = Modifier.size(32.dp))
                         }
                     }
 
@@ -246,19 +261,14 @@ fun PlayerScreen(videoUrl: String, onBack: () -> Unit) {
                         ) {
                             Text(formatTime(currentTime), color = Color.White, fontSize = 14.sp)
                             Spacer(modifier = Modifier.width(16.dp))
-                            Slider(
+                            SimpleSlider(
                                 value = if (totalDuration > 0) (currentTime.toFloat() / totalDuration.toFloat()) else 0f,
                                 onValueChange = { percent ->
                                     val newPosition = (percent * totalDuration).toLong()
                                     exoPlayer.seekTo(newPosition)
                                     currentTime = newPosition
                                 },
-                                modifier = Modifier.weight(1f),
-                                colors = SliderDefaults.colors(
-                                    thumbColor = Color(0xFFE50914),
-                                    activeTrackColor = Color(0xFFE50914),
-                                    inactiveTrackColor = Color.DarkGray
-                                )
+                                modifier = Modifier.weight(1f)
                             )
                             Spacer(modifier = Modifier.width(16.dp))
                             Text(formatTime(totalDuration), color = Color.White, fontSize = 14.sp)
@@ -313,7 +323,7 @@ fun VerticalSlider(value: Float, onValueChange: (Float) -> Unit, topIcon: ImageV
                 .height(120.dp),
             contentAlignment = Alignment.Center
         ) {
-            Slider(
+            SimpleSlider(
                 value = value,
                 onValueChange = onValueChange,
                 modifier = Modifier
@@ -322,11 +332,11 @@ fun VerticalSlider(value: Float, onValueChange: (Float) -> Unit, topIcon: ImageV
                         rotationZ = -90f
                         transformOrigin = TransformOrigin(0.5f, 0.5f)
                     },
-                colors = SliderDefaults.colors(
-                    thumbColor = Color.White,
-                    activeTrackColor = Color(0xFFE50914),
-                    inactiveTrackColor = Color.DarkGray
-                )
+                activeColor = Color.White,
+                thumbColor = Color.White,
+                inactiveColor = Color.DarkGray.copy(alpha = 0.5f),
+                thumbRadius = 14f,
+                trackHeight = 6f
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
@@ -382,4 +392,59 @@ fun formatTime(timeMs: Long): String {
     val minutes = totalSeconds / 60
     val seconds = totalSeconds % 60
     return String.format("%02d:%02d", minutes, seconds)
+}
+
+@Composable
+fun SimpleSlider(
+    value: Float,
+    onValueChange: (Float) -> Unit,
+    modifier: Modifier = Modifier,
+    activeColor: Color = Color(0xFFE50914),
+    inactiveColor: Color = Color.DarkGray,
+    thumbColor: Color = Color(0xFFE50914),
+    thumbRadius: Float = 12f,
+    trackHeight: Float = 8f
+) {
+    Canvas(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(32.dp) // Touch target height
+            .pointerInput(Unit) {
+                detectTapGestures { offset ->
+                    onValueChange((offset.x / size.width).coerceIn(0f, 1f))
+                }
+            }
+            .pointerInput(Unit) {
+                detectDragGestures { change, _ ->
+                    onValueChange((change.position.x / size.width).coerceIn(0f, 1f))
+                }
+            }
+    ) {
+        val width = size.width
+        val height = size.height
+        val centerY = height / 2f
+        
+        // Inactive Track
+        drawRoundRect(
+            color = inactiveColor,
+            topLeft = Offset(0f, centerY - trackHeight / 2f),
+            size = Size(width, trackHeight),
+            cornerRadius = CornerRadius(trackHeight / 2f)
+        )
+        
+        // Active Track
+        drawRoundRect(
+            color = activeColor,
+            topLeft = Offset(0f, centerY - trackHeight / 2f),
+            size = Size(width * value, trackHeight),
+            cornerRadius = CornerRadius(trackHeight / 2f)
+        )
+        
+        // Thumb
+        drawCircle(
+            color = thumbColor,
+            radius = thumbRadius,
+            center = Offset(width * value, centerY)
+        )
+    }
 }
