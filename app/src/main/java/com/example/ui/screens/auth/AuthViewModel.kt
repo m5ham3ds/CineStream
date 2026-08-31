@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.repository.AuthRepository
 import com.example.data.repository.User
+import android.net.Uri
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -165,7 +166,7 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    fun updateProfile(firstName: String, lastName: String, username: String, onComplete: (Boolean, String?) -> Unit) {
+    fun updateProfile(firstName: String, lastName: String, username: String, photoUri: Uri? = null, onComplete: (Boolean, String?) -> Unit) {
         viewModelScope.launch {
             _isLoading.value = true
             val currentUser = _currentUser.value
@@ -185,10 +186,19 @@ class AuthViewModel : ViewModel() {
                     }
                 }
                 
+                var finalPhotoUrl = currentUser.photoUrl
+                if (photoUri != null) {
+                    val uploadedUrl = repository.uploadProfilePicture(currentUser.uid, photoUri)
+                    if (uploadedUrl != null) {
+                        finalPhotoUrl = uploadedUrl
+                    }
+                }
+                
                 val updatedUser = currentUser.copy(
                     firstName = firstName,
                     lastName = lastName,
-                    username = username
+                    username = username,
+                    photoUrl = finalPhotoUrl
                 )
                 repository.saveUser(updatedUser)
                 _currentUser.value = updatedUser

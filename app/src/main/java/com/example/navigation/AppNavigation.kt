@@ -33,6 +33,15 @@ import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+
+import androidx.compose.ui.platform.LocalContext
+
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.ui.screens.auth.AuthViewModel
+import coil.compose.AsyncImage
+import androidx.compose.ui.layout.ContentScale
+
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -43,8 +52,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -102,6 +109,8 @@ fun AppNavigation() {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     
+    val authViewModel: AuthViewModel = viewModel()
+    val currentUser by authViewModel.currentUser.collectAsState()
     val userPrefs = remember { com.example.data.repository.UserPreferencesRepository(context) }
     val isGuest by userPrefs.isGuest.collectAsState(initial = false)
     
@@ -179,8 +188,11 @@ fun AppNavigation() {
                             }
                         ) {
                             Column {
+                                val displayName = if (isGuest || currentUser == null) "Guest User" else {
+                                    "${currentUser?.firstName} ${currentUser?.lastName}".trim().takeIf { it.isNotBlank() } ?: currentUser?.username ?: "User"
+                                }
                                 Text(
-                                    text = if (isGuest) "Guest User" else "E. Laurent",
+                                    text = displayName,
                                     fontSize = 24.sp,
                                     fontFamily = FontFamily.SansSerif,
                                     color = MaterialTheme.colorScheme.onSurface
@@ -206,7 +218,23 @@ fun AppNavigation() {
                                     .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Icon(Icons.Default.Person, contentDescription = "Avatar", tint = MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(40.dp))
+                                if (currentUser != null && currentUser?.photoUrl?.isNotEmpty() == true) {
+                                    AsyncImage(
+                                        model = currentUser?.photoUrl,
+                                        contentDescription = "Avatar",
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                } else if (currentUser != null) {
+                                    Text(
+                                        text = (currentUser?.firstName?.take(1) ?: currentUser?.username?.take(1) ?: "U").uppercase(),
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        fontSize = 28.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                } else {
+                                    Icon(Icons.Default.Person, contentDescription = "Avatar", tint = MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(40.dp))
+                                }
                             }
                         }
                     }

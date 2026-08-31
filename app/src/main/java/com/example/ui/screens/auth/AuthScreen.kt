@@ -24,6 +24,10 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.ui.text.input.ImeAction
+
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -241,6 +245,18 @@ fun AuthScreen(
                     },
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     singleLine = true,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(onDone = { 
+                        keyboardController?.hide()
+                        focusManager.clearFocus()
+                        if (email.isNotBlank() && password.isNotBlank()) {
+                            if (isSignUp) {
+                                authViewModel.signUpWithEmail(email, password)
+                            } else {
+                                authViewModel.signInWithEmail(email, password)
+                            }
+                        }
+                    }),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Color.Gray,
                         unfocusedBorderColor = Color.DarkGray,
@@ -283,8 +299,6 @@ fun AuthScreen(
                 Spacer(modifier = Modifier.height(24.dp))
                 Button(
                     onClick = {
-                        focusManager.clearFocus()
-                        keyboardController?.hide()
                         if (email.isNotBlank() && password.isNotBlank()) {
                             if (isSignUp) {
                                 authViewModel.signUpWithEmail(email, password)

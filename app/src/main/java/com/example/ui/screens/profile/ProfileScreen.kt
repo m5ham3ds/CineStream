@@ -13,8 +13,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.outlined.Person
+
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import android.net.Uri
+import coil.compose.AsyncImage
+import androidx.compose.ui.layout.ContentScale
+
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,7 +34,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImage
 import com.example.ui.ViewModelFactory
 import com.example.ui.screens.auth.AuthViewModel
 
@@ -45,15 +53,21 @@ fun ProfileScreen() {
     val iconBgColor = Color(0xFF2C2C2E)
     var showEditPhoto by remember { mutableStateOf(false) }
     
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            selectedImageUri = uri
+            showEditProfile = true
+        }
+    }
+    
     if (showEditPhoto) {
-        AlertDialog(
-            onDismissRequest = { showEditPhoto = false },
-            title = { Text("Change Photo") },
-            text = { Text("Coming soon...") },
-            confirmButton = {
-                TextButton(onClick = { showEditPhoto = false }) { Text("OK", color = primaryRed) }
-            }
-        )
+        LaunchedEffect(Unit) {
+            photoPickerLauncher.launch("image/*")
+            showEditPhoto = false
+        }
     }
 
     if (showEditProfile && currentUser != null) {
@@ -133,17 +147,29 @@ fun ProfileScreen() {
         ) {
             Box {
                 Box(
-                    modifier = Modifier.size(80.dp).clip(CircleShape).background(iconBgColor),
+                    modifier = Modifier
+                        .size(80.dp)
+                        .clip(CircleShape)
+                        .background(iconBgColor)
+                        .border(2.dp, primaryRed, CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
-                    if (!currentUser?.photoUrl.isNullOrEmpty()) {
+                    if (selectedImageUri != null || (currentUser != null && currentUser?.photoUrl?.isNotEmpty() == true)) {
                         AsyncImage(
-                            model = currentUser?.photoUrl,
-                            contentDescription = null,
-                            modifier = Modifier.fillMaxSize().clip(CircleShape)
+                            model = selectedImageUri ?: currentUser?.photoUrl,
+                            contentDescription = "Profile Photo",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    } else if (currentUser != null) {
+                        Text(
+                            text = (currentUser?.firstName?.take(1) ?: currentUser?.username?.take(1) ?: "U").uppercase(),
+                            color = Color.White,
+                            fontSize = 32.sp,
+                            fontWeight = FontWeight.Bold
                         )
                     } else {
-                        Icon(Icons.Outlined.Person, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(40.dp))
+                        Icon(Icons.Default.Person, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(40.dp))
                     }
                 }
                 if (currentUser != null) {
@@ -247,7 +273,7 @@ fun ProfileScreen() {
         Text("Account", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(12.dp))
         Column(modifier = Modifier.fillMaxWidth().background(cardColor, RoundedCornerShape(12.dp))) {
-            ProfileListItem(Icons.Outlined.Person, "Account Information", "Update your personal details", false, primaryRed, iconBgColor)
+            ProfileListItem(Icons.Default.Person, "Account Information", "Update your personal details", false, primaryRed, iconBgColor)
             ProfileListItem(Icons.Outlined.Security, "Security", "Password, device management", false, primaryRed, iconBgColor)
             ProfileListItem(Icons.Outlined.CreditCard, "Subscription", "Manage your plan and billing", true, primaryRed, iconBgColor)
         }

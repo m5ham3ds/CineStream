@@ -10,10 +10,15 @@ import kotlinx.coroutines.tasks.await
 
 data class UserProfile(
     val uid: String = "",
-    val displayName: String = "",
+    val username: String = "",
+    val firstName: String = "",
+    val lastName: String = "",
     val photoUrl: String = "",
     val isOnline: Boolean = false
-)
+) {
+    val displayName: String
+        get() = "${firstName} ${lastName}".trim().takeIf { it.isNotBlank() } ?: username
+}
 
 data class PrivateMessage(
     val id: String = "",
@@ -46,13 +51,16 @@ class SocialRepository {
     fun getCurrentUser(): UserProfile? {
         val user = auth.currentUser
         return if (user != null) {
-            UserProfile(user.uid, user.displayName ?: "User", user.photoUrl?.toString() ?: "", true)
+            UserProfile(uid = user.uid, username = user.displayName ?: "User", photoUrl = user.photoUrl?.toString() ?: "", isOnline = true)
         } else null
     }
 
     suspend fun saveUserProfile() {
-        val user = getCurrentUser() ?: return
-        db.collection("users").document(user.uid).set(user).await()
+        // We shouldn't overwrite the user profile from SocialRepository
+        // because AuthRepository is managing the users collection!
+        // We just update the isOnline status.
+        val user = auth.currentUser ?: return
+        db.collection("users").document(user.uid).update("isOnline", true)
     }
     
     fun searchUsers(query: String): Flow<List<UserProfile>> = callbackFlow {
@@ -69,7 +77,7 @@ class SocialRepository {
                 }
                 if (snapshot != null) {
                     val users = snapshot.documents.mapNotNull { it.toObject(UserProfile::class.java) }
-                    val filtered = users.filter { it.displayName.lowercase().contains(lowerQuery) }
+                    val filtered = users.filter { it.username.lowercase().contains(lowerQuery) || it.displayName.lowercase().contains(lowerQuery) }
                     trySend(filtered)
                 }
             }
