@@ -59,10 +59,11 @@ class AuthViewModel : ViewModel() {
                 val firebaseUser = authResult.user
                 
                 if (firebaseUser != null) {
-                    val existingUser = repository.getCurrentUser()
+                    var existingUser = repository.getCurrentUser()
+                    
                     if (existingUser == null) {
-                        // Create new user profile
-                        val generatedUsername = repository.generateUniqueUsername(email?.substringBefore("@") ?: "user")
+                        // Try to create new user profile
+                        val generatedUsername = try { repository.generateUniqueUsername(email?.substringBefore("@") ?: "user") } catch(e:Exception) { "user_" + firebaseUser.uid.take(5) }
                         val newUser = User(
                             uid = firebaseUser.uid,
                             email = email ?: firebaseUser.email ?: "",
@@ -71,7 +72,11 @@ class AuthViewModel : ViewModel() {
                             username = generatedUsername,
                             photoUrl = photoUrl ?: firebaseUser.photoUrl?.toString() ?: ""
                         )
-                        repository.saveUser(newUser)
+                        try {
+                            repository.saveUser(newUser)
+                        } catch (e: Exception) {
+                            // Ignore firestore errors and just log them in locally
+                        }
                         _currentUser.value = newUser
                     } else {
                         _currentUser.value = existingUser
@@ -89,8 +94,26 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                repository.auth.signInWithEmailAndPassword(email, pass).await()
-                _currentUser.value = repository.getCurrentUser()
+                val authResult = repository.auth.signInWithEmailAndPassword(email, pass).await()
+                val firebaseUser = authResult.user
+                if (firebaseUser != null) {
+                    var user = repository.getCurrentUser()
+                    if (user == null) {
+                        val generatedUsername = try { repository.generateUniqueUsername(email.substringBefore("@")) } catch(e:Exception) { "user_" + firebaseUser.uid.take(5) }
+                        user = User(
+                            uid = firebaseUser.uid,
+                            email = email,
+                            firstName = "",
+                            lastName = "",
+                            username = generatedUsername,
+                            photoUrl = ""
+                        )
+                        try {
+                            repository.saveUser(user)
+                        } catch (e: Exception) {}
+                    }
+                    _currentUser.value = user
+                }
             } catch (e: Exception) {
                 _authError.value = e.message ?: "Login failed"
             } finally {
@@ -106,7 +129,7 @@ class AuthViewModel : ViewModel() {
                 val authResult = repository.auth.createUserWithEmailAndPassword(email, pass).await()
                 val firebaseUser = authResult.user
                 if (firebaseUser != null) {
-                    val generatedUsername = repository.generateUniqueUsername(email.substringBefore("@"))
+                    val generatedUsername = try { repository.generateUniqueUsername(email.substringBefore("@")) } catch(e:Exception) { "user_" + firebaseUser.uid.take(5) }
                     val newUser = User(
                         uid = firebaseUser.uid,
                         email = email,
@@ -115,7 +138,9 @@ class AuthViewModel : ViewModel() {
                         username = generatedUsername,
                         photoUrl = ""
                     )
-                    repository.saveUser(newUser)
+                    try {
+                        repository.saveUser(newUser)
+                    } catch (e: Exception) {}
                     _currentUser.value = newUser
                 }
             } catch (e: Exception) {
