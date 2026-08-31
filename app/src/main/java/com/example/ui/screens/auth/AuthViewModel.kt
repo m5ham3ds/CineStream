@@ -1,10 +1,10 @@
 package com.example.ui.screens.auth
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.repository.AuthRepository
 import com.example.data.repository.User
-import android.net.Uri
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,31 +13,27 @@ import kotlinx.coroutines.tasks.await
 
 class AuthViewModel : ViewModel() {
     private val repository = AuthRepository
-
+    
     private val _currentUser = MutableStateFlow<User?>(null)
     val currentUser: StateFlow<User?> = _currentUser.asStateFlow()
-
+    
     private val _authError = MutableStateFlow<String?>(null)
     val authError: StateFlow<String?> = _authError.asStateFlow()
-
+    
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
-
 
     init {
         repository.auth.addAuthStateListener { auth ->
             viewModelScope.launch {
-                _isLoading.value = true
                 if (auth.currentUser != null) {
                     _currentUser.value = repository.getCurrentUser()
                 } else {
                     _currentUser.value = null
                 }
-                _isLoading.value = false
             }
         }
     }
-
 
     fun checkCurrentUser() {
         viewModelScope.launch {
@@ -63,7 +59,6 @@ class AuthViewModel : ViewModel() {
                     var existingUser = repository.getCurrentUser()
                     
                     if (existingUser == null) {
-                        // Try to create new user profile
                         val generatedUsername = try { repository.generateUniqueUsername(email?.substringBefore("@") ?: "user") } catch(e:Exception) { "user_" + firebaseUser.uid.take(5) }
                         val newUser = User(
                             uid = firebaseUser.uid,
@@ -75,9 +70,7 @@ class AuthViewModel : ViewModel() {
                         )
                         try {
                             repository.saveUser(newUser)
-                        } catch (e: Exception) {
-                            // Ignore firestore errors and just log them in locally
-                        }
+                        } catch (e: Exception) {}
                         _currentUser.value = newUser
                     } else {
                         _currentUser.value = existingUser
@@ -90,6 +83,7 @@ class AuthViewModel : ViewModel() {
             }
         }
     }
+
 
     fun signInWithEmail(email: String, pass: String) {
         viewModelScope.launch {
@@ -169,16 +163,16 @@ class AuthViewModel : ViewModel() {
     fun updateProfile(firstName: String, lastName: String, username: String, photoUri: Uri? = null, onComplete: (Boolean, String?) -> Unit) {
         viewModelScope.launch {
             _isLoading.value = true
-            val currentUser = _currentUser.value
-            if (currentUser == null) {
+            val currentUserData = _currentUser.value
+            if (currentUserData == null) {
                 onComplete(false, "User not found")
                 _isLoading.value = false
                 return@launch
             }
             
             try {
-                if (username != currentUser.username) {
-                    val isTaken = repository.isUsernameTaken(username, currentUser.uid)
+                if (username != currentUserData.username) {
+                    val isTaken = repository.isUsernameTaken(username, currentUserData.uid)
                     if (isTaken) {
                         onComplete(false, "Username is already taken")
                         _isLoading.value = false
@@ -186,15 +180,15 @@ class AuthViewModel : ViewModel() {
                     }
                 }
                 
-                var finalPhotoUrl = currentUser.photoUrl
+                var finalPhotoUrl = currentUserData.photoUrl
                 if (photoUri != null) {
-                    val uploadedUrl = repository.uploadProfilePicture(currentUser.uid, photoUri)
+                    val uploadedUrl = repository.uploadProfilePicture(currentUserData.uid, photoUri)
                     if (uploadedUrl != null) {
                         finalPhotoUrl = uploadedUrl
                     }
                 }
                 
-                val updatedUser = currentUser.copy(
+                val updatedUser = currentUserData.copy(
                     firstName = firstName,
                     lastName = lastName,
                     username = username,

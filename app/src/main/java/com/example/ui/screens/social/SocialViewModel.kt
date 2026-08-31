@@ -3,6 +3,7 @@ package com.example.ui.screens.social
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.repository.*
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -10,29 +11,32 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class SocialViewModel : ViewModel() {
-
     private val repo = SocialRepository()
-
+    
     private val _currentUser = MutableStateFlow<UserProfile?>(repo.getCurrentUser())
     val currentUser: StateFlow<UserProfile?> = _currentUser.asStateFlow()
-
+    
     private val _conversations = MutableStateFlow<List<Conversation>>(emptyList())
     val conversations: StateFlow<List<Conversation>> = _conversations.asStateFlow()
-
+    
     private val _stories = MutableStateFlow<List<Story>>(emptyList())
     val stories: StateFlow<List<Story>> = _stories.asStateFlow()
     
     private val _searchResults = MutableStateFlow<List<UserProfile>>(emptyList())
     val searchResults: StateFlow<List<UserProfile>> = _searchResults.asStateFlow()
-
+    
     private var searchJob: Job? = null
+    private var conversationJob: Job? = null
+    private var storiesJob: Job? = null
 
     init {
-        com.google.firebase.auth.FirebaseAuth.getInstance().addAuthStateListener { auth ->
+        FirebaseAuth.getInstance().addAuthStateListener { auth ->
             val user = repo.getCurrentUser()
             _currentUser.value = user
             if (user != null) {
                 startListening()
+            } else {
+                stopListening()
             }
         }
     }
@@ -46,16 +50,26 @@ class SocialViewModel : ViewModel() {
     }
 
     private fun startListening() {
-        viewModelScope.launch {
+        stopListening()
+        conversationJob = viewModelScope.launch {
             repo.getConversations().collect { convs ->
                 _conversations.value = convs
             }
         }
-        viewModelScope.launch {
+        storiesJob = viewModelScope.launch {
             repo.getStories().collect { sts ->
                 _stories.value = sts
             }
         }
+    }
+    
+    private fun stopListening() {
+        conversationJob?.cancel()
+        storiesJob?.cancel()
+        searchJob?.cancel()
+        _conversations.value = emptyList()
+        _stories.value = emptyList()
+        _searchResults.value = emptyList()
     }
     
     fun searchUsers(query: String) {

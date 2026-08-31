@@ -33,7 +33,7 @@ data class Conversation(
     val participantNames: Map<String, String> = emptyMap(),
     val lastMessage: String = "",
     val lastMessageTime: Long = 0L,
-    val unreadCounts: Map<String, Int> = emptyMap()
+    val unreadCounts: Map<String, Int> = emptyMap() // Use Int consistently
 )
 
 data class Story(
@@ -51,16 +51,22 @@ class SocialRepository {
     fun getCurrentUser(): UserProfile? {
         val user = auth.currentUser
         return if (user != null) {
-            UserProfile(uid = user.uid, username = user.displayName ?: "User", photoUrl = user.photoUrl?.toString() ?: "", isOnline = true)
+            UserProfile(
+                uid = user.uid, 
+                username = user.displayName ?: "User", 
+                photoUrl = user.photoUrl?.toString() ?: "", 
+                isOnline = true
+            )
         } else null
     }
 
     suspend fun saveUserProfile() {
-        // We shouldn't overwrite the user profile from SocialRepository
-        // because AuthRepository is managing the users collection!
-        // We just update the isOnline status.
         val user = auth.currentUser ?: return
-        db.collection("users").document(user.uid).update("isOnline", true)
+        try {
+            db.collection("users").document(user.uid).update("isOnline", true).await()
+        } catch (e: Exception) {
+            // Document might not exist yet, ignore
+        }
     }
     
     fun searchUsers(query: String): Flow<List<UserProfile>> = callbackFlow {
@@ -77,7 +83,10 @@ class SocialRepository {
                 }
                 if (snapshot != null) {
                     val users = snapshot.documents.mapNotNull { it.toObject(UserProfile::class.java) }
-                    val filtered = users.filter { it.username.lowercase().contains(lowerQuery) || it.displayName.lowercase().contains(lowerQuery) }
+                    val filtered = users.filter { 
+                        it.username.lowercase().contains(lowerQuery) || 
+                        it.displayName.lowercase().contains(lowerQuery) 
+                    }
                     trySend(filtered)
                 }
             }
@@ -109,7 +118,7 @@ class SocialRepository {
 
     fun getMessages(conversationId: String): Flow<List<PrivateMessage>> = callbackFlow {
         val listener = db.collection("conversations").document(conversationId).collection("messages")
-            .orderBy("timestamp", Query.Direction.DESCENDING)
+            .orderBy("timestamp", Query.Direction.ASCENDING)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
                     close(e)
@@ -130,6 +139,7 @@ class SocialRepository {
         
         val docRef = db.collection("conversations").document(convId)
         val doc = docRef.get().await()
+        
         if (!doc.exists()) {
             val conv = Conversation(
                 id = convId,
@@ -146,20 +156,27 @@ class SocialRepository {
         val docRef = db.collection("conversations").document(conversationId)
         
         val msgRef = docRef.collection("messages").document()
-        val msg = PrivateMessage(msgRef.id, user.uid, text)
+        val msg = PrivateMessage(msgRef.id, user.uid, text, System.currentTimeMillis())
         msgRef.set(msg)
         
-        // Update last message in conversation
         db.runTransaction { transaction ->
             val convSnapshot = transaction.get(docRef)
             if (convSnapshot.exists()) {
-                val currentCounts = convSnapshot.get("unreadCounts") as? Map<String, Long> ?: emptyMap()
+                val currentCountsAny = convSnapshot.get("unreadCounts")
+                val currentCounts = if (currentCountsAny is Map<*, *>) {
+                    currentCountsAny.entries.associate { it.key.toString() to (it.value.toString().toIntOrNull() ?: 0) }
+                } else emptyMap()
+                
                 val newCounts = currentCounts.toMutableMap()
                 
-                val participants = convSnapshot.get("participants") as? List<String> ?: emptyList()
+                val participantsAny = convSnapshot.get("participants")
+                val participants = if (participantsAny is List<*>) {
+                    participantsAny.map { it.toString() }
+                } else emptyList()
+                
                 for (p in participants) {
                     if (p != user.uid) {
-                        newCounts[p] = (newCounts[p] ?: 0L) + 1L
+                        newCounts[p] = (newCounts[p] ?: 0) + 1
                     }
                 }
                 
@@ -173,12 +190,18 @@ class SocialRepository {
     fun markConversationAsRead(conversationId: String) {
         val user = getCurrentUser() ?: return
         val docRef = db.collection("conversations").document(conversationId)
+        
         db.runTransaction { transaction ->
             val convSnapshot = transaction.get(docRef)
             if (convSnapshot.exists()) {
-                val currentCounts = convSnapshot.get("unreadCounts") as? Map<String, Long> ?: emptyMap()
+                val currentCountsAny = convSnapshot.get("unreadCounts")
+                val currentCounts = if (currentCountsAny is Map<*, *>) {
+                    currentCountsAny.entries.associate { it.key.toString() to (it.value.toString().toIntOrNull() ?: 0) }
+                } else emptyMap()
+                
                 val newCounts = currentCounts.toMutableMap()
-                newCounts[user.uid] = 0L
+                newCounts[user.uid] = 0
+                
                 transaction.update(docRef, "unreadCounts", newCounts)
             }
         }
@@ -204,7 +227,7 @@ class SocialRepository {
     fun addStory(imageUrl: String) {
         val user = getCurrentUser() ?: return
         val ref = db.collection("stories").document()
-        val story = Story(ref.id, user.uid, user.displayName, imageUrl)
+        val story = Story(ref.id, user.uid, user.displayName, imageUrl, System.currentTimeMillis())
         ref.set(story)
     }
 }

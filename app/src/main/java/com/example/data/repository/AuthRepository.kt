@@ -1,12 +1,10 @@
 package com.example.data.repository
 
+import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import android.net.Uri
 import kotlinx.coroutines.tasks.await
-import java.util.UUID
 
 data class User(
     val uid: String = "",
@@ -18,14 +16,13 @@ data class User(
 )
 
 object AuthRepository {
-    val auth = FirebaseAuth.getInstance()
-    private val db = FirebaseFirestore.getInstance()
-    private val storage = FirebaseStorage.getInstance()
+    val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private val storage: FirebaseStorage = FirebaseStorage.getInstance()
 
-    
     suspend fun uploadProfilePicture(uid: String, uri: Uri): String? {
         return try {
-            val ref = storage.reference.child("profile_pictures/$uid.jpg")
+            val ref = storage.reference.child("profile_pictures/$uid/${System.currentTimeMillis()}.jpg")
             ref.putFile(uri).await()
             ref.downloadUrl.await().toString()
         } catch (e: Exception) {
@@ -57,7 +54,7 @@ object AuthRepository {
             .whereEqualTo("username", username)
             .get()
             .await()
-        
+            
         for (doc in snapshot.documents) {
             if (doc.id != currentUid) return true
         }
