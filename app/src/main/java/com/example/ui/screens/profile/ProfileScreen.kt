@@ -38,6 +38,11 @@ fun ProfileScreen() {
     val context = LocalContext.current
 
     var showEditProfile by remember { mutableStateOf(false) }
+
+    val primaryRed = Color(0xFFE50914)
+    val bgColor = Color(0xFF121212)
+    val cardColor = Color(0xFF1E1E1E)
+    val iconBgColor = Color(0xFF2C2C2E)
     var showEditPhoto by remember { mutableStateOf(false) }
     
     if (showEditPhoto) {
@@ -50,11 +55,6 @@ fun ProfileScreen() {
             }
         )
     }
-
-    val primaryRed = Color(0xFFE50914)
-    val bgColor = Color(0xFF121212)
-    val cardColor = Color(0xFF1E1E1E)
-    val iconBgColor = Color(0xFF2C2C2E)
 
     if (showEditProfile && currentUser != null) {
         var firstName by remember { mutableStateOf(currentUser?.firstName ?: "") }

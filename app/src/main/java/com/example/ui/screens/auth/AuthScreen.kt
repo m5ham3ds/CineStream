@@ -57,6 +57,8 @@ fun AuthScreen(
     var passwordVisible by remember { mutableStateOf(false) }
     var rememberMe by remember { mutableStateOf(false) }
     var showForgotPasswordDialog by remember { mutableStateOf(false) }
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     val primaryRed = Color(0xFFE50914)
     val bgColor = Color(0xFF121212)

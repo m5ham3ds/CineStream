@@ -4,8 +4,8 @@ with open("app/src/main/java/com/example/ui/screens/profile/ProfileScreen.kt", "
     content = f.read()
 
 # 1. Add showEditPhoto state
-state_target = """    var showEditProfile by remember { mutableStateOf(false) }"""
-state_replacement = """    var showEditProfile by remember { mutableStateOf(false) }
+state_target = """    val iconBgColor = Color(0xFF2C2C2E)"""
+state_replacement = """    val iconBgColor = Color(0xFF2C2C2E)
     var showEditPhoto by remember { mutableStateOf(false) }
     
     if (showEditPhoto) {
@@ -26,7 +26,6 @@ pencil_replacement = """.clickable { showEditPhoto = true },"""
 content = content.replace(pencil_target, pencil_replacement)
 
 # 3. Make the account information clickable and update the text/remove "Member since May 2024"
-# The section is:
 info_target = """            Column(modifier = Modifier.weight(1f)) {
                 val displayName = if (currentUser != null) {
                     "${currentUser?.firstName} ${currentUser?.lastName}".trim().takeIf { it.isNotBlank() } ?: currentUser?.username ?: "User"
