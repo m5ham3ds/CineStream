@@ -16,8 +16,22 @@ class MyApplication : Application(), ImageLoaderFactory {
     }
 
     override fun onCreate() {
+
         super.onCreate()
         instance = this
+        
+        val cloudName = com.example.BuildConfig.CLOUDINARY_CLOUD_NAME
+        if (cloudName.isNotEmpty()) {
+            val config = mapOf(
+                "cloud_name" to cloudName
+            )
+            try {
+                com.cloudinary.android.MediaManager.init(this, config)
+            } catch (e: Exception) {
+                // Ignore if already initialized
+            }
+        }
+
     }
 
     override fun newImageLoader(): ImageLoader {

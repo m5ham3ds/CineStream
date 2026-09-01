@@ -1,4 +1,5 @@
 [versions]
+cloudinary = "2.5.0"
 playServicesNearby = "19.0.0"
 accompanistPermissions = "0.36.0"
 activityCompose = "1.9.3"
@@ -41,6 +42,7 @@ media3 = "1.5.0"
 jsoup = "1.17.2"
 
 [libraries]
+cloudinary-android = { module = "com.cloudinary:cloudinary-android", version.ref = "cloudinary" }
 play-services-nearby = { module = "com.google.android.gms:play-services-nearby", version.ref = "playServicesNearby" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }

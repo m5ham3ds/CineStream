@@ -1,14 +1,19 @@
 import re
 
-with open("app/src/main/java/com/example/data/repository/SocialRepository.kt", "r") as f:
+with open("app/src/main/java/com/example/data/repository/AuthRepository.kt", "r") as f:
     content = f.read()
 
 # Add imports at the top
 if "import kotlinx.coroutines.suspendCancellableCoroutine" not in content:
-    content = content.replace("import kotlinx.coroutines.tasks.await", "import kotlinx.coroutines.tasks.await\nimport kotlinx.coroutines.suspendCancellableCoroutine\nimport kotlin.coroutines.resume\nimport kotlin.coroutines.resumeWithException\nimport android.net.Uri")
+    content = content.replace("import kotlinx.coroutines.tasks.await", "import kotlinx.coroutines.tasks.await\nimport kotlinx.coroutines.suspendCancellableCoroutine\nimport kotlin.coroutines.resume\nimport kotlin.coroutines.resumeWithException")
 
-upload_function = """
-    suspend fun uploadMedia(uri: Uri): String {
+old_upload = """    suspend fun uploadProfilePicture(uid: String, uri: Uri): String {
+        val ref = storage.reference.child("profile_pictures/$uid/${System.currentTimeMillis()}.jpg")
+        ref.putFile(uri).await()
+        return ref.downloadUrl.await().toString()
+    }"""
+
+new_upload = """    suspend fun uploadProfilePicture(uid: String, uri: Uri): String {
         val cloudName = com.example.BuildConfig.CLOUDINARY_CLOUD_NAME
         val uploadPreset = com.example.BuildConfig.CLOUDINARY_UPLOAD_PRESET
         
@@ -36,12 +41,13 @@ upload_function = """
             }
         }
         
-        throw Exception("Cloudinary credentials are not configured in Secrets")
-    }
-"""
+        // Fallback to Firebase Storage if Cloudinary is not configured
+        val ref = storage.reference.child("profile_pictures/$uid/${System.currentTimeMillis()}.jpg")
+        ref.putFile(uri).await()
+        return ref.downloadUrl.await().toString()
+    }"""
 
-if "uploadMedia(uri: Uri)" not in content:
-    content = content.replace("class SocialRepository {", "class SocialRepository {\n" + upload_function)
+content = content.replace(old_upload, new_upload)
 
-with open("app/src/main/java/com/example/data/repository/SocialRepository.kt", "w") as f:
+with open("app/src/main/java/com/example/data/repository/AuthRepository.kt", "w") as f:
     f.write(content)
