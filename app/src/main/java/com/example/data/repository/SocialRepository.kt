@@ -17,6 +17,7 @@ data class UserProfile(
     val isOnline: Boolean = false,
     val isProfilePublic: Boolean = true
 ) {
+    @get:com.google.firebase.firestore.Exclude
     val displayName: String
         get() = "${firstName} ${lastName}".trim().takeIf { it.isNotBlank() } ?: username
 }
