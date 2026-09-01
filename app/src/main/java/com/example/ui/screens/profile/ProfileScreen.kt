@@ -39,7 +39,7 @@ import com.example.ui.screens.auth.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(onNavigateToAuth: () -> Unit = {}) {
     val authViewModel: AuthViewModel = viewModel(factory = ViewModelFactory())
     val currentUser by authViewModel.currentUser.collectAsState()
     val isLoading by authViewModel.isLoading.collectAsState()
@@ -110,7 +110,7 @@ fun ProfileScreen() {
                 TextButton(
                     onClick = {
                         if (username.isNotBlank()) {
-                            authViewModel.updateProfile(firstName, lastName, username) { success, error ->
+                            authViewModel.updateProfile(firstName, lastName, username, selectedImageUri) { success, error ->
                                 if (success) {
                                     showEditProfile = false
                                     Toast.makeText(context, "Profile updated", Toast.LENGTH_SHORT).show()
@@ -292,7 +292,10 @@ fun ProfileScreen() {
         if (currentUser != null) {
             Spacer(modifier = Modifier.height(32.dp))
             Button(
-                onClick = { authViewModel.signOut() },
+                onClick = { 
+                    authViewModel.signOut()
+                    onNavigateToAuth()
+                },
                 modifier = Modifier.fillMaxWidth().height(50.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2C2C2E)),
                 shape = RoundedCornerShape(12.dp)

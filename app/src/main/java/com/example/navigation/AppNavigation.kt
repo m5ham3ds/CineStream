@@ -416,7 +416,11 @@ fun AppNavigation() {
                 confirmButton = {
                     TextButton(onClick = {
                         showLogoutDialog = false
-                        scope.launch { userPrefs.saveIsGuest(true) }
+                        scope.launch { 
+                            userPrefs.saveIsGuest(true)
+                            userPrefs.saveIsLoggedIn(false)
+                        }
+                        authViewModel.signOut()
                         navController.navigate(Screen.Auth.route) { popUpTo(0) }
                     }) { Text(stringResource(R.string.yes), color = Color.Red) }
                 },
@@ -668,7 +672,13 @@ fun AppNavigation() {
                         }
                     )
                 }
-                composable(Screen.Profile.route) { ProfileScreen() }
+                composable(Screen.Profile.route) { ProfileScreen(onNavigateToAuth = {
+                        scope.launch { 
+                            userPrefs.saveIsLoggedIn(false)
+                            userPrefs.saveIsGuest(true)
+                        }
+                        navController.navigate(Screen.Auth.route) { popUpTo(0) }
+                    }) }
                 composable(Screen.Downloads.route) { 
                     DownloadsScreen(
                         onNavigateToHome = {

@@ -23,11 +23,17 @@ class AuthViewModel : ViewModel() {
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    init {
+        init {
         repository.auth.addAuthStateListener { auth ->
             viewModelScope.launch {
-                if (auth.currentUser != null) {
-                    _currentUser.value = repository.getCurrentUser()
+                val currentAuth = auth.currentUser
+                if (currentAuth != null) {
+                    if (_currentUser.value == null || _currentUser.value?.uid != currentAuth.uid) {
+                        val fetchedUser = repository.getCurrentUser()
+                        if (fetchedUser != null) {
+                            _currentUser.value = fetchedUser
+                        }
+                    }
                 } else {
                     _currentUser.value = null
                 }
@@ -52,7 +58,7 @@ class AuthViewModel : ViewModel() {
             _isLoading.value = true
             try {
                 val credential = com.google.firebase.auth.GoogleAuthProvider.getCredential(idToken, null)
-                val authResult = repository.auth.signInWithCredential(credential).await()
+                val authResult = kotlinx.coroutines.withTimeout(10000) { repository.auth.signInWithCredential(credential).await() }
                 val firebaseUser = authResult.user
                 
                 if (firebaseUser != null) {
@@ -69,7 +75,7 @@ class AuthViewModel : ViewModel() {
                             photoUrl = photoUrl ?: firebaseUser.photoUrl?.toString() ?: ""
                         )
                         try {
-                            repository.saveUser(newUser)
+                            kotlinx.coroutines.withTimeoutOrNull(3000) { repository.saveUser(newUser) }
                         } catch (e: Exception) {}
                         _currentUser.value = newUser
                     } else {
@@ -89,7 +95,7 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val authResult = repository.auth.signInWithEmailAndPassword(email, pass).await()
+                val authResult = kotlinx.coroutines.withTimeout(10000) { repository.auth.signInWithEmailAndPassword(email, pass).await() }
                 val firebaseUser = authResult.user
                 if (firebaseUser != null) {
                     var user = repository.getCurrentUser()
@@ -104,7 +110,7 @@ class AuthViewModel : ViewModel() {
                             photoUrl = ""
                         )
                         try {
-                            repository.saveUser(user)
+                            kotlinx.coroutines.withTimeoutOrNull(3000) { repository.saveUser(user) }
                         } catch (e: Exception) {}
                     }
                     _currentUser.value = user
@@ -121,7 +127,7 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val authResult = repository.auth.createUserWithEmailAndPassword(email, pass).await()
+                val authResult = kotlinx.coroutines.withTimeout(10000) { repository.auth.createUserWithEmailAndPassword(email, pass).await() }
                 val firebaseUser = authResult.user
                 if (firebaseUser != null) {
                     val generatedUsername = try { repository.generateUniqueUsername(email.substringBefore("@")) } catch(e:Exception) { "user_" + firebaseUser.uid.take(5) }
@@ -134,7 +140,7 @@ class AuthViewModel : ViewModel() {
                         photoUrl = ""
                     )
                     try {
-                        repository.saveUser(newUser)
+                        kotlinx.coroutines.withTimeoutOrNull(3000) { repository.saveUser(newUser) }
                     } catch (e: Exception) {}
                     _currentUser.value = newUser
                 }
@@ -194,7 +200,7 @@ class AuthViewModel : ViewModel() {
                     username = username,
                     photoUrl = finalPhotoUrl
                 )
-                repository.saveUser(updatedUser)
+                kotlinx.coroutines.withTimeoutOrNull(3000) { repository.saveUser(updatedUser) }
                 _currentUser.value = updatedUser
                 onComplete(true, null)
             } catch (e: Exception) {
