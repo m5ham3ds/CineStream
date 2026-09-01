@@ -140,7 +140,6 @@ class SocialRepository {
         
         val listener = db.collection("conversations")
             .whereArrayContains("participants", user.uid)
-            .orderBy("lastMessageTime", Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
                     close(e)
@@ -148,6 +147,7 @@ class SocialRepository {
                 }
                 if (snapshot != null) {
                     val convs = snapshot.documents.mapNotNull { it.toObject(Conversation::class.java) }
+                        .sortedByDescending { it.lastMessageTime }
                     trySend(convs)
                 }
             }
