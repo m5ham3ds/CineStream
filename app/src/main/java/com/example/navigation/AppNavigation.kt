@@ -688,13 +688,21 @@ fun AppNavigation() {
                         }
                     )
                 }
-                composable(Screen.Profile.route) { ProfileScreen(onNavigateToAuth = {
-                        scope.launch { 
-                            userPrefs.saveIsLoggedIn(false)
-                            userPrefs.saveIsGuest(true)
-                        }
+                            composable(Screen.Profile.route) {
+                ProfileScreen(
+                    onNavigateToAuth = {
                         navController.navigate(Screen.Auth.route) { popUpTo(0) }
-                    }) }
+                    },
+                    onNavigateToEditProfile = {
+                        navController.navigate(Screen.EditProfile.route)
+                    }
+                )
+            }
+            composable(Screen.EditProfile.route) {
+                com.example.ui.screens.profile.EditProfileScreen(
+                    onBack = { navController.popBackStack() }
+                )
+            }
                 composable(Screen.Downloads.route) { 
                     DownloadsScreen(
                         onNavigateToHome = {

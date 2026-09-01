@@ -12,7 +12,8 @@ data class User(
     val firstName: String = "",
     val lastName: String = "",
     val username: String = "",
-    val photoUrl: String = ""
+    val photoUrl: String = "",
+    val isProfilePublic: Boolean = true
 )
 
 object AuthRepository {

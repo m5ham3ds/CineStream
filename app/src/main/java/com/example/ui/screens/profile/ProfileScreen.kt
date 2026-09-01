@@ -39,13 +39,13 @@ import com.example.ui.screens.auth.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(onNavigateToAuth: () -> Unit = {}) {
+fun ProfileScreen(onNavigateToAuth: () -> Unit = {}, onNavigateToEditProfile: () -> Unit = {}) {
     val authViewModel: AuthViewModel = viewModel(factory = ViewModelFactory())
     val currentUser by authViewModel.currentUser.collectAsState()
     val isLoading by authViewModel.isLoading.collectAsState()
     val context = LocalContext.current
 
-    var showEditProfile by remember { mutableStateOf(false) }
+    
 
     val primaryRed = Color(0xFFE50914)
     val bgColor = Color(0xFF121212)
@@ -124,6 +124,7 @@ fun ProfileScreen(onNavigateToAuth: () -> Unit = {}) {
                             currentUser?.firstName ?: "", 
                             currentUser?.lastName ?: "", 
                             currentUser?.username ?: "", 
+                            currentUser?.isProfilePublic ?: true,
                             selectedImageUri
                         ) { success, error ->
                             if (success) {
@@ -151,68 +152,6 @@ fun ProfileScreen(onNavigateToAuth: () -> Unit = {}) {
         )
     }
 
-    if (showEditProfile && currentUser != null) {
-        var firstName by remember { mutableStateOf(currentUser?.firstName ?: "") }
-        var lastName by remember { mutableStateOf(currentUser?.lastName ?: "") }
-        var username by remember { mutableStateOf(currentUser?.username ?: "") }
-        
-        AlertDialog(
-            onDismissRequest = { showEditProfile = false },
-            title = { Text("Edit Profile") },
-            text = {
-                Column {
-                    OutlinedTextField(
-                        value = firstName,
-                        onValueChange = { firstName = it },
-                        label = { Text("First Name") },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
-                    )
-                    OutlinedTextField(
-                        value = lastName,
-                        onValueChange = { lastName = it },
-                        label = { Text("Last Name") },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
-                    )
-                    OutlinedTextField(
-                        value = username,
-                        onValueChange = { username = it },
-                        label = { Text("Username") },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
-                    )
-                    if (isLoading) {
-                        CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 8.dp), color = primaryRed)
-                    }
-                }
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        if (username.isNotBlank()) {
-                            authViewModel.updateProfile(firstName, lastName, username, null) { success, error ->
-                                if (success) {
-                                    showEditProfile = false
-                                    Toast.makeText(context, "Profile updated", Toast.LENGTH_SHORT).show()
-                                } else {
-                                    Toast.makeText(context, error ?: "Failed to update", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                        }
-                    },
-                    enabled = !isLoading
-                ) {
-                    Text("Save", color = primaryRed)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showEditProfile = false }, enabled = !isLoading) {
-                    Text("Cancel", color = Color.Gray)
-                }
-            }
-        )
-    }
 
     Column(
         modifier = Modifier
@@ -271,7 +210,7 @@ fun ProfileScreen(onNavigateToAuth: () -> Unit = {}) {
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .clickable(enabled = currentUser != null) { showEditProfile = true }
+                    .clickable(enabled = currentUser != null) { onNavigateToEditProfile() }
                     .padding(vertical = 4.dp)
             ) {
                 val displayName = if (currentUser != null) {
@@ -281,7 +220,20 @@ fun ProfileScreen(onNavigateToAuth: () -> Unit = {}) {
                 }
                 Text(displayName, color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Bold)
                 if (currentUser != null && !currentUser?.username.isNullOrEmpty()) {
-                    Text("@${currentUser?.username}", color = Color.LightGray, fontSize = 14.sp)
+                    Text(
+                        text = "@${currentUser?.username}",
+                        color = Color.LightGray,
+                        fontSize = 14.sp,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(4.dp))
+                            .clickable {
+                                val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                                val clip = android.content.ClipData.newPlainText("username", currentUser?.username)
+                                clipboard.setPrimaryClip(clip)
+                                Toast.makeText(context, "Username copied", Toast.LENGTH_SHORT).show()
+                            }
+                            .padding(2.dp)
+                    )
                 }
                 Text(currentUser?.email ?: "Sign in to access features", color = Color.Gray, fontSize = 14.sp)
                 

@@ -176,7 +176,7 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    fun updateProfile(firstName: String, lastName: String, username: String, photoUri: Uri? = null, onComplete: (Boolean, String?) -> Unit) {
+    fun updateProfile(firstName: String, lastName: String, username: String, isProfilePublic: Boolean = true, photoUri: Uri? = null, onComplete: (Boolean, String?) -> Unit) {
         val safeUsername = username.lowercase().replace(" ", "").trim()
         viewModelScope.launch {
             _isLoading.value = true
@@ -213,7 +213,8 @@ class AuthViewModel : ViewModel() {
                     firstName = firstName,
                     lastName = lastName,
                     username = safeUsername,
-                    photoUrl = finalPhotoUrl
+                    photoUrl = finalPhotoUrl,
+                    isProfilePublic = isProfilePublic
                 )
                 kotlinx.coroutines.withTimeout(15000) { repository.saveUser(updatedUser) }
                 _currentUser.value = updatedUser

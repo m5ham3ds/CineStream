@@ -14,7 +14,8 @@ data class UserProfile(
     val firstName: String = "",
     val lastName: String = "",
     val photoUrl: String = "",
-    val isOnline: Boolean = false
+    val isOnline: Boolean = false,
+    val isProfilePublic: Boolean = true
 ) {
     val displayName: String
         get() = "${firstName} ${lastName}".trim().takeIf { it.isNotBlank() } ?: username
@@ -84,8 +85,8 @@ class SocialRepository {
                 if (snapshot != null) {
                     val users = snapshot.documents.mapNotNull { it.toObject(UserProfile::class.java) }
                     val filtered = users.filter { 
-                        it.username.lowercase().contains(lowerQuery) || 
-                        it.displayName.lowercase().contains(lowerQuery) 
+                        it.isProfilePublic && (it.username.lowercase().contains(lowerQuery) || 
+                        it.displayName.lowercase().contains(lowerQuery))
                     }
                     trySend(filtered)
                 }
@@ -134,6 +135,8 @@ class SocialRepository {
     
     suspend fun startConversation(otherUserId: String, otherUserName: String): String {
         val user = getCurrentUser() ?: return ""
+        val dbUserDoc = db.collection("users").document(user.uid).get().await()
+        val realUser = dbUserDoc.toObject(UserProfile::class.java) ?: user
         val participants = listOf(user.uid, otherUserId).sorted()
         val convId = participants.joinToString("_")
         
@@ -144,7 +147,7 @@ class SocialRepository {
             val conv = Conversation(
                 id = convId,
                 participants = participants,
-                participantNames = mapOf(user.uid to user.displayName, otherUserId to otherUserName)
+                participantNames = mapOf(user.uid to realUser.displayName, otherUserId to otherUserName)
             )
             docRef.set(conv).await()
         }

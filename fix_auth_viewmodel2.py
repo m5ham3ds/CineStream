@@ -5,11 +5,11 @@ with open("app/src/main/java/com/example/ui/screens/auth/AuthViewModel.kt", "r")
 
 # Replace updateProfile signature
 content = content.replace(
-    "fun updateProfile(firstName: String, lastName: String, username: String, photoUri: Uri?, onComplete: (Boolean, String?) -> Unit) {",
+    "fun updateProfile(firstName: String, lastName: String, username: String, photoUri: Uri? = null, onComplete: (Boolean, String?) -> Unit) {",
     "fun updateProfile(firstName: String, lastName: String, username: String, isProfilePublic: Boolean = true, photoUri: Uri? = null, onComplete: (Boolean, String?) -> Unit) {"
 )
 
-# Replace copy constructor in updateProfile
+# I also need to check the copy function again.
 old_copy = """                val updatedUser = currentUserData.copy(
                     firstName = firstName,
                     lastName = lastName,
@@ -23,7 +23,8 @@ new_copy = """                val updatedUser = currentUserData.copy(
                     photoUrl = finalPhotoUrl,
                     isProfilePublic = isProfilePublic
                 )"""
-content = content.replace(old_copy, new_copy)
+if old_copy in content:
+    content = content.replace(old_copy, new_copy)
 
 with open("app/src/main/java/com/example/ui/screens/auth/AuthViewModel.kt", "w") as f:
     f.write(content)
