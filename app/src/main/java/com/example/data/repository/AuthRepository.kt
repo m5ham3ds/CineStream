@@ -20,15 +20,10 @@ object AuthRepository {
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val storage: FirebaseStorage = FirebaseStorage.getInstance()
 
-    suspend fun uploadProfilePicture(uid: String, uri: Uri): String? {
-        return try {
-            val ref = storage.reference.child("profile_pictures/$uid/${System.currentTimeMillis()}.jpg")
-            ref.putFile(uri).await()
-            ref.downloadUrl.await().toString()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
+    suspend fun uploadProfilePicture(uid: String, uri: Uri): String {
+        val ref = storage.reference.child("profile_pictures/$uid/${System.currentTimeMillis()}.jpg")
+        ref.putFile(uri).await()
+        return ref.downloadUrl.await().toString()
     }
 
     suspend fun getCurrentUser(): User? {
