@@ -52,6 +52,8 @@ fun ProfileScreen(onNavigateToAuth: () -> Unit = {}) {
     val cardColor = Color(0xFF1E1E1E)
     val iconBgColor = Color(0xFF2C2C2E)
     var showEditPhoto by remember { mutableStateOf(false) }
+    var showImageConfirmDialog by remember { mutableStateOf(false) }
+    var showLogoutConfirm by remember { mutableStateOf(false) }
     
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     val photoPickerLauncher = rememberLauncherForActivityResult(
@@ -59,7 +61,7 @@ fun ProfileScreen(onNavigateToAuth: () -> Unit = {}) {
     ) { uri: Uri? ->
         if (uri != null) {
             selectedImageUri = uri
-            showEditProfile = true
+            showImageConfirmDialog = true
         }
     }
     
@@ -68,6 +70,85 @@ fun ProfileScreen(onNavigateToAuth: () -> Unit = {}) {
             photoPickerLauncher.launch("image/*")
             showEditPhoto = false
         }
+    }
+
+    
+    if (showLogoutConfirm) {
+        AlertDialog(
+            onDismissRequest = { showLogoutConfirm = false },
+            title = { Text("Sign Out", color = Color.White) },
+            text = { Text("Are you sure you want to sign out?", color = Color.Gray) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showLogoutConfirm = false
+                        authViewModel.signOut()
+                        onNavigateToAuth()
+                    }
+                ) { Text("Sign Out", color = primaryRed) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showLogoutConfirm = false }) { Text("Cancel", color = Color.White) }
+            },
+            containerColor = cardColor
+        )
+    }
+
+    if (showImageConfirmDialog && selectedImageUri != null) {
+        AlertDialog(
+            onDismissRequest = { 
+                showImageConfirmDialog = false 
+                selectedImageUri = null
+            },
+            title = { Text("Update Profile Picture", color = Color.White) },
+            text = { 
+                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+                    AsyncImage(
+                        model = selectedImageUri,
+                        contentDescription = "New Profile Photo",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.size(120.dp).clip(CircleShape).border(2.dp, primaryRed, CircleShape)
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text("Do you want to set this as your new profile picture?", color = Color.Gray)
+                    if (isLoading) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        CircularProgressIndicator(color = primaryRed)
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        authViewModel.updateProfile(
+                            currentUser?.firstName ?: "", 
+                            currentUser?.lastName ?: "", 
+                            currentUser?.username ?: "", 
+                            selectedImageUri
+                        ) { success, error ->
+                            if (success) {
+                                showImageConfirmDialog = false
+                                selectedImageUri = null
+                                Toast.makeText(context, "Profile picture updated", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(context, error ?: "Failed to update", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    },
+                    enabled = !isLoading
+                ) { Text("Save", color = primaryRed) }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { 
+                        showImageConfirmDialog = false 
+                        selectedImageUri = null
+                    },
+                    enabled = !isLoading
+                ) { Text("Cancel", color = Color.White) }
+            },
+            containerColor = cardColor
+        )
     }
 
     if (showEditProfile && currentUser != null) {
@@ -110,7 +191,7 @@ fun ProfileScreen(onNavigateToAuth: () -> Unit = {}) {
                 TextButton(
                     onClick = {
                         if (username.isNotBlank()) {
-                            authViewModel.updateProfile(firstName, lastName, username, selectedImageUri) { success, error ->
+                            authViewModel.updateProfile(firstName, lastName, username, null) { success, error ->
                                 if (success) {
                                     showEditProfile = false
                                     Toast.makeText(context, "Profile updated", Toast.LENGTH_SHORT).show()
@@ -292,10 +373,7 @@ fun ProfileScreen(onNavigateToAuth: () -> Unit = {}) {
         if (currentUser != null) {
             Spacer(modifier = Modifier.height(32.dp))
             Button(
-                onClick = { 
-                    authViewModel.signOut()
-                    onNavigateToAuth()
-                },
+                onClick = { showLogoutConfirm = true },
                 modifier = Modifier.fillMaxWidth().height(50.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2C2C2E)),
                 shape = RoundedCornerShape(12.dp)

@@ -167,6 +167,7 @@ class AuthViewModel : ViewModel() {
     }
 
     fun updateProfile(firstName: String, lastName: String, username: String, photoUri: Uri? = null, onComplete: (Boolean, String?) -> Unit) {
+        val safeUsername = username.lowercase().replace(" ", "").trim()
         viewModelScope.launch {
             _isLoading.value = true
             val currentUserData = _currentUser.value
@@ -178,7 +179,7 @@ class AuthViewModel : ViewModel() {
             
             try {
                 if (username != currentUserData.username) {
-                    val isTaken = repository.isUsernameTaken(username, currentUserData.uid)
+                    val isTaken = repository.isUsernameTaken(safeUsername, currentUserData.uid)
                     if (isTaken) {
                         onComplete(false, "Username is already taken")
                         _isLoading.value = false
@@ -197,7 +198,7 @@ class AuthViewModel : ViewModel() {
                 val updatedUser = currentUserData.copy(
                     firstName = firstName,
                     lastName = lastName,
-                    username = username,
+                    username = safeUsername,
                     photoUrl = finalPhotoUrl
                 )
                 kotlinx.coroutines.withTimeoutOrNull(3000) { repository.saveUser(updatedUser) }

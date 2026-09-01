@@ -197,6 +197,13 @@ fun AppNavigation() {
                                     fontFamily = FontFamily.SansSerif,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
+                                if (!isGuest && currentUser?.username?.isNotBlank() == true) {
+                                    Text(
+                                        text = "@${currentUser?.username}",
+                                        fontSize = 14.sp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     if (!isGuest) {
                                         Icon(painter = painterResource(android.R.drawable.ic_dialog_info), contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
@@ -466,7 +473,7 @@ fun AppNavigation() {
                                 modifier = Modifier
                                     .size(40.dp)
                                     .clip(CircleShape)
-                                    .background(Color.DarkGray)
+                                    .background(MaterialTheme.colorScheme.onSurfaceVariant)
                                     .clickable {
                                          if (isGuest) {
                                             navController.navigate(Screen.Auth.route)
@@ -476,7 +483,16 @@ fun AppNavigation() {
                                     },
                                 contentAlignment = Alignment.Center
                             ) {
-                                Icon(Icons.Default.Person, contentDescription = "Avatar", tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                                if (currentUser != null && currentUser?.photoUrl?.isNotEmpty() == true) {
+                                    AsyncImage(
+                                        model = currentUser?.photoUrl,
+                                        contentDescription = "Avatar",
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                } else {
+                                    Icon(Icons.Default.Person, contentDescription = "Avatar", tint = MaterialTheme.colorScheme.background)
+                                }
                             }
                             
                             if (!isSearchExpanded) {
