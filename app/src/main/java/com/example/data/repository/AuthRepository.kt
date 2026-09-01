@@ -34,7 +34,7 @@ object AuthRepository {
     suspend fun getCurrentUser(): User? {
         val firebaseUser = auth.currentUser ?: return null
         return try {
-            val snapshot = kotlinx.coroutines.withTimeout(5000) { db.collection("users").document(firebaseUser.uid).get().await() }
+            val snapshot = kotlinx.coroutines.withTimeout(15000) { db.collection("users").document(firebaseUser.uid).get().await() }
             if (snapshot.exists()) {
                 snapshot.toObject(User::class.java)
             } else {

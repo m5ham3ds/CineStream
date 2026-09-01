@@ -58,28 +58,31 @@ class AuthViewModel : ViewModel() {
             _isLoading.value = true
             try {
                 val credential = com.google.firebase.auth.GoogleAuthProvider.getCredential(idToken, null)
-                val authResult = kotlinx.coroutines.withTimeout(10000) { repository.auth.signInWithCredential(credential).await() }
+                val authResult = kotlinx.coroutines.withTimeout(15000) { repository.auth.signInWithCredential(credential).await() }
                 val firebaseUser = authResult.user
                 
                 if (firebaseUser != null) {
-                    var existingUser = repository.getCurrentUser()
-                    
-                    if (existingUser == null) {
-                        val generatedUsername = try { repository.generateUniqueUsername(email?.substringBefore("@") ?: "user") } catch(e:Exception) { "user_" + firebaseUser.uid.take(5) }
-                        val newUser = User(
-                            uid = firebaseUser.uid,
-                            email = email ?: firebaseUser.email ?: "",
-                            firstName = displayName?.substringBefore(" ") ?: "",
-                            lastName = displayName?.substringAfter(" ", "") ?: "",
-                            username = generatedUsername,
-                            photoUrl = photoUrl ?: firebaseUser.photoUrl?.toString() ?: ""
-                        )
-                        try {
-                            kotlinx.coroutines.withTimeoutOrNull(3000) { repository.saveUser(newUser) }
-                        } catch (e: Exception) {}
-                        _currentUser.value = newUser
-                    } else {
-                        _currentUser.value = existingUser
+                    try {
+                        val snapshot = kotlinx.coroutines.withTimeout(15000) { com.google.firebase.firestore.FirebaseFirestore.getInstance().collection("users").document(firebaseUser.uid).get().await() }
+                        if (snapshot.exists()) {
+                            _currentUser.value = snapshot.toObject(User::class.java)
+                        } else {
+                            val generatedUsername = try { repository.generateUniqueUsername(email?.substringBefore("@") ?: "user") } catch(e:Exception) { "user_" + firebaseUser.uid.take(5) }
+                            val newUser = User(
+                                uid = firebaseUser.uid,
+                                email = email ?: firebaseUser.email ?: "",
+                                firstName = displayName?.substringBefore(" ") ?: "",
+                                lastName = displayName?.substringAfter(" ", "") ?: "",
+                                username = generatedUsername,
+                                photoUrl = photoUrl ?: firebaseUser.photoUrl?.toString() ?: ""
+                            )
+                            kotlinx.coroutines.withTimeoutOrNull(15000) { repository.saveUser(newUser) }
+                            _currentUser.value = newUser
+                        }
+                    } catch (e: Exception) {
+                        repository.auth.signOut()
+                        _authError.value = "Network error: Could not load user profile. Please try again."
+                        _currentUser.value = null
                     }
                 }
             } catch (e: Exception) {
@@ -95,25 +98,32 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val authResult = kotlinx.coroutines.withTimeout(10000) { repository.auth.signInWithEmailAndPassword(email, pass).await() }
+                val authResult = kotlinx.coroutines.withTimeout(15000) { repository.auth.signInWithEmailAndPassword(email, pass).await() }
                 val firebaseUser = authResult.user
                 if (firebaseUser != null) {
-                    var user = repository.getCurrentUser()
-                    if (user == null) {
-                        val generatedUsername = try { repository.generateUniqueUsername(email.substringBefore("@")) } catch(e:Exception) { "user_" + firebaseUser.uid.take(5) }
-                        user = User(
-                            uid = firebaseUser.uid,
-                            email = email,
-                            firstName = "",
-                            lastName = "",
-                            username = generatedUsername,
-                            photoUrl = ""
-                        )
-                        try {
-                            kotlinx.coroutines.withTimeoutOrNull(3000) { repository.saveUser(user) }
-                        } catch (e: Exception) {}
+                    try {
+                        val snapshot = kotlinx.coroutines.withTimeout(15000) { com.google.firebase.firestore.FirebaseFirestore.getInstance().collection("users").document(firebaseUser.uid).get().await() }
+                        if (snapshot.exists()) {
+                            _currentUser.value = snapshot.toObject(User::class.java)
+                        } else {
+                            // User document missing? Rare, but create it.
+                            val generatedUsername = try { repository.generateUniqueUsername(email.substringBefore("@")) } catch(e:Exception) { "user_" + firebaseUser.uid.take(5) }
+                            val user = User(
+                                uid = firebaseUser.uid,
+                                email = email,
+                                firstName = "",
+                                lastName = "",
+                                username = generatedUsername,
+                                photoUrl = ""
+                            )
+                            kotlinx.coroutines.withTimeoutOrNull(15000) { repository.saveUser(user) }
+                            _currentUser.value = user
+                        }
+                    } catch (e: Exception) {
+                        repository.auth.signOut()
+                        _authError.value = "Network error: Could not load user profile. Please try again."
+                        _currentUser.value = null
                     }
-                    _currentUser.value = user
                 }
             } catch (e: Exception) {
                 _authError.value = e.message ?: "Login failed"
@@ -127,7 +137,7 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val authResult = kotlinx.coroutines.withTimeout(10000) { repository.auth.createUserWithEmailAndPassword(email, pass).await() }
+                val authResult = kotlinx.coroutines.withTimeout(15000) { repository.auth.createUserWithEmailAndPassword(email, pass).await() }
                 val firebaseUser = authResult.user
                 if (firebaseUser != null) {
                     val generatedUsername = try { repository.generateUniqueUsername(email.substringBefore("@")) } catch(e:Exception) { "user_" + firebaseUser.uid.take(5) }
@@ -140,7 +150,7 @@ class AuthViewModel : ViewModel() {
                         photoUrl = ""
                     )
                     try {
-                        kotlinx.coroutines.withTimeoutOrNull(3000) { repository.saveUser(newUser) }
+                        kotlinx.coroutines.withTimeout(15000) { repository.saveUser(newUser) }
                     } catch (e: Exception) {}
                     _currentUser.value = newUser
                 }
@@ -192,6 +202,10 @@ class AuthViewModel : ViewModel() {
                     val uploadedUrl = repository.uploadProfilePicture(currentUserData.uid, photoUri)
                     if (uploadedUrl != null) {
                         finalPhotoUrl = uploadedUrl
+                    } else {
+                        onComplete(false, "Failed to upload image. Check Firebase Storage rules or network.")
+                        _isLoading.value = false
+                        return@launch
                     }
                 }
                 
@@ -201,11 +215,11 @@ class AuthViewModel : ViewModel() {
                     username = safeUsername,
                     photoUrl = finalPhotoUrl
                 )
-                kotlinx.coroutines.withTimeoutOrNull(3000) { repository.saveUser(updatedUser) }
+                kotlinx.coroutines.withTimeout(15000) { repository.saveUser(updatedUser) }
                 _currentUser.value = updatedUser
                 onComplete(true, null)
             } catch (e: Exception) {
-                onComplete(false, e.message)
+                onComplete(false, "Failed to save to server. Check connection.")
             } finally {
                 _isLoading.value = false
             }
