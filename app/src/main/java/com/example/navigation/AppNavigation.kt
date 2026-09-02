@@ -573,7 +573,7 @@ navController.navigate(Screen.SeriesDetails.createRoute(id)) }
             bottomBar = {
                 androidx.compose.foundation.layout.Column {
                     if (currentRoute != null && currentRoute != Screen.Splash.route && currentRoute != Screen.Auth.route && currentRoute != Screen.Onboarding.route) {
-                        if (!currentRoute.contains("movie_details") && !currentRoute.contains("series_details")) {
+                        if (!currentRoute.contains("movie_details") && !currentRoute.contains("series_details") && !currentRoute.contains("player") && !currentRoute.contains("trailer")) {
                             com.example.ui.components.StartAppBanner()
                         }
                     }

@@ -16,12 +16,12 @@ data class PlayerUiState(
     val title: String = "",
     
     // Website (Provider)
-    val availableWebsites: List<String> = listOf("VidSrc", "SuperStream", "AutoEmbed"),
+    val availableWebsites: List<String> = listOf("VidSrc", "SuperStream", "FlixHQ", "Goku", "EgyBest", "FaselHD"),
     val currentWebsite: String = "VidSrc",
     
     // Server
-    val availableServers: List<String> = listOf("Auto Server 1", "Auto Server 2"),
-    val currentServer: String = "Auto Server 1",
+    val availableServers: List<String> = listOf("Server 1", "Server 2", "VIP Server", "Fast Server"),
+    val currentServer: String = "Server 1",
     
     // Quality
     val availableQualities: List<String> = listOf("Auto", "1080p", "720p"),
@@ -119,12 +119,20 @@ class PlayerViewModel : ViewModel() {
             when (state.currentWebsite) {
                 "VidSrc" -> "https://vidsrc.me/embed/movie?tmdb=${state.mediaId}"
                 "SuperStream" -> "https://multiembed.mov/?video_id=${state.mediaId}&tmdb=1"
+                "FlixHQ" -> "https://vidsrc.to/embed/movie/${state.mediaId}"
+                "Goku" -> "https://vidsrc.cc/v2/embed/movie/${state.mediaId}"
+                "EgyBest" -> "https://egydead.icu/movie/${state.mediaId}"
+                "FaselHD" -> "https://faselhd.club/?p=${state.mediaId}"
                 else -> "https://vidsrc.me/embed/movie?tmdb=${state.mediaId}"
             }
         } else {
             when (state.currentWebsite) {
                 "VidSrc" -> "https://vidsrc.me/embed/tv?tmdb=${state.mediaId}&season=${state.currentSeasonNumber}&episode=${state.currentEpisodeNumber}"
                 "SuperStream" -> "https://multiembed.mov/?video_id=${state.mediaId}&tmdb=1&s=${state.currentSeasonNumber}&e=${state.currentEpisodeNumber}"
+                "FlixHQ" -> "https://vidsrc.to/embed/tv/${state.mediaId}/${state.currentSeasonNumber}/${state.currentEpisodeNumber}"
+                "Goku" -> "https://vidsrc.cc/v2/embed/tv/${state.mediaId}/${state.currentSeasonNumber}/${state.currentEpisodeNumber}"
+                "EgyBest" -> "https://egydead.icu/episode/${state.mediaId}-season-${state.currentSeasonNumber}-ep-${state.currentEpisodeNumber}"
+                "FaselHD" -> "https://faselhd.club/?p=${state.mediaId}&s=${state.currentSeasonNumber}&e=${state.currentEpisodeNumber}"
                 else -> "https://vidsrc.me/embed/tv?tmdb=${state.mediaId}&season=${state.currentSeasonNumber}&episode=${state.currentEpisodeNumber}"
             }
         }

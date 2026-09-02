@@ -190,6 +190,17 @@ fun PlayerScreen(mediaId: String, isMovie: Boolean, title: String, url: String? 
         }
 
         AnimatedVisibility(
+            visible = !showControls && !uiState.isLoading,
+            enter = fadeIn(),
+            exit = fadeOut(),
+            modifier = Modifier.align(Alignment.TopCenter).fillMaxWidth()
+        ) {
+            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
+                com.example.ui.components.StartAppBanner()
+            }
+        }
+
+        AnimatedVisibility(
             visible = showControls,
             enter = fadeIn(),
             exit = fadeOut(),
