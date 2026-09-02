@@ -70,7 +70,6 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
     DisposableEffect(Unit) {
         val activity = context as? Activity
         activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
-        
         val window = activity?.window
         var insetsController: WindowInsetsControllerCompat? = null
         if (window != null) {
@@ -78,7 +77,6 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
             insetsController.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             insetsController.hide(androidx.core.view.WindowInsetsCompat.Type.systemBars())
         }
-        
         onDispose {
             activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
             insetsController?.show(androidx.core.view.WindowInsetsCompat.Type.systemBars())
@@ -112,11 +110,11 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
             it.attributes = lp
         }
     }
-    
+
     LaunchedEffect(volume) {
         exoPlayer.volume = volume
     }
-    
+
     LaunchedEffect(isPlaying) {
         while (isPlaying) {
             currentTime = exoPlayer.currentPosition
@@ -181,25 +179,23 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
                     }
                 } else {
                     // Top Bar
-                    Row(
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 24.dp, start = 48.dp, end = 48.dp)
-                            .align(Alignment.TopCenter),
-                        verticalAlignment = Alignment.Top
+                            .padding(top = 16.dp, start = 16.dp, end = 16.dp)
                     ) {
                         // Left section
                         Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.align(Alignment.CenterStart),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
-                                Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Back",
-                                tint = Color.White,
-                                modifier = Modifier.size(40.dp).clickable { onBack() }
+                                Icons.AutoMirrored.Filled.ArrowBack, 
+                                contentDescription = "Back", 
+                                tint = Color.White, 
+                                modifier = Modifier.size(28.dp).clickable { onBack() }
                             )
-                            Spacer(modifier = Modifier.width(160.dp))
+                            Spacer(modifier = Modifier.width(16.dp))
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.clickable { showServerSheet = true }.padding(8.dp)
@@ -209,23 +205,22 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
                                 Icon(Icons.Default.KeyboardArrowDown, contentDescription = null, tint = Color(0xFFE50914), modifier = Modifier.size(16.dp))
                             }
                         }
-
+                        
                         // Center section
                         Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.align(Alignment.Center),
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text("Now Playing", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                             Spacer(modifier = Modifier.height(4.dp))
                             Text("Episode 1", color = Color.LightGray, fontSize = 14.sp)
                         }
-
+                        
                         // Right section
                         Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.align(Alignment.CenterEnd),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Spacer(modifier = Modifier.width(70.dp))
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.clickable { showWebsiteSheet = true }.padding(8.dp)
@@ -234,18 +229,18 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text("WEBSITE", color = Color.Gray, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                             }
-                            Spacer(modifier = Modifier.weight(1f))
+                            Spacer(modifier = Modifier.width(16.dp))
                             Icon(
-                                Icons.Default.MoreVert,
-                                contentDescription = "Menu",
-                                tint = Color.White,
-                                modifier = Modifier.size(40.dp).clickable { /* Menu */ }
+                                Icons.Default.MoreVert, 
+                                contentDescription = "Menu", 
+                                tint = Color.White, 
+                                modifier = Modifier.size(28.dp).clickable { /* Menu */ }
                             )
                         }
                     }
 
                     // Left Vertical Slider (Brightness)
-                    Box(modifier = Modifier.align(Alignment.TopStart).padding(start = 48.dp, top = 144.dp)) {
+                    Box(modifier = Modifier.align(Alignment.CenterStart).padding(start = 24.dp)) {
                         VerticalSlider(
                             value = brightness, 
                             onValueChange = { brightness = it }, 
@@ -253,9 +248,9 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
                             bottomIcon = Icons.Default.PictureInPictureAlt
                         )
                     }
-
+                    
                     // Right Vertical Slider (Volume)
-                    Box(modifier = Modifier.align(Alignment.TopEnd).padding(end = 48.dp, top = 144.dp)) {
+                    Box(modifier = Modifier.align(Alignment.CenterEnd).padding(end = 24.dp)) {
                         VerticalSlider(
                             value = volume, 
                             onValueChange = { volume = it }, 
@@ -263,27 +258,26 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
                             bottomIcon = Icons.Default.Fullscreen
                         )
                     }
-
+                    
                     // Center Playback Controls
                     Row(
                         modifier = Modifier.align(Alignment.Center),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(76.dp)
+                        horizontalArrangement = Arrangement.spacedBy(32.dp)
                     ) {
                         Box(
                             contentAlignment = Alignment.Center,
                             modifier = Modifier
-                                .size(88.dp)
+                                .size(56.dp)
                                 .border(1.dp, Color.White.copy(alpha = 0.2f), CircleShape)
                                 .clickable { exoPlayer.seekTo((exoPlayer.currentPosition - 10000).coerceAtLeast(0)) }
                         ) {
-                            Icon(Icons.Default.Replay10, contentDescription = "Rewind", tint = Color.White, modifier = Modifier.size(32.dp))
+                            Icon(Icons.Default.Replay10, contentDescription = "Rewind", tint = Color.White, modifier = Modifier.size(28.dp))
                         }
-                        
                         Box(
                             contentAlignment = Alignment.Center,
                             modifier = Modifier
-                                .size(126.dp)
+                                .size(72.dp)
                                 .border(2.dp, Color(0xFFE50914), CircleShape)
                                 .clickable { if (isPlaying) exoPlayer.pause() else exoPlayer.play() }
                         ) {
@@ -291,27 +285,26 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
                                 if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
                                 contentDescription = "Play/Pause",
                                 tint = Color.White,
-                                modifier = Modifier.size(40.dp)
+                                modifier = Modifier.size(36.dp)
                             )
                         }
-                        
                         Box(
                             contentAlignment = Alignment.Center,
                             modifier = Modifier
-                                .size(88.dp)
+                                .size(56.dp)
                                 .border(1.dp, Color.White.copy(alpha = 0.2f), CircleShape)
                                 .clickable { exoPlayer.seekTo((exoPlayer.currentPosition + 10000).coerceAtMost(exoPlayer.duration)) }
                         ) {
-                            Icon(Icons.Default.Forward10, contentDescription = "Forward", tint = Color.White, modifier = Modifier.size(32.dp))
+                            Icon(Icons.Default.Forward10, contentDescription = "Forward", tint = Color.White, modifier = Modifier.size(28.dp))
                         }
                     }
-
+                    
                     // Bottom Controls
                     Column(
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                             .fillMaxWidth()
-                            .padding(horizontal = 48.dp, bottom = 16.dp, top = 0.dp)
+                            .padding(horizontal = 24.dp, vertical = 24.dp)
                     ) {
                         // Progress Bar Row
                         Row(
@@ -319,7 +312,7 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Text(formatTime(currentTime), color = Color.White, fontSize = 14.sp)
-                            Spacer(modifier = Modifier.width(64.dp))
+                            Spacer(modifier = Modifier.width(16.dp))
                             SimpleSlider(
                                 value = if (totalDuration > 0) (currentTime.toFloat() / totalDuration.toFloat()) else 0f,
                                 onValueChange = { percent ->
@@ -329,18 +322,15 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
                                 },
                                 modifier = Modifier.weight(1f)
                             )
-                            Spacer(modifier = Modifier.width(32.dp))
+                            Spacer(modifier = Modifier.width(16.dp))
                             Text(formatTime(totalDuration), color = Color.White, fontSize = 14.sp)
                         }
-
-                        Spacer(modifier = Modifier.height(24.dp))
-
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
                         // Action Toolbar Row
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 40.dp, end = 150.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             BottomAction(icon = Icons.Default.Speed, text = "Speed (${if (currentSpeed == 1f) "1" else currentSpeed}x)") { 
@@ -393,7 +383,7 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
             }
         }
     }
-    
+
     if (showEpisodesSheet) {
         ModalBottomSheet(
             onDismissRequest = { showEpisodesSheet = false },
@@ -489,13 +479,12 @@ fun VerticalSlider(
     bottomIcon: ImageVector
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Icon(topIcon, contentDescription = null, tint = Color.White, modifier = Modifier.size(40.dp))
-        Spacer(modifier = Modifier.height(44.dp))
-        
+        Icon(topIcon, contentDescription = null, tint = Color.White, modifier = Modifier.size(28.dp))
+        Spacer(modifier = Modifier.height(16.dp))
         Canvas(
             modifier = Modifier
                 .width(32.dp)
-                .height(184.dp)
+                .height(140.dp)
                 .pointerInput(Unit) {
                     detectTapGestures { offset ->
                         val newValue = 1f - (offset.y / size.height).coerceIn(0f, 1f)
@@ -514,9 +503,8 @@ fun VerticalSlider(
             val centerX = width / 2f
             val trackWidth = 4.dp.toPx()
             val thumbRadius = 8.dp.toPx()
-            
             val thumbY = height - (height * value)
-            
+
             // Inactive Track (Full height)
             drawRoundRect(
                 color = Color.White.copy(alpha = 0.3f),
@@ -524,7 +512,6 @@ fun VerticalSlider(
                 size = Size(trackWidth, height),
                 cornerRadius = CornerRadius(trackWidth / 2f)
             )
-            
             // Active Track (From bottom to thumb)
             drawRoundRect(
                 color = Color.White,
@@ -532,7 +519,6 @@ fun VerticalSlider(
                 size = Size(trackWidth, height - thumbY),
                 cornerRadius = CornerRadius(trackWidth / 2f)
             )
-            
             // Thumb
             drawCircle(
                 color = Color.White,
@@ -540,9 +526,8 @@ fun VerticalSlider(
                 center = Offset(centerX, thumbY)
             )
         }
-        
-        Spacer(modifier = Modifier.height(40.dp))
-        Icon(bottomIcon, contentDescription = null, tint = Color.White, modifier = Modifier.size(40.dp))
+        Spacer(modifier = Modifier.height(16.dp))
+        Icon(bottomIcon, contentDescription = null, tint = Color.White, modifier = Modifier.size(28.dp))
     }
 }
 
@@ -625,7 +610,7 @@ fun SimpleSlider(
         val width = size.width
         val height = size.height
         val centerY = height / 2f
-        
+
         // Inactive Track
         drawRoundRect(
             color = inactiveColor,
@@ -633,7 +618,6 @@ fun SimpleSlider(
             size = Size(width, trackHeight),
             cornerRadius = CornerRadius(trackHeight / 2f)
         )
-        
         // Active Track
         drawRoundRect(
             color = activeColor,
@@ -641,7 +625,6 @@ fun SimpleSlider(
             size = Size(width * value, trackHeight),
             cornerRadius = CornerRadius(trackHeight / 2f)
         )
-        
         // Thumb
         drawCircle(
             color = thumbColor,
