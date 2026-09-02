@@ -88,6 +88,9 @@ import com.example.ui.screens.player.PlayerScreen
 import com.example.ui.screens.splash.SplashScreen
 import com.example.ui.screens.onboarding.OnboardingScreen
 import com.example.ui.screens.profile.ProfileScreen
+import com.example.ui.screens.profile.SecurityScreen
+import com.example.ui.screens.profile.SubscriptionScreen
+import com.example.ui.screens.profile.EditProfileScreen
 import com.example.ui.screens.profile.PublicProfileScreen
 import com.example.ui.screens.downloads.DownloadsScreen
 import com.example.ui.screens.settings.SettingsScreen
@@ -518,8 +521,10 @@ fun AppNavigation() {
                                 ExpandableSearchBar(
                                     isExpanded = isSearchExpanded,
                                     onExpandedChange = { isSearchExpanded = it },
-                                    onMovieClick = { id -> navController.navigate(Screen.MovieDetails.createRoute(id)) },
-                                    onSeriesClick = { id -> navController.navigate(Screen.SeriesDetails.createRoute(id)) }
+                                    onMovieClick = {  id -> com.example.utils.AdManager.showInterstitial(context)
+navController.navigate(Screen.MovieDetails.createRoute(id)) },
+                                    onSeriesClick = {  id -> com.example.utils.AdManager.showInterstitial(context)
+navController.navigate(Screen.SeriesDetails.createRoute(id)) }
                                 )
                             } else {
                                 // Right Icons
@@ -566,11 +571,17 @@ fun AppNavigation() {
                 }
             },
             bottomBar = {
-                if (bottomBarRoutes.contains(currentRoute)) {
-                    BottomNavBar(navController = navController)
+                androidx.compose.foundation.layout.Column {
+                    if (currentRoute != null && currentRoute != Screen.Splash.route && currentRoute != Screen.Auth.route && currentRoute != Screen.Onboarding.route) {
+                        if (!currentRoute.contains("movie_details") && !currentRoute.contains("series_details")) {
+                            com.example.ui.components.StartAppBanner()
+                        }
+                    }
+                    if (bottomBarRoutes.contains(currentRoute)) {
+                        BottomNavBar(navController = navController)
+                    }
                 }
-    
-        }
+            }
         
         ) { innerPadding ->
 
@@ -627,8 +638,10 @@ fun AppNavigation() {
                 }
                 composable(Screen.Home.route) {
                     HomeScreen(
-                        onMovieClick = { id -> navController.navigate(Screen.MovieDetails.createRoute(id)) },
-                        onSeriesClick = { id -> navController.navigate(Screen.SeriesDetails.createRoute(id)) },
+                        onMovieClick = {  id -> com.example.utils.AdManager.showInterstitial(context)
+navController.navigate(Screen.MovieDetails.createRoute(id)) },
+                        onSeriesClick = {  id -> com.example.utils.AdManager.showInterstitial(context)
+navController.navigate(Screen.SeriesDetails.createRoute(id)) },
                         onNavigateToTrending = { navController.navigate(Screen.Trending.route) },
                         onNavigateToWatching = { navController.navigate(Screen.Watching.route) },
                         onNavigateToPopular = { navController.navigate(Screen.Popular.route) },
@@ -639,7 +652,8 @@ fun AppNavigation() {
                 }
                 composable(Screen.Movies.route) {
                     MoviesScreen(
-                        onMovieClick = { id -> navController.navigate(Screen.MovieDetails.createRoute(id)) },
+                        onMovieClick = {  id -> com.example.utils.AdManager.showInterstitial(context)
+navController.navigate(Screen.MovieDetails.createRoute(id)) },
                         onNavigateToTrending = { navController.navigate(Screen.Trending.route) },
                         onNavigateToWatching = { navController.navigate(Screen.Watching.route) },
                         onNavigateToPopular = { navController.navigate(Screen.Popular.route) },
@@ -649,6 +663,7 @@ fun AppNavigation() {
                         composable(Screen.Anime.route) {
             AnimeScreen(
                 onAnimeClick = { seriesId ->
+                    com.example.utils.AdManager.showInterstitial(context)
                     navController.navigate(Screen.SeriesDetails.createRoute(seriesId))
                 },
                 onNavigateToPopular = { navController.navigate(Screen.Popular.route) },
@@ -659,7 +674,8 @@ fun AppNavigation() {
         }
         composable(Screen.Series.route) {
                     SeriesScreen(
-                        onSeriesClick = { id -> navController.navigate(Screen.SeriesDetails.createRoute(id)) },
+                        onSeriesClick = {  id -> com.example.utils.AdManager.showInterstitial(context)
+navController.navigate(Screen.SeriesDetails.createRoute(id)) },
                         onNavigateToTrending = { navController.navigate(Screen.Trending.route) },
                         onNavigateToWatching = { navController.navigate(Screen.Watching.route) },
                         onNavigateToPopular = { navController.navigate(Screen.Popular.route) },
@@ -751,7 +767,15 @@ fun AppNavigation() {
                 )
             }
 
-            composable(Screen.Settings.route) { SettingsScreen() }
+            
+                composable(Screen.Security.route) {
+                    SecurityScreen(onBack = { navController.popBackStack() })
+                }
+                composable(Screen.Subscription.route) {
+                    SubscriptionScreen(onBack = { navController.popBackStack() })
+                }
+
+                composable(Screen.Settings.route) { SettingsScreen() }
                 composable(Screen.About.route) { AboutScreen() }
                 composable(Screen.Trending.route) {
                     TrendingScreen(
@@ -819,8 +843,10 @@ fun AppNavigation() {
                     com.example.ui.screens.details.PersonDetailsScreen(
                         personId = personId,
                         onBack = { navController.popBackStack() },
-                        onMovieClick = { navController.navigate(Screen.MovieDetails.createRoute(it)) },
-                        onSeriesClick = { navController.navigate(Screen.SeriesDetails.createRoute(it)) }
+                        onMovieClick = {  com.example.utils.AdManager.showInterstitial(context)
+navController.navigate(Screen.MovieDetails.createRoute(it)) },
+                        onSeriesClick = {  com.example.utils.AdManager.showInterstitial(context)
+navController.navigate(Screen.SeriesDetails.createRoute(it)) }
                     )
                 }
 

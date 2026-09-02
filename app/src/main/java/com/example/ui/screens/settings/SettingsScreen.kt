@@ -208,6 +208,15 @@ fun SettingsScreen() {
             )
         }
         
+        
+        Spacer(modifier = Modifier.height(32.dp))
+        SettingsSectionHeader(icon = Icons.Outlined.Settings, title = "Advanced Preferences")
+        Column(modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))) {
+            SettingsListItem(Icons.Outlined.PlayCircleOutline, "Playback", "Quality, subtitles, autoplay", false) {}
+            SettingsListItem(Icons.Outlined.Download, "Downloads", "Wi-Fi only, smart downloads", false) {}
+            SettingsListItem(Icons.Outlined.Settings, "Notifications", "Manage your notification preferences", true) {}
+        }
+        
         Spacer(modifier = Modifier.height(100.dp))
     }
 

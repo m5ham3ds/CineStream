@@ -177,7 +177,7 @@ fun ChatScreen(
             contentPadding = PaddingValues(16.dp),
             reverseLayout = true
         ) {
-            items(messages) { msg ->
+            items(messages.reversed()) { msg ->
                 val isMe = msg.senderId == currentUser?.uid
                 Row(
                     modifier = Modifier

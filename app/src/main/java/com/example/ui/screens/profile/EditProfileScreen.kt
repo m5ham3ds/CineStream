@@ -10,6 +10,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImage
+import com.example.R
+import androidx.compose.material.icons.filled.Edit
+
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,6 +46,16 @@ fun EditProfileScreen(
     var lastName by remember(currentUser) { mutableStateOf(currentUser?.lastName ?: "") }
     var username by remember(currentUser) { mutableStateOf(currentUser?.username ?: "") }
     var isProfilePublic by remember(currentUser) { mutableStateOf(currentUser?.isProfilePublic ?: true) }
+    var selectedPhotoUri by remember { mutableStateOf<android.net.Uri?>(null) }
+    
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        if (uri != null) {
+            selectedPhotoUri = uri
+        }
+    }
+
 
     val primaryRed = Color(0xFFE50914)
 
@@ -61,7 +82,39 @@ fun EditProfileScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             
+
+            // Profile Picture Editor
+            Box(
+                modifier = Modifier
+                    .size(120.dp)
+                    .clip(CircleShape)
+                    .background(Color.DarkGray)
+                    .clickable {
+                        photoPickerLauncher.launch(
+                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                        )
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                AsyncImage(
+                    model = selectedPhotoUri ?: currentUser?.photoUrl?.takeIf { it.isNotEmpty() } ?: R.drawable.ic_launcher_background,
+                    contentDescription = "Profile Picture",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.4f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(Icons.Default.Edit, contentDescription = "Edit Photo", tint = Color.White, modifier = Modifier.size(32.dp))
+                }
+            }
+            Spacer(modifier = Modifier.height(24.dp))
+            
             OutlinedTextField(
+
                 value = firstName,
                 onValueChange = { firstName = it },
                 label = { Text("First Name", color = Color.Gray) },
@@ -144,7 +197,7 @@ fun EditProfileScreen(
 
             Button(
                 onClick = {
-                    authViewModel.updateProfile(firstName, lastName, username, isProfilePublic, null) { success, error ->
+                    authViewModel.updateProfile(firstName, lastName, username, isProfilePublic, selectedPhotoUri) { success, error ->
                         if (success) {
                             Toast.makeText(context, "Profile updated successfully", Toast.LENGTH_SHORT).show()
                             onBack()

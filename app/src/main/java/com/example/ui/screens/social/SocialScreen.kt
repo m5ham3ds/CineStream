@@ -177,10 +177,10 @@ fun SocialScreen(
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             val filteredConversations = when (selectedCategory) {
-                                "Unread" -> conversations.filter { 
-                                    val otherUserId = it.participants.firstOrNull { p -> p != currentUser?.uid } ?: ""
-                                    (it.unreadCounts[otherUserId] ?: 0) > 0 
-                                }
+                                "All Messages" -> conversations.filter { !it.isGroup && !it.isRequest }
+                                "Unread" -> conversations.filter { (it.unreadCounts[currentUser?.uid ?: ""] ?: 0) > 0 }
+                                "Groups" -> conversations.filter { it.isGroup }
+                                "Requests" -> conversations.filter { it.isRequest }
                                 else -> conversations
                             }
                             items(filteredConversations) { conv ->

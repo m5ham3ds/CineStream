@@ -39,7 +39,9 @@ data class Conversation(
     val participantNames: Map<String, String> = emptyMap(),
     val lastMessage: String = "",
     val lastMessageTime: Long = 0L,
-    val unreadCounts: Map<String, Int> = emptyMap() // Use Int consistently
+    val unreadCounts: Map<String, Int> = emptyMap(), // Use Int consistently
+    val isGroup: Boolean = false,
+    val isRequest: Boolean = false
 )
 
 data class Story(

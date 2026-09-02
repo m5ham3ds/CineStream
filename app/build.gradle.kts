@@ -82,6 +82,7 @@ googleServices { missingGoogleServicesStrategy = MissingGoogleServicesStrategy.W
 // Some unused dependencies are commented out below instead of being removed.
 // This makes it easy to add them back in the future if needed.
 dependencies {
+  implementation("com.startapp:inapp-sdk:5.1.0")
   implementation(libs.cloudinary.android)
     implementation(libs.play.services.nearby)
     implementation("com.pierfrancescosoffritti.androidyoutubeplayer:core:12.1.1")

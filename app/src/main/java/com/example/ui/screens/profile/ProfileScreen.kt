@@ -39,7 +39,7 @@ import com.example.ui.screens.auth.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(onNavigateToAuth: () -> Unit = {}, onNavigateToEditProfile: () -> Unit = {}) {
+fun ProfileScreen(onNavigateToAuth: () -> Unit = {}, onNavigateToEditProfile: () -> Unit = {}, onNavigateToSecurity: () -> Unit = {}, onNavigateToSubscription: () -> Unit = {}) {
     val authViewModel: AuthViewModel = viewModel(factory = ViewModelFactory())
     val currentUser by authViewModel.currentUser.collectAsState()
     val isLoading by authViewModel.isLoading.collectAsState()
@@ -291,7 +291,7 @@ fun ProfileScreen(onNavigateToAuth: () -> Unit = {}, onNavigateToEditProfile: ()
             }
             Spacer(modifier = Modifier.width(8.dp))
             Button(
-                onClick = {},
+                onClick = onNavigateToSubscription,
                 colors = ButtonDefaults.buttonColors(containerColor = primaryRed),
                 shape = RoundedCornerShape(24.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
@@ -350,9 +350,9 @@ fun StatItem(icon: ImageVector, count: String, label: String, tintColor: Color) 
 }
 
 @Composable
-fun ProfileListItem(icon: ImageVector, title: String, subtitle: String, isLast: Boolean, tintColor: Color, iconBg: Color) {
+fun ProfileListItem(icon: ImageVector, title: String, subtitle: String, isLast: Boolean, tintColor: Color, iconBg: Color, onClick: () -> Unit = {}) {
     Row(
-        modifier = Modifier.fillMaxWidth().clickable { }.padding(16.dp),
+        modifier = Modifier.fillMaxWidth().clickable { onClick() }.padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(

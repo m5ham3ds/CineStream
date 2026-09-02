@@ -20,10 +20,17 @@ import com.example.data.repository.UserPreferencesRepository
 import com.example.navigation.AppNavigation
 import com.example.ui.theme.MyApplicationTheme
 import com.example.utils.NotificationHelper
+import com.startapp.sdk.adsbase.StartAppAd
+import com.startapp.sdk.adsbase.StartAppSDK
 
 class MainActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    
+    // Initialize Start.io SDK with a placeholder App ID.
+    // Replace "208324071" with your actual Start.io App ID.
+    StartAppSDK.init(this, "208324071", false)
+    StartAppAd.disableSplash()
     
     NotificationHelper.createChannel(this)
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
