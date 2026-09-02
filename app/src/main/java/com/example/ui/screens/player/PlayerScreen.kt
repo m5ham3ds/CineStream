@@ -247,6 +247,7 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
                     }
 
                     // ==================== LEFT VERTICAL SLIDER (Brightness) ====================
+                    // Top icon: Brightness | Bottom icon: PIP
                     Box(
                         modifier = Modifier
                             .align(Alignment.CenterStart)
@@ -261,6 +262,7 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
                     }
 
                     // ==================== RIGHT VERTICAL SLIDER (Volume) ====================
+                    // Top icon: Volume | Bottom icon: Fullscreen
                     Box(
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
@@ -326,21 +328,11 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
                             .fillMaxWidth()
                             .padding(horizontal = 24.dp, vertical = 16.dp)
                     ) {
-                        // Progress Bar Row with PIP and Fullscreen icons
+                        // Progress Bar Row: 00:00 [Slider] 00:00 ONLY
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            // PIP Icon (left)
-                            Icon(
-                                imageVector = Icons.Default.PictureInPictureAlt,
-                                contentDescription = "PIP",
-                                tint = Color.White,
-                                modifier = Modifier.size(20.dp)
-                            )
-
-                            Spacer(modifier = Modifier.width(12.dp))
-
                             // Current Time
                             Text(formatTime(currentTime), color = Color.White, fontSize = 14.sp)
 
@@ -361,16 +353,6 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
 
                             // Total Time
                             Text(formatTime(totalDuration), color = Color.White, fontSize = 14.sp)
-
-                            Spacer(modifier = Modifier.width(12.dp))
-
-                            // Fullscreen Icon (right)
-                            Icon(
-                                imageVector = Icons.Default.Fullscreen,
-                                contentDescription = "Fullscreen",
-                                tint = Color.White,
-                                modifier = Modifier.size(20.dp)
-                            )
                         }
 
                         Spacer(modifier = Modifier.height(12.dp))
