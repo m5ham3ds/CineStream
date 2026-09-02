@@ -30,13 +30,23 @@ class SocialViewModel : ViewModel() {
     private var storiesJob: Job? = null
 
     init {
-        FirebaseAuth.getInstance().addAuthStateListener { auth ->
-            val user = repo.getCurrentUser()
-            _currentUser.value = user
-            if (user != null) {
-                startListening()
-            } else {
-                stopListening()
+        viewModelScope.launch {
+            AuthRepository.currentUserFlow.collect { authUser ->
+                if (authUser != null) {
+                    _currentUser.value = UserProfile(
+                        uid = authUser.uid,
+                        username = authUser.username,
+                        firstName = authUser.firstName,
+                        lastName = authUser.lastName,
+                        photoUrl = authUser.photoUrl,
+                        isOnline = true,
+                        isProfilePublic = authUser.isProfilePublic
+                    )
+                    startListening()
+                } else {
+                    _currentUser.value = null
+                    stopListening()
+                }
             }
         }
     }

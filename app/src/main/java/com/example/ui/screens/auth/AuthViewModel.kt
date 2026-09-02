@@ -14,8 +14,7 @@ import kotlinx.coroutines.tasks.await
 class AuthViewModel : ViewModel() {
     private val repository = AuthRepository
     
-    private val _currentUser = MutableStateFlow<User?>(null)
-    val currentUser: StateFlow<User?> = _currentUser.asStateFlow()
+    val currentUser: StateFlow<User?> = repository.currentUserFlow
     
     private val _authError = MutableStateFlow<String?>(null)
     val authError: StateFlow<String?> = _authError.asStateFlow()
@@ -28,14 +27,11 @@ class AuthViewModel : ViewModel() {
             viewModelScope.launch {
                 val currentAuth = auth.currentUser
                 if (currentAuth != null) {
-                    if (_currentUser.value == null || _currentUser.value?.uid != currentAuth.uid) {
-                        val fetchedUser = repository.getCurrentUser()
-                        if (fetchedUser != null) {
-                            _currentUser.value = fetchedUser
-                        }
+                    if (repository.currentUserFlow.value == null || repository.currentUserFlow.value?.uid != currentAuth.uid) {
+                        repository.getCurrentUser()
                     }
                 } else {
-                    _currentUser.value = null
+                    repository.getCurrentUser()
                 }
             }
         }
@@ -44,7 +40,7 @@ class AuthViewModel : ViewModel() {
     fun checkCurrentUser() {
         viewModelScope.launch {
             _isLoading.value = true
-            _currentUser.value = repository.getCurrentUser()
+            repository.getCurrentUser()
             _isLoading.value = false
         }
     }
@@ -65,7 +61,7 @@ class AuthViewModel : ViewModel() {
                     try {
                         val snapshot = kotlinx.coroutines.withTimeout(15000) { com.google.firebase.firestore.FirebaseFirestore.getInstance().collection("users").document(firebaseUser.uid).get().await() }
                         if (snapshot.exists()) {
-                            _currentUser.value = snapshot.toObject(User::class.java)
+                            repository.currentUserFlow.value = snapshot.toObject(User::class.java)
                         } else {
                             val generatedUsername = try { repository.generateUniqueUsername(email?.substringBefore("@") ?: "user") } catch(e:Exception) { "user_" + firebaseUser.uid.take(5) }
                             val newUser = User(
@@ -77,12 +73,12 @@ class AuthViewModel : ViewModel() {
                                 photoUrl = photoUrl ?: firebaseUser.photoUrl?.toString() ?: ""
                             )
                             kotlinx.coroutines.withTimeoutOrNull(15000) { repository.saveUser(newUser) }
-                            _currentUser.value = newUser
+                            repository.currentUserFlow.value = newUser
                         }
                     } catch (e: Exception) {
                         repository.auth.signOut()
                         _authError.value = "Network error: Could not load user profile. Please try again."
-                        _currentUser.value = null
+                        repository.currentUserFlow.value = null
                     }
                 }
             } catch (e: Exception) {
@@ -104,7 +100,7 @@ class AuthViewModel : ViewModel() {
                     try {
                         val snapshot = kotlinx.coroutines.withTimeout(15000) { com.google.firebase.firestore.FirebaseFirestore.getInstance().collection("users").document(firebaseUser.uid).get().await() }
                         if (snapshot.exists()) {
-                            _currentUser.value = snapshot.toObject(User::class.java)
+                            repository.currentUserFlow.value = snapshot.toObject(User::class.java)
                         } else {
                             // User document missing? Rare, but create it.
                             val generatedUsername = try { repository.generateUniqueUsername(email.substringBefore("@")) } catch(e:Exception) { "user_" + firebaseUser.uid.take(5) }
@@ -117,12 +113,12 @@ class AuthViewModel : ViewModel() {
                                 photoUrl = ""
                             )
                             kotlinx.coroutines.withTimeoutOrNull(15000) { repository.saveUser(user) }
-                            _currentUser.value = user
+                            repository.currentUserFlow.value = user
                         }
                     } catch (e: Exception) {
                         repository.auth.signOut()
                         _authError.value = "Network error: Could not load user profile. Please try again."
-                        _currentUser.value = null
+                        repository.currentUserFlow.value = null
                     }
                 }
             } catch (e: Exception) {
@@ -152,7 +148,7 @@ class AuthViewModel : ViewModel() {
                     try {
                         kotlinx.coroutines.withTimeout(15000) { repository.saveUser(newUser) }
                     } catch (e: Exception) {}
-                    _currentUser.value = newUser
+                    repository.currentUserFlow.value = newUser
                 }
             } catch (e: Exception) {
                 _authError.value = e.message ?: "Signup failed"
@@ -180,7 +176,7 @@ class AuthViewModel : ViewModel() {
         val safeUsername = username.lowercase().replace(" ", "").trim()
         viewModelScope.launch {
             _isLoading.value = true
-            val currentUserData = _currentUser.value
+            val currentUserData = repository.currentUserFlow.value
             if (currentUserData == null) {
                 onComplete(false, "User not found")
                 _isLoading.value = false
@@ -217,7 +213,7 @@ class AuthViewModel : ViewModel() {
                     isProfilePublic = isProfilePublic
                 )
                 kotlinx.coroutines.withTimeout(15000) { repository.saveUser(updatedUser) }
-                _currentUser.value = updatedUser
+                
                 onComplete(true, null)
             } catch (e: Exception) {
                 onComplete(false, "Failed to save to server. Check connection.")
@@ -229,6 +225,6 @@ class AuthViewModel : ViewModel() {
 
     fun signOut() {
         repository.auth.signOut()
-        _currentUser.value = null
+        viewModelScope.launch { repository.getCurrentUser() }
     }
 }

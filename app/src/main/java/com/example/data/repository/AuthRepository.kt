@@ -5,6 +5,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -20,6 +23,8 @@ data class User(
 )
 
 object AuthRepository {
+
+    val currentUserFlow = MutableStateFlow<User?>(null)
     val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val storage: FirebaseStorage = FirebaseStorage.getInstance()
@@ -29,6 +34,15 @@ object AuthRepository {
         val uploadPreset = com.example.BuildConfig.CLOUDINARY_UPLOAD_PRESET
         
         if (cloudName.isNotEmpty() && uploadPreset.isNotEmpty()) {
+            try {
+                com.cloudinary.android.MediaManager.get()
+            } catch (e: Exception) {
+                try {
+                    com.cloudinary.android.MediaManager.init(com.example.MyApplication.instance, mapOf("cloud_name" to cloudName))
+                } catch (e2: Exception) {
+                    // Ignore
+                }
+            }
             return suspendCancellableCoroutine { continuation ->
                 com.cloudinary.android.MediaManager.get().upload(uri)
                     .unsigned(uploadPreset)
@@ -59,12 +73,19 @@ object AuthRepository {
     }
 
     suspend fun getCurrentUser(): User? {
-        val firebaseUser = auth.currentUser ?: return null
+        val firebaseUser = auth.currentUser
+        if (firebaseUser == null) {
+            currentUserFlow.value = null
+            return null
+        }
         return try {
             val snapshot = kotlinx.coroutines.withTimeout(15000) { db.collection("users").document(firebaseUser.uid).get().await() }
             if (snapshot.exists()) {
-                snapshot.toObject(User::class.java)
+                val user = snapshot.toObject(User::class.java)
+                currentUserFlow.value = user
+                user
             } else {
+                currentUserFlow.value = null
                 null
             }
         } catch (e: Exception) {
@@ -74,6 +95,7 @@ object AuthRepository {
 
     suspend fun saveUser(user: User) {
         db.collection("users").document(user.uid).set(user).await()
+        currentUserFlow.value = user
     }
 
     suspend fun isUsernameTaken(username: String, currentUid: String): Boolean {

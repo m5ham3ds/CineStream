@@ -88,6 +88,7 @@ import com.example.ui.screens.player.PlayerScreen
 import com.example.ui.screens.splash.SplashScreen
 import com.example.ui.screens.onboarding.OnboardingScreen
 import com.example.ui.screens.profile.ProfileScreen
+import com.example.ui.screens.profile.PublicProfileScreen
 import com.example.ui.screens.downloads.DownloadsScreen
 import com.example.ui.screens.settings.SettingsScreen
 
@@ -703,6 +704,14 @@ fun AppNavigation() {
                     onBack = { navController.popBackStack() }
                 )
             }
+            
+            composable(Screen.PublicProfile.route) { backStackEntry ->
+                val userId = backStackEntry.arguments?.getString("userId") ?: return@composable
+                PublicProfileScreen(
+                    userId = userId,
+                    onBack = { navController.popBackStack() }
+                )
+            }
                 composable(Screen.Downloads.route) { 
                     DownloadsScreen(
                         onNavigateToHome = {
@@ -730,7 +739,10 @@ fun AppNavigation() {
                 val convId = backStackEntry.arguments?.getString("conversationId") ?: return@composable
                 ChatScreen(
                     conversationId = convId,
-                    onBack = { navController.popBackStack() }
+                    onBack = { navController.popBackStack() },
+                    onUserClick = { userId ->
+                        navController.navigate(Screen.PublicProfile.createRoute(userId))
+                    }
                 )
             }
             composable(Screen.Share.route) {

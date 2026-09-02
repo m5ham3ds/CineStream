@@ -43,6 +43,8 @@ fun SocialScreen(
     val currentUser by viewModel.currentUser.collectAsState()
     val conversations by viewModel.conversations.collectAsState()
     val searchResults by viewModel.searchResults.collectAsState()
+    var selectedCategory by remember { mutableStateOf("All Messages") }
+
     
     val primaryRed = Color(0xFFE50914)
     val bgColor = Color(0xFF121212)
@@ -160,15 +162,28 @@ fun SocialScreen(
                             contentPadding = PaddingValues(horizontal = 16.dp),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            item { FilterChip(text = "All Messages", selected = true) }
-                            item { FilterChip(text = "Groups", selected = false) }
+                            val categories = listOf("All Messages", "Unread", "Groups", "Requests")
+                            items(categories) { category ->
+                                CustomFilterChip(
+                                    text = category,
+                                    selected = selectedCategory == category,
+                                    onClick = { selectedCategory = category }
+                                )
+                            }
                         }
                         
                         LazyColumn(
                             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            items(conversations) { conv ->
+                            val filteredConversations = when (selectedCategory) {
+                                "Unread" -> conversations.filter { 
+                                    val otherUserId = it.participants.firstOrNull { p -> p != currentUser?.uid } ?: ""
+                                    (it.unreadCounts[otherUserId] ?: 0) > 0 
+                                }
+                                else -> conversations
+                            }
+                            items(filteredConversations) { conv ->
                                 val otherUserId = conv.participants.firstOrNull { it != currentUser?.uid } ?: ""
                                 val otherUserName = conv.participantNames[otherUserId] ?: "Unknown"
                                 val unreadCount = conv.unreadCounts[currentUser?.uid ?: ""] ?: 0
@@ -197,15 +212,15 @@ private fun formatTime(timeMillis: Long): String {
 }
 
 @Composable
-fun FilterChip(text: String, selected: Boolean) {
+fun CustomFilterChip(text: String, selected: Boolean, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(20.dp))
+            .clickable { onClick() }
             .background(if (selected) Color(0xFFE50914) else Color(0xFF2C2C2E))
             .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable { /* TODO */ }
     ) {
-        Text(text, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+        Text(text, color = if (selected) Color.White else Color.Gray, fontSize = 14.sp, fontWeight = FontWeight.Medium)
     }
 }
 

@@ -52,11 +52,38 @@ data class Story(
 
 class SocialRepository {
 
+        suspend fun getConversation(conversationId: String): Conversation? {
+        return try {
+            val doc = db.collection("conversations").document(conversationId).get().await()
+            doc.toObject(Conversation::class.java)
+        } catch (e: Exception) {
+            null
+        }
+    }
+    
+    suspend fun getUserProfile(userId: String): UserProfile? {
+        return try {
+            val doc = db.collection("users").document(userId).get().await()
+            doc.toObject(UserProfile::class.java)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     suspend fun uploadMedia(uri: Uri): String {
         val cloudName = com.example.BuildConfig.CLOUDINARY_CLOUD_NAME
         val uploadPreset = com.example.BuildConfig.CLOUDINARY_UPLOAD_PRESET
         
         if (cloudName.isNotEmpty() && uploadPreset.isNotEmpty()) {
+            try {
+                com.cloudinary.android.MediaManager.get()
+            } catch (e: Exception) {
+                try {
+                    com.cloudinary.android.MediaManager.init(com.example.MyApplication.instance, mapOf("cloud_name" to cloudName))
+                } catch (e2: Exception) {
+                    // Ignore
+                }
+            }
             return suspendCancellableCoroutine { continuation ->
                 com.cloudinary.android.MediaManager.get().upload(uri)
                     .unsigned(uploadPreset)
@@ -87,12 +114,14 @@ class SocialRepository {
     private val db = FirebaseFirestore.getInstance()
 
     fun getCurrentUser(): UserProfile? {
-        val user = auth.currentUser
+        val user = com.example.data.repository.AuthRepository.currentUserFlow.value
         return if (user != null) {
             UserProfile(
                 uid = user.uid, 
-                username = user.displayName ?: "User", 
-                photoUrl = user.photoUrl?.toString() ?: "", 
+                username = user.username, 
+                firstName = user.firstName,
+                lastName = user.lastName,
+                photoUrl = user.photoUrl, 
                 isOnline = true
             )
         } else null

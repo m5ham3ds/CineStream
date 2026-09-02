@@ -26,6 +26,9 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
 
     object Profile : Screen("profile", "Profile", Icons.Default.Person)
     object EditProfile : Screen("edit_profile", "Edit Profile", Icons.Default.Person)
+    object PublicProfile : Screen("public_profile/{userId}", "Public Profile", Icons.Default.Person) {
+        fun createRoute(userId: String) = "public_profile/$userId"
+    }
     object Downloads : Screen("downloads", "Downloads", Icons.Default.Download)
     object Settings : Screen("settings", "Settings", Icons.Default.Settings)
     object About : Screen("about", "About Us", Icons.Default.Info)

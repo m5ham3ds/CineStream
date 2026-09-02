@@ -17,6 +17,9 @@ class ChatViewModel : ViewModel() {
     private val _currentUser = MutableStateFlow<UserProfile?>(repo.getCurrentUser())
     val currentUser: StateFlow<UserProfile?> = _currentUser.asStateFlow()
 
+    private val _otherUser = MutableStateFlow<UserProfile?>(null)
+    val otherUser: StateFlow<UserProfile?> = _otherUser.asStateFlow()
+
     private val _messages = MutableStateFlow<List<PrivateMessage>>(emptyList())
     val messages: StateFlow<List<PrivateMessage>> = _messages.asStateFlow()
 
@@ -25,6 +28,16 @@ class ChatViewModel : ViewModel() {
     fun loadConversation(conversationId: String) {
         currentConversationId = conversationId
         repo.markConversationAsRead(conversationId)
+        
+        viewModelScope.launch {
+            val conv = repo.getConversation(conversationId)
+            if (conv != null) {
+                val otherUserId = conv.participants.firstOrNull { it != currentUser.value?.uid }
+                if (otherUserId != null) {
+                    _otherUser.value = repo.getUserProfile(otherUserId)
+                }
+            }
+        }
         
         viewModelScope.launch {
             repo.getMessages(conversationId).collect { msgs ->
