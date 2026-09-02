@@ -712,6 +712,15 @@ navController.navigate(Screen.SeriesDetails.createRoute(id)) },
                     },
                     onNavigateToEditProfile = {
                         navController.navigate(Screen.EditProfile.route)
+                    },
+                    onNavigateToSecurity = {
+                        navController.navigate(Screen.Security.route)
+                    },
+                    onNavigateToSubscription = {
+                        navController.navigate(Screen.Subscription.route)
+                    },
+                    onNavigateToSettings = {
+                        navController.navigate(Screen.Settings.route)
                     }
                 )
             }

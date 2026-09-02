@@ -311,17 +311,6 @@ fun ProfileScreen(onNavigateToAuth: () -> Unit = {}, onNavigateToEditProfile: ()
             ProfileListItem(Icons.Outlined.CreditCard, "Subscription", "Manage your plan and billing", false, primaryRed, iconBgColor, onClick = onNavigateToSubscription)
             ProfileListItem(Icons.Outlined.Settings, "Settings", "App preferences and settings", true, primaryRed, iconBgColor, onClick = onNavigateToSettings)
         }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Preferences
-        Text("Preferences", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(12.dp))
-        Column(modifier = Modifier.fillMaxWidth().background(cardColor, RoundedCornerShape(12.dp))) {
-            ProfileListItem(Icons.Outlined.Settings, "App Settings", "Customize your experience", false, primaryRed, iconBgColor)
-            ProfileListItem(Icons.Outlined.PlayCircleOutline, "Playback", "Quality, subtitles, autoplay", false, primaryRed, iconBgColor)
-            ProfileListItem(Icons.Outlined.Notifications, "Notifications", "Manage your notification preferences", true, primaryRed, iconBgColor)
-        }
         
         if (currentUser != null) {
             Spacer(modifier = Modifier.height(32.dp))

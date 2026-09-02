@@ -226,6 +226,9 @@ fun ChatScreen(
         ) {
             items(messages.reversed()) { msg ->
                 val isMe = msg.senderId == currentUser?.uid
+                val isDeletedForMe = msg.deletedFor.contains(currentUser?.uid)
+                if (isDeletedForMe) return@items
+                
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -235,10 +238,7 @@ fun ChatScreen(
                     Column(
                         horizontalAlignment = if (isMe) Alignment.End else Alignment.Start
                     ) {
-                        val isDeletedForMe = msg.deletedFor.contains(currentUser?.uid)
-                if (isDeletedForMe) return@items
-                
-                val isEffectivelyDeleted = msg.isDeleted
+                        val isEffectivelyDeleted = msg.isDeleted
                 
                 Box(
                             modifier = Modifier
