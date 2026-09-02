@@ -1,5 +1,8 @@
 @file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 package com.example.ui.screens.player
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 import android.app.Activity
 import android.content.pm.ActivityInfo
@@ -45,7 +48,13 @@ import com.example.ui.components.DownloadQualitySheet
 @OptIn(androidx.media3.common.util.UnstableApi::class, androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 @Suppress("OPT_IN_USAGE")
-fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
+fun PlayerScreen(mediaId: String, isMovie: Boolean, title: String, url: String? = null, onBack: () -> Unit, viewModel: PlayerViewModel = viewModel()) {
+    val uiState by viewModel.uiState.collectAsState()
+    
+    LaunchedEffect(mediaId) {
+        viewModel.initialize(mediaId, isMovie, title, url)
+    }
+
     val context = LocalContext.current
     var showDownloadSheet by remember { mutableStateOf(false) }
     var showControls by remember { mutableStateOf(true) }
@@ -63,8 +72,6 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
     // Server & Website state
     var showServerSheet by remember { mutableStateOf(false) }
     var showWebsiteSheet by remember { mutableStateOf(false) }
-    var currentServer by remember { mutableStateOf("Server 1") }
-    var currentWebsite by remember { mutableStateOf("VidSrc") }
 
     // Force landscape mode for better viewing
     DisposableEffect(Unit) {
@@ -87,10 +94,6 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
 
     val exoPlayer = remember {
         ExoPlayer.Builder(context).build().apply {
-            val mediaItem = MediaItem.fromUri(videoUrl)
-            setMediaItem(mediaItem)
-            prepare()
-            playWhenReady = true
             addListener(object : Player.Listener {
                 override fun onIsPlayingChanged(isPlayingChanged: Boolean) {
                     isPlaying = isPlayingChanged
@@ -101,6 +104,15 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
                     }
                 }
             })
+        }
+    }
+    
+    LaunchedEffect(uiState.currentVideoUrl) {
+        uiState.currentVideoUrl?.let { url ->
+            val mediaItem = MediaItem.fromUri(url)
+            exoPlayer.setMediaItem(mediaItem)
+            exoPlayer.prepare()
+            exoPlayer.playWhenReady = true
         }
     }
 
@@ -157,6 +169,25 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
             },
             modifier = Modifier.fillMaxSize()
         )
+        
+        uiState.extractionUrl?.let { url ->
+            HiddenVideoExtractor(
+                url = url,
+                onVideoUrlFound = { extractedUrl ->
+                    viewModel.setExtractedUrl(extractedUrl)
+                }
+            )
+        }
+        
+        if (uiState.isLoading) {
+            Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.5f)), contentAlignment = Alignment.Center) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    CircularProgressIndicator(color = Color(0xFFE50914))
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text("Connecting to ${uiState.currentWebsite} / ${uiState.currentServer}...", color = Color.White)
+                }
+            }
+        }
 
         AnimatedVisibility(
             visible = showControls,
@@ -201,7 +232,7 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.clickable { showServerSheet = true }.padding(8.dp)
                             ) {
-                                Text("SERVER", color = Color.Gray, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                                Text(uiState.currentServer.uppercase(), color = Color.Gray, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Icon(Icons.Default.KeyboardArrowDown, contentDescription = null, tint = Color(0xFFE50914), modifier = Modifier.size(16.dp))
                             }
@@ -210,9 +241,9 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
                         
                         // Center section
                         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(1.2f)) {
-                            Text("Now Playing", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                            Text(if(uiState.isMovie) "Movie" else "Series", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text("Episode 1", color = Color.LightGray, fontSize = 14.sp)
+                            Text(uiState.title, color = Color.LightGray, fontSize = 14.sp)
                         }
                         
                         // Right section
@@ -224,7 +255,7 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
                             ) {
                                 Icon(Icons.Default.KeyboardArrowDown, contentDescription = null, tint = Color(0xFFE50914), modifier = Modifier.size(16.dp))
                                 Spacer(modifier = Modifier.width(4.dp))
-                                Text("WEBSITE", color = Color.Gray, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                                Text(uiState.currentWebsite.uppercase(), color = Color.Gray, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                             }
                             Spacer(modifier = Modifier.weight(1f))
                             Icon(
@@ -346,9 +377,9 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
                             ActionDivider()
                             BottomAction(icon = Icons.Default.Lock, text = "Lock") { isLocked = true }
                             ActionDivider()
-                            BottomAction(icon = Icons.Default.VideoLibrary, text = "Episodes") { showEpisodesSheet = true }
+                            if (!uiState.isMovie) { BottomAction(icon = Icons.Default.VideoLibrary, text = "Episodes") { showEpisodesSheet = true } }
                             ActionDivider()
-                            QualityAction(currentQuality, onClick = { showQualitySheet = true })
+                            QualityAction(uiState.currentQuality, onClick = { showQualitySheet = true })
                             ActionDivider()
                             BottomAction(icon = Icons.Default.Download, text = "Download") { showDownloadSheet = true }
                         }
@@ -392,14 +423,19 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text("Episodes", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.height(16.dp))
-                Column {
-                    repeat(5) { i ->
-                        val epNum = i + 1
+                LazyColumn {
+                    items(uiState.episodes) { ep ->
                         TextButton(
-                            onClick = { showEpisodesSheet = false },
+                            onClick = { 
+                                viewModel.selectEpisode(ep)
+                                showEpisodesSheet = false 
+                            },
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text("Episode $epNum", color = Color.White)
+                            Text(
+                                "Episode ${ep.episodeNumber}: ${ep.title}", 
+                                color = if (ep.id == uiState.currentEpisodeId) Color(0xFFE50914) else Color.White
+                            )
                         }
                     }
                 }
@@ -416,17 +452,16 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text("Select Server", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.height(16.dp))
-                val servers = listOf("Server 1", "Server 2", "VIP Server", "Fast Server")
-                servers.forEach { s ->
+                uiState.availableServers.forEach { s ->
                     TextButton(
                         onClick = { 
-                            currentServer = s
+                            viewModel.selectServer(s)
                             showServerSheet = false
                             android.widget.Toast.makeText(context, "Switched to $s", android.widget.Toast.LENGTH_SHORT).show()
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(s, color = if (s == currentServer) Color(0xFFE50914) else Color.White)
+                        Text(s, color = if (s == uiState.currentServer) Color(0xFFE50914) else Color.White)
                     }
                 }
                 Spacer(modifier = Modifier.height(32.dp))
@@ -442,17 +477,16 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text("Select Source Website", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.height(16.dp))
-                val websites = listOf("VidSrc", "SuperStream", "FlixHQ", "Goku")
-                websites.forEach { w ->
+                uiState.availableWebsites.forEach { w ->
                     TextButton(
                         onClick = { 
-                            currentWebsite = w
+                            viewModel.selectWebsite(w)
                             showWebsiteSheet = false
                             android.widget.Toast.makeText(context, "Switched source to $w", android.widget.Toast.LENGTH_SHORT).show()
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(w, color = if (w == currentWebsite) Color(0xFFE50914) else Color.White)
+                        Text(w, color = if (w == uiState.currentWebsite) Color(0xFFE50914) else Color.White)
                     }
                 }
                 Spacer(modifier = Modifier.height(32.dp))
@@ -464,7 +498,11 @@ fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
         DownloadQualitySheet(
             onDismiss = { showDownloadSheet = false },
             onQualitySelected = { quality ->
-                android.widget.Toast.makeText(context, "Downloading in $quality...", android.widget.Toast.LENGTH_SHORT).show()
+                uiState.currentVideoUrl?.let { videoUrl ->
+                    com.example.utils.AndroidDownloader.downloadVideo(context, videoUrl, "${uiState.title} - $quality")
+                } ?: run {
+                    android.widget.Toast.makeText(context, "Please wait for the stream to load first.", android.widget.Toast.LENGTH_SHORT).show()
+                }
                 showDownloadSheet = false
             }
         )

@@ -17,4 +17,6 @@ interface WatchedEpisodeDao {
 
     @Query("DELETE FROM watched_episodes WHERE id = :id")
     suspend fun deleteById(id: String)
+    @Query("DELETE FROM watched_episodes")
+    suspend fun clearAll()
 }

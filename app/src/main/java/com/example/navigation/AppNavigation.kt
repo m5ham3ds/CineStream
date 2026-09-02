@@ -872,7 +872,7 @@ navController.navigate(Screen.SeriesDetails.createRoute(it)) }
                             } else {
                                 val encodedUrl = URLEncoder.encode(url, "UTF-8")
                                 val encodedTitle = URLEncoder.encode(title, "UTF-8")
-                                navController.navigate("player?url=$encodedUrl&title=$encodedTitle")
+                                navController.navigate("player?mediaId=$movieId&isMovie=true&title=$encodedTitle&url=$encodedUrl")
                             }
                         }
                     )
@@ -890,7 +890,7 @@ navController.navigate(Screen.SeriesDetails.createRoute(it)) }
                             } else {
                                 val encodedUrl = URLEncoder.encode(url, "UTF-8")
                                 val encodedTitle = URLEncoder.encode(title, "UTF-8")
-                                navController.navigate("player?url=$encodedUrl&title=$encodedTitle")
+                                navController.navigate("player?mediaId=$seriesId&isMovie=false&title=$encodedTitle&url=$encodedUrl")
                             }
                         }
                     )
@@ -901,12 +901,22 @@ navController.navigate(Screen.SeriesDetails.createRoute(it)) }
                     com.example.ui.screens.player.TrailerScreen(trailerId = trailerId, onBack = { navController.popBackStack() })
                 }
 
-                composable("player?url={url}&title={title}") { backStackEntry ->
-                    val url = backStackEntry.arguments?.getString("url") ?: return@composable
+                composable("player?mediaId={mediaId}&isMovie={isMovie}&title={title}&url={url}") { backStackEntry ->
+                    val mediaId = backStackEntry.arguments?.getString("mediaId") ?: ""
+                    val isMovieStr = backStackEntry.arguments?.getString("isMovie") ?: "true"
+                    val isMovie = isMovieStr.toBoolean()
                     val title = backStackEntry.arguments?.getString("title") ?: "Unknown"
-                    val decodedUrl = URLDecoder.decode(url, "UTF-8")
+                    val url = backStackEntry.arguments?.getString("url") ?: ""
+                    
                     val decodedTitle = URLDecoder.decode(title, "UTF-8")
-                    PlayerScreen(videoUrl = decodedUrl, title = decodedTitle, onBack = { navController.popBackStack() })
+                    val decodedUrl = if (url.isNotEmpty()) URLDecoder.decode(url, "UTF-8") else ""
+                    
+                    com.example.ui.screens.player.PlayerScreen(
+                        mediaId = mediaId, 
+                        isMovie = isMovie, 
+                        title = decodedTitle, 
+                        onBack = { navController.popBackStack() }
+                    )
                 }
             }
         }

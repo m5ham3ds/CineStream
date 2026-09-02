@@ -16,4 +16,6 @@ interface HistoryDao {
     
     @Query("DELETE FROM history_items")
     suspend fun clearHistory()
+    @Query("DELETE FROM history_items")
+    suspend fun clearAll()
 }

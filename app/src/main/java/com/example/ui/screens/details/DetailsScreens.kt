@@ -194,7 +194,7 @@ fun MovieDetailsScreen(
                             if (downloadItem?.isCompleted == true) {
                                 onPlay(movie.title, "local_offline_file://${downloadItem.id}")
                             } else {
-                                isDownloadMode = false; showSourceSheet = true 
+                                onPlay(movie.title, "") 
                             }
                         },
                         modifier = Modifier.weight(1f).height(50.dp),
@@ -284,7 +284,7 @@ fun MovieDetailsScreen(
                                 downloadRepository.addToDownloads(DownloadItem(
                                     id = movie.id, title = movie.title, posterUrl = movie.posterUrl, isMovie = true, quality = source.quality
                                 ))
-                                Toast.makeText(context, "Download Started", Toast.LENGTH_SHORT).show()
+                                com.example.utils.AndroidDownloader.downloadVideo(ctx, source.url, "${movie.title} - ${source.quality}")
                             }
                         } else {
                             scope.launch {
@@ -545,10 +545,11 @@ fun SeriesDetailsScreen(
                         selectedEpisodeForSource = null
                         if (isDownloadMode) {
                             scope.launch {
+                                val fullTitle = "${series.title} - S${uiState.selectedSeason?.seasonNumber}E${ep.episodeNumber}"
                                 downloadRepository.addToDownloads(DownloadItem(
-                                    id = ep.id, title = "${series.title} - S${uiState.selectedSeason?.seasonNumber}E${ep.episodeNumber}", posterUrl = ep.thumbnailUrl, isMovie = false, quality = source.quality
+                                    id = ep.id, title = fullTitle, posterUrl = ep.thumbnailUrl, isMovie = false, quality = source.quality
                                 ))
-                                Toast.makeText(context, "Download Started: ${source.providerName}", Toast.LENGTH_SHORT).show()
+                                com.example.utils.AndroidDownloader.downloadVideo(context, source.url, "$fullTitle - ${source.quality}")
                             }
                         } else {
                             scope.launch {

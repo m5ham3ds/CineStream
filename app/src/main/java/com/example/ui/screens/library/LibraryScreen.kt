@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.stringResource
 import com.example.R
 import com.example.ui.components.MediaCard
+import com.example.data.repository.HistoryRepository
 import com.example.data.repository.LibraryRepository
 import com.example.data.repository.DownloadRepository
 
@@ -37,6 +38,8 @@ fun LibraryScreen(
     val context = LocalContext.current
     val libraryRepository = remember { LibraryRepository(context) }
     val downloadRepository = remember { DownloadRepository(context) }
+    val historyRepository = remember { HistoryRepository(context) }
+    val historyItems by historyRepository.getHistoryItems().collectAsState(initial = emptyList())
     
     val libraryItems by libraryRepository.getLibraryItems().collectAsState(initial = emptyList())
     val downloadedItems by downloadRepository.getDownloadItems().collectAsState(initial = emptyList())

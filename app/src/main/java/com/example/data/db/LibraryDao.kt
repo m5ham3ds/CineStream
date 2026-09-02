@@ -21,4 +21,6 @@ interface LibraryDao {
 
     @Delete
     suspend fun deleteItem(item: LibraryItem)
+    @Query("DELETE FROM library_items")
+    suspend fun clearAll()
 }

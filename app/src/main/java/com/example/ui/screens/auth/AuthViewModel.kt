@@ -225,6 +225,9 @@ class AuthViewModel : ViewModel() {
 
     fun signOut() {
         repository.auth.signOut()
-        viewModelScope.launch { repository.getCurrentUser() }
+        viewModelScope.launch { 
+            com.example.data.sync.CloudSyncManager(com.example.MyApplication.instance).clearLocalData()
+            repository.getCurrentUser() 
+        }
     }
 }
