@@ -1,5 +1,12 @@
 package com.example.ui.screens.profile
 
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material.icons.outlined.*
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -29,6 +36,9 @@ fun PublicProfileScreen(userId: String, onBack: () -> Unit) {
     
     val bgColor = Color(0xFF121212)
     val surfaceColor = Color(0xFF1C1C1E)
+    val primaryRed = Color(0xFFE50914)
+    var selectedStat by remember { mutableStateOf<String?>(null) }
+
 
     LaunchedEffect(userId) {
         val repo = SocialRepository()
@@ -132,5 +142,17 @@ fun PublicProfileScreen(userId: String, onBack: () -> Unit) {
                 }
             }
         }
+    }
+}
+
+
+@Composable
+fun PublicStatItem(icon: androidx.compose.ui.graphics.vector.ImageVector, count: String, label: String, tintColor: Color, onClick: () -> Unit) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.clickable { onClick() }.padding(4.dp)) {
+        Icon(icon, contentDescription = null, tint = tintColor, modifier = Modifier.size(28.dp))
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(count, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(label, color = Color.Gray, fontSize = 12.sp)
     }
 }

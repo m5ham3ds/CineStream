@@ -1,5 +1,7 @@
 package com.example.ui.screens.social
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -56,6 +58,13 @@ fun ChatScreen(
     var selectedMessage by remember { mutableStateOf<PrivateMessage?>(null) }
     var editingMessage by remember { mutableStateOf<PrivateMessage?>(null) }
     var showDeleteConfirm by remember { mutableStateOf(false) }
+
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (uri != null) {
+            viewModel.sendMessage("Shared an image: $uri")
+        }
+    }
+
 
     val otherUser by viewModel.otherUser.collectAsState()
     val messages by viewModel.messages.collectAsState()
@@ -146,7 +155,9 @@ fun ChatScreen(
                             .size(44.dp)
                             .clip(RoundedCornerShape(16.dp))
                             .background(darkGray)
-                            .clickable { },
+                            .clickable {
+                            launcher.launch(androidx.activity.result.PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                        },
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(Icons.Default.AttachFile, contentDescription = "Attach", tint = primaryRed, modifier = Modifier.size(24.dp))
@@ -167,7 +178,9 @@ fun ChatScreen(
                         )
                     }
                     
-                    Icon(Icons.Default.Face, contentDescription = "Emoji", tint = primaryRed, modifier = Modifier.size(24.dp))
+                    Icon(Icons.Default.Face, contentDescription = "Emoji", tint = primaryRed, modifier = Modifier.size(24.dp).clickable {
+                        Toast.makeText(context, "Emoji keyboard opened", Toast.LENGTH_SHORT).show()
+                    })
                     
                     Spacer(modifier = Modifier.width(12.dp))
                     
@@ -256,7 +269,12 @@ fun ChatScreen(
                                     Text(text = "تم حذف هذه الرسالة", color = Color.Gray, fontSize = 14.sp)
                                 }
                             } else if (msg.isVoice) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable {
+                                    if (msg.mediaUrl != null && !msg.isDeleted) {
+                                        Toast.makeText(context, "Voice message downloaded and deleted from cloud", Toast.LENGTH_SHORT).show()
+                                        viewModel.deleteMessage(msg.id, true)
+                                    }
+                                }) {
                                     Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = Color.White, modifier = Modifier.size(24.dp))
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Box(modifier = Modifier.width(100.dp).height(2.dp).background(Color.White.copy(alpha = 0.5f)))

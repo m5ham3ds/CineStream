@@ -31,8 +31,11 @@ data class PrivateMessage(
     val senderId: String = "",
     val text: String = "",
     val timestamp: Long = System.currentTimeMillis(),
+    @get:com.google.firebase.firestore.PropertyName("isDeleted")
     val isDeleted: Boolean = false,
+    @get:com.google.firebase.firestore.PropertyName("isEdited")
     val isEdited: Boolean = false,
+    @get:com.google.firebase.firestore.PropertyName("isVoice")
     val isVoice: Boolean = false,
     val mediaUrl: String? = null,
     val deletedFor: List<String> = emptyList(),

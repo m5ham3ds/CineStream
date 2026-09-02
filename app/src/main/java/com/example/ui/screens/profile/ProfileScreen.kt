@@ -39,7 +39,7 @@ import com.example.ui.screens.auth.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(onNavigateToAuth: () -> Unit = {}, onNavigateToEditProfile: () -> Unit = {}, onNavigateToSecurity: () -> Unit = {}, onNavigateToSubscription: () -> Unit = {}) {
+fun ProfileScreen(onNavigateToAuth: () -> Unit = {}, onNavigateToEditProfile: () -> Unit = {}, onNavigateToSecurity: () -> Unit = {}, onNavigateToSubscription: () -> Unit = {}, onNavigateToSettings: () -> Unit = {}) {
     val authViewModel: AuthViewModel = viewModel(factory = ViewModelFactory())
     val currentUser by authViewModel.currentUser.collectAsState()
     val isLoading by authViewModel.isLoading.collectAsState()
@@ -306,9 +306,10 @@ fun ProfileScreen(onNavigateToAuth: () -> Unit = {}, onNavigateToEditProfile: ()
         Text("Account", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(12.dp))
         Column(modifier = Modifier.fillMaxWidth().background(cardColor, RoundedCornerShape(12.dp))) {
-            ProfileListItem(Icons.Default.Person, "Account Information", "Update your personal details", false, primaryRed, iconBgColor)
-            ProfileListItem(Icons.Outlined.Security, "Security", "Password, device management", false, primaryRed, iconBgColor)
-            ProfileListItem(Icons.Outlined.CreditCard, "Subscription", "Manage your plan and billing", true, primaryRed, iconBgColor)
+            ProfileListItem(Icons.Default.Person, "Account Information", "Update your personal details", false, primaryRed, iconBgColor, onClick = onNavigateToEditProfile)
+            ProfileListItem(Icons.Outlined.Security, "Security", "Password, device management", false, primaryRed, iconBgColor, onClick = onNavigateToSecurity)
+            ProfileListItem(Icons.Outlined.CreditCard, "Subscription", "Manage your plan and billing", false, primaryRed, iconBgColor, onClick = onNavigateToSubscription)
+            ProfileListItem(Icons.Outlined.Settings, "Settings", "App preferences and settings", true, primaryRed, iconBgColor, onClick = onNavigateToSettings)
         }
 
         Spacer(modifier = Modifier.height(24.dp))
