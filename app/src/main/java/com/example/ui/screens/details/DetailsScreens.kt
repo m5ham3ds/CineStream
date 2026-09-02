@@ -339,6 +339,7 @@ fun SeriesDetailsScreen(
     var selectedEpisodeForSource by remember { mutableStateOf<Episode?>(null) }
     var isDownloadMode by remember { mutableStateOf(false) }
     var showBatchDownloadSheet by remember { mutableStateOf(false) }
+    var selectedTrailerId by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(seriesId) {
         viewModel.loadSeries(seriesId)
@@ -456,7 +457,7 @@ fun SeriesDetailsScreen(
                         Spacer(modifier = Modifier.height(8.dp))
                         LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                             items(series.trailers) { trailer ->
-                                TrailerCard(trailer) { onPlay(series.title, "trailer:${trailer.key}") }
+                                TrailerCard(trailer) { selectedTrailerId = trailer.key }
                             }
                         }
                         Spacer(modifier = Modifier.height(32.dp))

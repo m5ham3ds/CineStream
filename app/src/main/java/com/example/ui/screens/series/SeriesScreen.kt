@@ -169,26 +169,23 @@ fun SeriesScreen(
                 }
             }
             }
-
-
         Spacer(modifier = Modifier.height(24.dp))
-        
-        
+
         if (selectedCategory == "Series") {
-if (seriesHistoryItems.isNotEmpty()) {
-            SectionTitleShared(stringResource(R.string.continue_watching), onSeeAllClick = onNavigateToWatching)
-            LazyRow(
-                contentPadding = PaddingValues(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                items(seriesHistoryItems) { item ->
-                    ContinueWatchingCardShared(item = item) {
-                        onSeriesClick(item.id)
+            if (seriesHistoryItems.isNotEmpty()) {
+                SectionTitleShared(stringResource(R.string.continue_watching), onSeeAllClick = onNavigateToWatching)
+                LazyRow(
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(seriesHistoryItems) { item ->
+                        ContinueWatchingCardShared(item = item) {
+                            onSeriesClick(item.id)
+                        }
                     }
                 }
+                Spacer(modifier = Modifier.height(24.dp))
             }
-            Spacer(modifier = Modifier.height(24.dp))
-        }
 
 
         // Popular Series

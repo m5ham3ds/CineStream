@@ -1,0 +1,1 @@
+sed -i '/if (selectedCategory == "Series") {if (seriesHistoryItems.isNotEmpty()) {/,/Spacer(modifier = Modifier.height(24.dp))/c\        if (selectedCategory == "Series") {' app/src/main/java/com/example/ui/screens/series/SeriesScreen.kt

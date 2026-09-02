@@ -171,7 +171,7 @@ fun AnimeScreen(
 
         
         if (selectedCategory == animeStr) {
-if (animeHistoryItems.isNotEmpty()) {
+            if (animeHistoryItems.isNotEmpty()) {
             SectionTitleShared(stringResource(R.string.continue_watching), onSeeAllClick = onNavigateToWatching)
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp),
