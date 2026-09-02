@@ -52,4 +52,29 @@ class ChatViewModel : ViewModel() {
             repo.sendMessage(currentConversationId, text)
         }
     }
+
+    fun editMessage(msgId: String, newText: String) {
+        if (currentConversationId.isNotEmpty() && newText.isNotBlank()) {
+            repo.editMessage(currentConversationId, msgId, newText)
+        }
+    }
+
+    fun deleteMessage(msgId: String, forEveryone: Boolean) {
+        if (currentConversationId.isNotEmpty()) {
+            repo.deleteMessage(currentConversationId, msgId, forEveryone)
+        }
+    }
+
+    fun reactToMessage(msgId: String, emoji: String) {
+        if (currentConversationId.isNotEmpty()) {
+            repo.reactToMessage(currentConversationId, msgId, emoji)
+        }
+    }
+
+    fun sendVoiceMessage(voicePath: String) {
+        if (currentConversationId.isNotEmpty()) {
+            repo.sendVoiceMessage(currentConversationId, voicePath)
+        }
+    }
 }
+

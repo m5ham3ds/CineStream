@@ -1,4 +1,4 @@
-package com.example.data.repository
+content = """package com.example.data.repository
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -201,40 +201,19 @@ class SocialRepository {
         }
     }
 
-    fun searchUsers(query: String): Flow<List<UserProfile>> = callbackFlow {
-        if (query.isBlank()) {
-            trySend(emptyList())
-            return@callbackFlow
+    suspend fun searchUsers(query: String): List<UserProfile> {
+        return try {
+            val snapshot = db.collection("users")
+                .whereGreaterThanOrEqualTo("username", query)
+                .whereLessThanOrEqualTo("username", query + "\\\\uf8ff")
+                .get()
+                .await()
+            val result = snapshot.toObjects(UserProfile::class.java)
+            result.filter { it.uid != auth.currentUser?.uid }
+        } catch (e: Exception) {
+            emptyList()
         }
-        val listener = db.collection("users")
-            .whereGreaterThanOrEqualTo("username", query)
-            .whereLessThanOrEqualTo("username", query + "\uf8ff")
-            .addSnapshotListener { snapshot, _ ->
-                if (snapshot != null) {
-                    val result = snapshot.toObjects(UserProfile::class.java)
-                    trySend(result.filter { it.uid != auth.currentUser?.uid })
-                }
-            }
-        awaitClose { listener?.remove() }
     }
-
-    suspend fun saveUserProfile() {
-        val user = auth.currentUser ?: return
-        val profile = UserProfile(uid = user.uid, username = user.displayName ?: "User", photoUrl = user.photoUrl?.toString() ?: "")
-        db.collection("users").document(user.uid).set(profile).await()
-    }
-
-    suspend fun startConversation(otherUserId: String, otherUserName: String): String {
-        return createOrGetConversation(otherUserId, otherUserName)
-    }
-
-    suspend fun addStory(imageUrl: String) {
-        val user = auth.currentUser ?: return
-        val story = Story(id = "", userId = user.uid, imageUrl = imageUrl, timestamp = System.currentTimeMillis())
-        val ref = db.collection("stories").document()
-        ref.set(story.copy(id = ref.id)).await()
-    }
-
 
     fun editMessage(conversationId: String, msgId: String, newText: String) {
         val msgRef = db.collection("conversations").document(conversationId).collection("messages").document(msgId)
@@ -316,3 +295,7 @@ class SocialRepository {
         }
     }
 }
+"""
+
+with open("app/src/main/java/com/example/data/repository/SocialRepository.kt", "w") as f:
+    f.write(content)

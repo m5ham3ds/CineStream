@@ -106,7 +106,7 @@ class SocialViewModel : ViewModel() {
 
     fun addStory(imageUrl: String) {
         if (imageUrl.isNotBlank()) {
-            repo.addStory(imageUrl)
+            viewModelScope.launch { repo.addStory(imageUrl) }
         }
     }
 }

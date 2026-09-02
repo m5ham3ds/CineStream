@@ -1,31 +1,7 @@
-package com.example.data.repository
+with open("app/src/main/java/com/example/data/repository/SocialRepository.kt", "r") as f:
+    content = f.read()
 
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import android.net.Uri
-
-data class UserProfile(
-    val uid: String = "",
-    val username: String = "",
-    val firstName: String = "",
-    val lastName: String = "",
-    val photoUrl: String = "",
-    val isOnline: Boolean = false,
-    val isProfilePublic: Boolean = true
-) {
-    @get:com.google.firebase.firestore.Exclude
-    val displayName: String
-        get() = "${firstName} ${lastName}".trim().takeIf { it.isNotBlank() } ?: username
-}
-
+models = """
 data class PrivateMessage(
     val id: String = "",
     val senderId: String = "",
@@ -201,118 +177,26 @@ class SocialRepository {
         }
     }
 
-    fun searchUsers(query: String): Flow<List<UserProfile>> = callbackFlow {
-        if (query.isBlank()) {
-            trySend(emptyList())
-            return@callbackFlow
-        }
-        val listener = db.collection("users")
-            .whereGreaterThanOrEqualTo("username", query)
-            .whereLessThanOrEqualTo("username", query + "\uf8ff")
-            .addSnapshotListener { snapshot, _ ->
-                if (snapshot != null) {
-                    val result = snapshot.toObjects(UserProfile::class.java)
-                    trySend(result.filter { it.uid != auth.currentUser?.uid })
-                }
-            }
-        awaitClose { listener?.remove() }
-    }
-
-    suspend fun saveUserProfile() {
-        val user = auth.currentUser ?: return
-        val profile = UserProfile(uid = user.uid, username = user.displayName ?: "User", photoUrl = user.photoUrl?.toString() ?: "")
-        db.collection("users").document(user.uid).set(profile).await()
-    }
-
-    suspend fun startConversation(otherUserId: String, otherUserName: String): String {
-        return createOrGetConversation(otherUserId, otherUserName)
-    }
-
-    suspend fun addStory(imageUrl: String) {
-        val user = auth.currentUser ?: return
-        val story = Story(id = "", userId = user.uid, imageUrl = imageUrl, timestamp = System.currentTimeMillis())
-        val ref = db.collection("stories").document()
-        ref.set(story.copy(id = ref.id)).await()
-    }
-
-
-    fun editMessage(conversationId: String, msgId: String, newText: String) {
-        val msgRef = db.collection("conversations").document(conversationId).collection("messages").document(msgId)
-        msgRef.update("text", newText, "isEdited", true)
-    }
-
-    fun deleteMessage(conversationId: String, msgId: String, forEveryone: Boolean) {
-        val user = getCurrentUser() ?: return
-        val msgRef = db.collection("conversations").document(conversationId).collection("messages").document(msgId)
-        if (forEveryone) {
-            msgRef.update("isDeleted", true)
-        } else {
-            db.runTransaction { transaction ->
-                val snapshot = transaction.get(msgRef)
-                if (snapshot.exists()) {
-                    val msg = snapshot.toObject(PrivateMessage::class.java)
-                    if (msg != null) {
-                        val newDeletedFor = msg.deletedFor.toMutableList()
-                        if (!newDeletedFor.contains(user.uid)) {
-                            newDeletedFor.add(user.uid)
-                            transaction.update(msgRef, "deletedFor", newDeletedFor)
-                        }
-                    }
-                }
-            }
+    suspend fun searchUsers(query: String): List<UserProfile> {
+        return try {
+            val snapshot = db.collection("users")
+                .whereGreaterThanOrEqualTo("username", query)
+                .whereLessThanOrEqualTo("username", query + "\\uf8ff")
+                .get()
+                .await()
+            val result = snapshot.toObjects(UserProfile::class.java)
+            result.filter { it.uid != auth.currentUser?.uid }
+        } catch (e: Exception) {
+            emptyList()
         }
     }
+"""
 
-    fun reactToMessage(conversationId: String, msgId: String, emoji: String) {
-        val user = getCurrentUser() ?: return
-        val msgRef = db.collection("conversations").document(conversationId).collection("messages").document(msgId)
-        db.runTransaction { transaction ->
-            val snapshot = transaction.get(msgRef)
-            if (snapshot.exists()) {
-                val msg = snapshot.toObject(PrivateMessage::class.java)
-                if (msg != null) {
-                    val newReactions = msg.reactions.toMutableMap()
-                    if (newReactions[user.uid] == emoji) {
-                        newReactions.remove(user.uid)
-                    } else {
-                        newReactions[user.uid] = emoji
-                    }
-                    transaction.update(msgRef, "reactions", newReactions)
-                }
-            }
-        }
-    }
+index = content.find("}")
+# This is the end of UserProfile
+if index != -1:
+    content = content[:index+1] + "\n" + models + "\n}\n"
 
-    fun sendVoiceMessage(conversationId: String, voicePath: String) {
-        val user = getCurrentUser() ?: return
-        val docRef = db.collection("conversations").document(conversationId)
-        
-        val msgRef = docRef.collection("messages").document()
-        val msg = PrivateMessage(msgRef.id, user.uid, "Voice Message", System.currentTimeMillis(), isVoice = true, mediaUrl = voicePath)
-        msgRef.set(msg)
-        
-        db.runTransaction { transaction ->
-            val convSnapshot = transaction.get(docRef)
-            if (convSnapshot.exists()) {
-                val currentCountsAny = convSnapshot.get("unreadCounts")
-                val currentCounts = if (currentCountsAny is Map<*, *>) {
-                    currentCountsAny.entries.associate { it.key.toString() to (it.value.toString().toIntOrNull() ?: 0) }
-                } else emptyMap()
-                
-                val newCounts = currentCounts.toMutableMap()
-                val participantsAny = convSnapshot.get("participants")
-                val participants = if (participantsAny is List<*>) {
-                    participantsAny.map { it.toString() }
-                } else emptyList()
-                
-                participants.forEach { p ->
-                    if (p != user.uid) {
-                        newCounts[p] = (newCounts[p] ?: 0) + 1
-                    }
-                }
-                
-                transaction.update(docRef, "lastMessage", "Voice Message", "lastMessageTime", System.currentTimeMillis(), "unreadCounts", newCounts)
-            }
-        }
-    }
-}
+with open("app/src/main/java/com/example/data/repository/SocialRepository.kt", "w") as f:
+    f.write(content)
+
