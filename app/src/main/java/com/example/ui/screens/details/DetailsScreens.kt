@@ -366,23 +366,32 @@ fun SeriesDetailsScreen(
                     .fillMaxSize()
                     .verticalScroll(scrollState)
             ) {
-                Box(modifier = Modifier.fillMaxWidth().height(400.dp)) {
-                    AsyncImage(
-                        model = series.posterUrl,
-                        contentDescription = series.title,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                Brush.verticalGradient(
-                                    colors = listOf(Color.Transparent, MaterialTheme.colorScheme.background),
-                                    startY = 300f
+                if (selectedTrailerId != null) {
+                    Box(modifier = Modifier.fillMaxWidth().aspectRatio(16f/9f)) {
+                        com.example.ui.components.InlineYouTubePlayer(
+                            videoId = selectedTrailerId!!,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                } else {
+                    Box(modifier = Modifier.fillMaxWidth().height(400.dp)) {
+                        AsyncImage(
+                            model = series.posterUrl,
+                            contentDescription = series.title,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    Brush.verticalGradient(
+                                        colors = listOf(Color.Transparent, MaterialTheme.colorScheme.background),
+                                        startY = 300f
+                                    )
                                 )
-                            )
-                    )
+                        )
+                    }
                 }
 
                 Column(modifier = Modifier.padding(16.dp)) {
