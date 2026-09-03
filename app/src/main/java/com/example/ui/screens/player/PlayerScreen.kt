@@ -173,6 +173,9 @@ fun PlayerScreen(mediaId: String, isMovie: Boolean, title: String, url: String? 
         uiState.extractionUrl?.let { url ->
             HiddenVideoExtractor(
                 url = url,
+                isMovie = uiState.isMovie,
+                season = uiState.currentSeasonNumber,
+                episode = uiState.currentEpisodeNumber,
                 onVideoUrlFound = { extractedUrl ->
                     viewModel.setExtractedUrl(extractedUrl)
                 }

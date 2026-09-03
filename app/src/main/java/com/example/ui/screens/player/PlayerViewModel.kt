@@ -16,7 +16,7 @@ data class PlayerUiState(
     val title: String = "",
     
     // Website (Provider)
-    val availableWebsites: List<String> = listOf("VidSrc", "SuperStream", "FlixHQ", "Goku", "EgyBest", "FaselHD"),
+    val availableWebsites: List<String> = listOf("VidSrc", "SuperStream", "FlixHQ", "EgyDead", "FaselHD", "Anime4Up", "WitAnime", "CimaLeek", "Asia2TV", "TukTukCinema"),
     val currentWebsite: String = "VidSrc",
     
     // Server
@@ -123,6 +123,12 @@ class PlayerViewModel : ViewModel() {
                 "Goku" -> "https://vidsrc.cc/v2/embed/movie/${state.mediaId}"
                 "EgyBest" -> "https://egydead.icu/movie/${state.mediaId}"
                 "FaselHD" -> "https://faselhd.club/?p=${state.mediaId}"
+                "EgyDead" -> "https://egydead.icu/movie/${state.mediaId}"
+                "Anime4Up" -> "https://anime4up.com/?s=${state.title}" // Uses search
+                "WitAnime" -> "https://witanime.com/?search_param=animes&s=${state.title}"
+                "CimaLeek" -> "https://cimaleek.com/?s=${state.title}"
+                "Asia2TV" -> "https://asia2tv.com/?s=${state.title}"
+                "TukTukCinema" -> "https://tuktukcinema.com/?s=${state.title}"
                 else -> "https://vidsrc.me/embed/movie?tmdb=${state.mediaId}"
             }
         } else {
@@ -133,6 +139,12 @@ class PlayerViewModel : ViewModel() {
                 "Goku" -> "https://vidsrc.cc/v2/embed/tv/${state.mediaId}/${state.currentSeasonNumber}/${state.currentEpisodeNumber}"
                 "EgyBest" -> "https://egydead.icu/episode/${state.mediaId}-season-${state.currentSeasonNumber}-ep-${state.currentEpisodeNumber}"
                 "FaselHD" -> "https://faselhd.club/?p=${state.mediaId}&s=${state.currentSeasonNumber}&e=${state.currentEpisodeNumber}"
+                "EgyDead" -> "https://egydead.icu/episode/${state.mediaId}-season-${state.currentSeasonNumber}-ep-${state.currentEpisodeNumber}"
+                "Anime4Up" -> "https://anime4up.com/?s=${state.title}" // Will require WebView to click first result
+                "WitAnime" -> "https://witanime.com/?search_param=animes&s=${state.title}"
+                "CimaLeek" -> "https://cimaleek.com/?s=${state.title}"
+                "Asia2TV" -> "https://asia2tv.com/?s=${state.title}"
+                "TukTukCinema" -> "https://tuktukcinema.com/?s=${state.title}"
                 else -> "https://vidsrc.me/embed/tv?tmdb=${state.mediaId}&season=${state.currentSeasonNumber}&episode=${state.currentEpisodeNumber}"
             }
         }
